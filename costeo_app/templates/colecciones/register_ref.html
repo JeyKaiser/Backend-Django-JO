@@ -1,0 +1,202 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Referencias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .form-container {            
+            margin-left: auto;
+            margin-right: auto;
+            width: 800px;           
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .thead tr th{
+            background: #C7BEAF;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            margin-bottom: 0px;
+        }
+        .tbody tr td{
+            padding: 10px;
+            border: 1px solid #C7BEAF; 
+        }
+        .form-groupfoto {
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .form-label {
+            width: 320px;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-input .form-select{           
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 320px;         
+        } 
+        .image-preview {
+            display: none;
+            max-width: 200px;
+            margin-top: 10px;
+        }
+        .highlight {
+            background-color: #9a9387;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px 20px;
+            margin-bottom: 20px;            
+        }
+        .bordes{
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
+        }
+        .submit-btn:hover {
+            background-color: DarkGoldenrod;
+            color: white;
+        } 
+        
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="highlight">CREAR NUEVA REFERENCIA</div>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <table>
+                <thead class="thead">
+                    <tr>
+                        <th class="center">FOTO DE REFERENCIA</th>  
+                        <th class="center">DATOS DE REFERENCIA</th>  
+                    </tr>
+                </thead>
+                <tbody class="tbody">
+                    <tr>
+                        <td class="center">
+                            <div class="form-groupfoto">
+                                <label class="form-label">Seleccionar imagen...</label>
+                                <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
+                                <div>
+                                    <img id="img-preview" src="" alt="Vista previa" class="image-preview" />
+                                </div>
+                            </div>
+                        </td>                         
+                        <td class="center">
+                            <div class="form-group">
+                                <label class="form-label">REFERENCIA</label>
+                                <input type="text" name="referencia" class="form-input" placeholder="1" required/>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">NOMBRE SISTEMA</label>
+                                <input type="text" name="nombreRef" class="form-input" placeholder="RIVIERA ANKLE DRESS" required/>
+                            </div>                         
+                            
+                            <div class="form-group">
+                                <label class="form-label">CODIGO MD</label>
+                                <input type="text" name="codigoSapMD" class="form-input" placeholder="MD00101">
+                                <label class="form-label">CODIGO PT</label>
+                                <input type="text" name="codigoSapPT" class="form-input" placeholder="PT02777">
+                            </div>
+                            
+                            <div class="form-group form-input">
+                                <label class="form-label">STATUS</label>
+                                <select name="status" class="form-select">
+                                    {% for status in miStatus %}
+                                        <option value="{{status.id}}">{{status.status}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group form-input">
+                                <label class="form-label">CREATIVO</label>
+                                <select name="creativo" class="form-select">
+                                    {% for creativo in miCreativo %}
+                                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group form-input">
+                                <label class="form-label">TECNICO</label>
+                                <select name="tecnico" class="form-select">
+                                    {% for tecnico in miTecnico %}
+                                        <option value="{{tecnico.id}}">{{tecnico.nombreTecnico}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group form-input">
+                                <label class="form-label">TIPO</label>
+                                <select name="tipo" class="form-select">
+                                    {% for tipo in miTipo %}
+                                        <option value="{{tipo.id}}">{{tipo.tipo}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>                             
+                            
+                            <div class="form-group form-input">
+                                <label class="form-label">VARIACIÓN</label>
+                                <select name="variacion" class="form-select">
+                                    {% for variacion in miVariacion %}
+                                        <option value="{{variacion.id}}">{{variacion.es_variacion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </td>                         
+                    </tr>
+                </tbody>            
+            </table>  
+
+            <button type="submit" class="highlight bordes submit-btn">  CREAR  </button>
+
+        </form>
+    </div>
+
+    <script>
+        function previewImage(event) {
+            console.log("Evento onchange activado");  // Verifica si se dispara el evento
+            
+            let input = event.target;
+            let imgPreview = document.getElementById('img-preview');
+            
+            // Verifica si el archivo es correcto
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    console.log("Archivo cargado correctamente");
+                    imgPreview.src = e.target.result;  // Asegúrate de usar e.target.result
+                    imgPreview.style.display = 'block';  // Muestra la imagen
+                };
+                
+                reader.readAsDataURL(input.files[0]);  // Lee el archivo seleccionado
+            } else {
+                console.log("No se seleccionó ningún archivo o hubo un error");
+            }
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

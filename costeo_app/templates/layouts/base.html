@@ -9,22 +9,19 @@
 </head>
 <body>
     <header>        
-        <img src="{% static "yourCompany.jpg" %}" alt="" width="70" >        
-        <h1>BASE DE DATOS JO</h1>
+        <img src="{% static "yourCompany.jpg" %}" alt="" width="70" >       
+        
     </header>
 
     <nav class="navbar container">
         <ul>
             <li><a href= "{% url 'index' %}" >        Inicio</a></li>
-            <li><a href= "{% url 'proyecto' %}" >     Proyectos</a></li>
-            <li><a href= "{% url 'tasks' %}" >        Tareas</a></li>
-            <li><a href= "{% url 'create_task' %}" >  Nueva Tarea</a></li>
-            <li><a href= "{% url 'create_project' %}">Nuevo Proyecto</a></li>
             <li><a href= "{% url 'about' %}" >        Sobre Nosotros</a></li>
+            <li><a href= "{% url 'RegisterReference' %}" >    Crear Referencia</a></li>
             {% if user.is_authenticated %}
-                <li><a href= "{% url 'logout' %}" >       Salir</a></li>
+                <li><a href= "{% url 'logout' %}" >   Salir</a></li>
             {% else %}
-                <li><a href= "{% url 'signin' %}" >       Iniciar</a></li>
+                <li><a href= "{% url 'signin' %}" >   Iniciar</a></li>
             {% endif %}
         </ul>
     </nav>

@@ -1,6 +1,6 @@
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: #f4f1ec; /* Color pastel tierra */
+    background-color: #F4F4F4; /* Color pastel tierra */
     margin: 0;
     padding: 0;    
     justify-content: center;
@@ -18,8 +18,8 @@ body {
 .navbar ul {
     display: flex;
     justify-content: space-between;
-    background: #5e642e;
-    padding: 10px 10px;
+    background: #AA9D8C;
+    padding: 10px 40px;
 }
 
 .navbar ul li {
@@ -37,7 +37,7 @@ body {
 
 .container {
     max-width: 1200px;
-    background: #e0daa9;
+    background: #DADBD6;
     margin: auto;
     padding: 20px 10px;    
 }
@@ -61,7 +61,7 @@ textarea.input{
 }
 
 /* Contenedor del formulario */
-.form-container {
+.form-containerbase {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -128,7 +128,7 @@ input:focus {
 
 /* Estilo de respuesta móvil */
 @media (max-width: 600px) {
-    .form-container {
+    .form-containerbase {
         padding: 1.5rem;
     }
 }

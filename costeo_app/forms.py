@@ -3,18 +3,25 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
 
-class CreateNewTask(forms.Form):
-    titulo = forms.CharField(label="Nombre de tarea", 
-                            max_length=200, 
-                            widget=forms.TextInput(attrs={'class':'input'}))    
-    descripcion = forms.CharField(label="Descripcion de la tarea", 
-                                widget=forms.Textarea(attrs={'class':'input'}))
 
 
-class CreateNewProject(forms.Form):
-    nombre = forms.CharField(label="Nombre del proyecto", max_length=200,
-                            widget=forms.TextInput(attrs={'class':'input'}))
-    
+class CreateNewReference(forms.Form):
+    referencia  =    forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))    
+    fotoreferencia = forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))
+    codigoSapMD =    forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))    
+    codigoSaoPT =    forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))
+    nombreSistema =  forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))    
+    descripcionColor=forms.CharField(label="Nombre de tarea", max_length=200, widget=forms.TextInput(attrs={'class':'input'}))
+    codigoColor =    forms.CharField(label="Nombre de tarea", max_length=200, widget=forms.TextInput(attrs={'class':'input'}))    
+    fotoTela =       forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))
+    nombreReferente =forms.CharField(label="Nombre de tarea", max_length=20, widget=forms.TextInput(attrs={'class':'input'}))    
+    linea =          forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))
+    creativo =       forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))    
+    tecnico =        forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))
+    status =         forms.CharField(label="Nombre de tarea", max_length=30, widget=forms.TextInput(attrs={'class':'input'}))    
+    tallaje =        forms.CharField(label="Nombre de tarea", max_length=50, widget=forms.TextInput(attrs={'class':'input'}))
+    largo =          forms.CharField(label="Nombre de tarea", max_length=50, widget=forms.TextInput(attrs={'class':'input'}))    
+    modista =        forms.CharField(label="Nombre de tarea", max_length=100, widget=forms.TextInput(attrs={'class':'input'}))   
 
 
 class CustomUserCreationForm(UserCreationForm):

@@ -1,12 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, JsonResponse
-from .models import Proyecto, Task, CustomUser
-from .forms import CreateNewTask, CreateNewProject, CustomUserCreationForm
+from .models import CustomUser, Status, Foto, Creativo, Tecnico, Linea, Tela, Tipo, Variacion, Collection
+from .forms import CustomUserCreationForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.db import transaction
+from django.core.files.storage import FileSystemStorage
 
 
 def signup(request):
@@ -58,65 +57,66 @@ def signin(request):
     
 def index(request):
     title = 'Django-Course!!'
-    return render(request, "index.html", {
-        'mititle': title
+    return render(request, "index.html")
+
+
+
+def RegisterReference(request):
+    status = Status.objects.all()
+    creativo = Creativo.objects.all()
+    tecnico = Tecnico.objects.all()
+    tipo = Tipo.objects.all()
+    variacion = Variacion.objects.all()
+
+    if request.method == "POST":
+        referencia  = request.POST.get('referencia')
+        nombreRef   = request.POST.get('nombreRef')
+        codigoSapMD = request.POST.get('codigoSapMD')
+        codigoSapPT = request.POST.get('codigoSapPT')
+        status_id   = request.POST.get('status')
+        creativo_id = request.POST.get('creativo')
+        tecnico_id  = request.POST.get('tecnico')
+        tipo_id     = request.POST.get('tipo')
+        variacion_id= request.POST.get('variacion')
+        linea_id    = request.POST.get('linea')
+
+        print(referencia, nombreRef, codigoSapMD, codigoSapPT, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
+
+        cargarFoto = request.FILES.get('foto')
+        foto_referencia = None
+        if cargarFoto:            
+            fs = FileSystemStorage()
+            filename = fs.save(cargarFoto.name, cargarFoto)
+            uploaded_file_url = fs.url(filename)
+            # Crear una instancia de Foto con la ruta del archivo subido 
+            foto_referencia = Foto.objects.create(rutaFoto=uploaded_file_url)  # Ajustado para usar rutaFoto
+
+        # Crear la nueva colección en la base de datos
+        nueva_coleccion = Collection.objects.create(
+            referencia    = referencia,
+            fotoReferencia= foto_referencia,
+            codigoSapMD   = codigoSapMD,
+            codigoSapPT   = codigoSapPT,
+            nombreSistema = nombreRef,
+            status_id     = status_id,
+            creativo_id   = creativo_id,
+            tecnico_id    = tecnico_id,
+            linea_id      = linea_id,
+        )
+
+        return redirect('RegisterReference')
+
+    return render(request, 'colecciones/register_ref.html', {
+        'miStatus': status,
+        'miCreativo': creativo,
+        'miTecnico': tecnico,
+        'miTipo': tipo,
+        'miVariacion': variacion,
     })
-        
-
-def proyecto(request):
-    proyectos = list(Proyecto.objects.values())
-    return render(request, 'proyectos/proyectos.html', {
-        'miproyecto': proyectos
-    })
-
-def project_detail(request, id):
-    proyecto = get_object_or_404(Proyecto, id=id)
-    tasks = Task.objects.filter(proyecto_id=id)
-    print(proyecto)
-    print(tasks)
-    return render(request, 'proyectos/detail.html', {
-        'detailProject': proyecto,
-        'detailTask': tasks
-    })
 
 
-def tasks(request):
-    tareas = list(Task.objects.values()) 
-    return render(request, 'tareas/tasks.html', {
-        'mitarea': tareas,
-        
-    })
 
 
-def create_task(request):
-    if request.method == 'GET':
-        proyectos = Proyecto.objects.all()
-        return render(request, 'tareas/create_task.html', {
-            'miFormTask': CreateNewTask(),
-            'proyectos': proyectos,
-        })
-        # print(request.GET)                                # Esto no genera error, solo imprime el diccionario
-    else:
-        print(request.POST)                             # Devuelve '' si 'titulo' no está en la solicitud
-        titulo = request.POST.get('titulo', '')         # Devuelve '' si 'descripcion' no está en la solicitud
-        descripcion = request.POST.get('descripcion', '')
-        proyecto = Proyecto.objects.get(id=request.POST.get('proyectos'))
-        Task.objects.create(
-            titulo=titulo, descripcion=descripcion, proyecto=proyecto)
-        return redirect('tasks')
-
-
-def create_project(request):
-    if request.method == 'GET':
-        # show interface
-        return render(request, 'proyectos/create_project.html', {
-            'miFormProject': CreateNewProject()
-        })
-        # print(request.GET)                                  # Esto no genera error, solo imprime el diccionario
-    else:       
-        nombreProject = request.POST.get('nombre', '')        # Devuelve '' si 'titulo' no está en la solicitud
-        Proyecto.objects.create(nombre_proyecto = nombreProject)
-        return redirect('proyecto')
 
 
 
