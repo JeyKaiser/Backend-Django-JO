@@ -61,21 +61,30 @@ def index(request):
 
 # Crear una nueva referencia
 def create_collection(request):
+    status = Status.objects.all()
+    creativo = Creativo.objects.all()
+    tecnico = Tecnico.objects.all()
+    tipo = Tipo.objects.all()
+    variacion = Variacion.objects.all()
+    print(creativo)
+
     if request.method == 'POST':
         form = CollectionForm(request.POST, request.FILES)
-        print(request.POST.get('referencia'))    #ejemplo
+        print(request.POST.get('referencia'), request.POST.get('creativo'))    #ejemplo
         if form.is_valid():
             form.save()
-            return redirect('index')
+            return redirect('create_collection')
     else:
         form = CollectionForm()
         
-    return render(request, 'colecciones/create.html', {'form': form})
-
+    return render(request, 'colecciones/create.html', {
+        'form': form,
+        'miCreativo': creativo,
+        })
 
 def RegisterReference(request):
     status = Status.objects.all()
-    creativo = Creativo.objects.all()
+    creativo = Creativo.objects.all() 
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()

@@ -20,6 +20,8 @@ class CollectionForm(forms.ModelForm):
             'linea'
         ]
 
+
+
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser

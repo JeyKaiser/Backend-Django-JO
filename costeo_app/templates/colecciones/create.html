@@ -1,7 +1,7 @@
 
 {% extends "layouts/base.html" %}
-{% load static %}
 {% block content %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,58 +20,96 @@
     <!-- Formulario para crear una nueva referencia -->
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+
         <table>
+            <thead>
+                <tr>
+                    <td>
+                        <table>
+                            <tr>
+                                <td><label for="foto_referencia"> FOTO REFERENCIA </label></td>
+                                <td>{{ form.foto_referencia }}</td>
+                            </tr>
+                        </table>
+                    </td>                 
+                    <td> ITEM </td>
+                    <td> VALOR</td>
+                </tr>
+            </thead>
             <tr>
-                <td><label for="referencia">Reference:</label></td>
-                <td>{{ form.referencia }}</td>
+                
             </tr>
             <tr>
-                <td><label for="foto_referencia">Reference Photo:</label></td>
-                <td>{{ form.foto_referencia }}</td>
+                <td></td>                
+                <td><label for="referencia"> REFERENCIA </label></td>                
+                <td><input type="text" placeholder="1" required/>{{ form.referencia }}</td>
+            </tr>            
+            <tr>
+                <td></td>                
+                <td><label for="codigoSapMD"> SAP MD Code: </label></td>
+                <td> <input type="text" placeholder="MD00101">  {{ form.codigo_sap_md }}</td>
             </tr>
             <tr>
-                <td><label for="codigo_sap_md">SAP MD Code:</label></td>
-                <td>{{ form.codigo_sap_md }}</td>
+                <td></td>                
+                <td><label for="codigoSapPT"> SAP PT Code: </label></td>
+                <td> <input type="text" placeholder="PT00101"> {{ form.codigo_sap_pt }}</td>
             </tr>
             <tr>
-                <td><label for="codigo_sap_pt">SAP PT Code:</label></td>
-                <td>{{ form.codigo_sap_pt }}</td>
+                <td></td>                
+                <td><label for="nombreSistema"> System Name: </label></td>
+                <td><input type="text" placeholder="RIVIERA ANKLE DRESS" required/> {{ form.nombre_sistema }}</td>
             </tr>
             <tr>
-                <td><label for="nombre_sistema">System Name:</label></td>
-                <td>{{ form.nombre_sistema }}</td>
-            </tr>
-            <tr>
-                <td><label for="descripcion_color">Color Description:</label></td>
+                <td></td>                
+                <td><label for="descripcionColor"> Color Description: </label></td>
                 <td>{{ form.descripcion_color }}</td>
             </tr>
             <tr>
-                <td><label for="foto_tela">Fabric Photo:</label></td>
-                <td>{{ form.foto_tela }}</td>
+                <td></td>                
+                <td><label for="fotoTela"> Fabric Photo: </label></td>
+                <td><select name="creativo">
+                    {% for creativo in miCreativo %}
+                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
+                    {% endfor %}
+                </select>{{ form.foto_tela }}</td>
             </tr>
             <tr>
-                <td><label for="tela">Fabric:</label></td>
+                <td></td>                
+                <td><label for="creativo"> Creativo: </label></td>
+                <td>
+                    <select name="creativo">
+                    {% for creativo in miCreativo %}
+                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            </tr>
+            <tr>
+                <td></td>                
+                <td><label for="tela"> Fabric: </label></td>
                 <td>{{ form.tela }}</td>
             </tr>
             <tr>
-                <td><label for="status">Status:</label></td>
+                <td></td>                
+                <td><label for="status"> Status: </label></td>
                 <td>{{ form.status }}</td>
             </tr>
             <tr>
-                <td><label for="modista">Tailor:</label></td>
+                <td></td>                
+                <td><label for="modista"> Tailor: </label></td>
                 <td>{{ form.modista }}</td>
             </tr>
             <tr>
-                <td><label for="largo">Length:</label></td>
+                <td></td>                
+                <td><label for="largo"> Length: </label></td>
                 <td>{{ form.largo }}</td>
             </tr>
-            <tr>
-                <td colspan="2">
-                    <button type="submit">Create Reference</button>
-                </td>
-            </tr>
+            
+            <button type="submit">Create Reference</button>
+
         </table>
     </form>
+    <!--div> <p></p> <button type="submit">Create Reference</button></div-->
 
     <p><a href="{% url 'index' %}">Back to list</a></p>
 </body>
