@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import CustomUser, Status, Foto, Creativo, Tecnico, Linea, Tela, Tipo, Variacion, Collection
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -59,6 +59,18 @@ def index(request):
     title = 'Django-Course!!'
     return render(request, "index.html")
 
+# Crear una nueva referencia
+def create_collection(request):
+    if request.method == 'POST':
+        form = CollectionForm(request.POST, request.FILES)
+        print(request.POST.get('referencia'))    #ejemplo
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = CollectionForm()
+        
+    return render(request, 'colecciones/create.html', {'form': form})
 
 
 def RegisterReference(request):
@@ -82,15 +94,14 @@ def RegisterReference(request):
 
         print(referencia, nombreRef, codigoSapMD, codigoSapPT, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
 
-        cargarFoto = request.FILES.get('foto')
+        fotoRef = request.FILES.get('foto')
         foto_referencia = None
-        if cargarFoto:            
+        if fotoRef:            
             fs = FileSystemStorage()
-            filename = fs.save(cargarFoto.name, cargarFoto)
+            filename = fs.save(fotoRef.name, fotoRef)
             uploaded_file_url = fs.url(filename)
-            # Crear una instancia de Foto con la ruta del archivo subido 
-            foto_referencia = Foto.objects.create(rutaFoto=uploaded_file_url)  # Ajustado para usar rutaFoto
-
+            foto_referencia = Foto.objects.create(rutaFoto=uploaded_file_url)  
+        
         # Crear la nueva colección en la base de datos
         nueva_coleccion = Collection.objects.create(
             referencia    = referencia,

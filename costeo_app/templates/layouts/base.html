@@ -18,6 +18,7 @@
             <li><a href= "{% url 'index' %}" >        Inicio</a></li>
             <li><a href= "{% url 'about' %}" >        Sobre Nosotros</a></li>
             <li><a href= "{% url 'RegisterReference' %}" >    Crear Referencia</a></li>
+            <li><a href= "{% url 'create_collection' %}" >    Crear Colección</a></li>
             {% if user.is_authenticated %}
                 <li><a href= "{% url 'logout' %}" >   Salir</a></li>
             {% else %}

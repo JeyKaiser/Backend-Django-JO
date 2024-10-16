@@ -9,6 +9,7 @@ urlpatterns = [
     path('signin/', views.signin, name='signin'),  
     path('index/', views.index, name='index'),
     path('coleccion/', views.RegisterReference, name='RegisterReference'),
+    path('create/', views.create_collection, name='create_collection'),
     #path('proyecto/', views.proyecto, name='proyecto'),
     #path('proyecto/<int:id>', views.project_detail, name='project_detail'),
     #path('tasks/', views.tasks, name='tasks'),
