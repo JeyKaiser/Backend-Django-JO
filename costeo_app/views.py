@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Status, Foto, Creativo, Tecnico, Linea, Tela, Tipo, Variacion, Collection
+from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection
 from .forms import CustomUserCreationForm, CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
@@ -59,6 +59,7 @@ def index(request):
     title = 'Django-Course!!'
     return render(request, "index.html")
 
+
 # Crear una nueva referencia
 def create_collection(request):
     status = Status.objects.all()
@@ -66,11 +67,20 @@ def create_collection(request):
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()
-    print(creativo)
+    codigoColor =  Color_Referencia.objects.all()
+    
 
     if request.method == 'POST':
         form = CollectionForm(request.POST, request.FILES)
-        print(request.POST.get('referencia'), request.POST.get('creativo'))    #ejemplo
+        print(request.POST.get('referencia'),         #------
+            request.POST.get('nombreSistema'),
+            request.POST.get('codigoSapMD'),
+            request.POST.get('codigoSapPT'),
+            request.POST.get('descripcionColor'),         #------
+            request.POST.get('creativo'),
+            request.POST.get('tecnico'),            
+            request.POST.get('status'),
+            )   #ejemplo
         if form.is_valid():
             form.save()
             return redirect('create_collection')
@@ -78,9 +88,16 @@ def create_collection(request):
         form = CollectionForm()
         
     return render(request, 'colecciones/create.html', {
-        'form': form,
-        'miCreativo': creativo,
+        'form'       : form,
+        'miCreativo' : creativo,
+        'miTecnico'  : tecnico,
+        'miStatus'   : status,
+        'miTipo'     : tipo,
+        'miVariacion': variacion,
+        'miColorReferencia': codigoColor,
         })
+
+
 
 def RegisterReference(request):
     status = Status.objects.all()

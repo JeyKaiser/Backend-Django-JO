@@ -1,4 +1,3 @@
-
 {% extends "layouts/base.html" %}
 {% block content %}
 {% load static %}
@@ -8,110 +7,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Collection Reference</title>    
-    <!--link rel="stylesheet" href="{% static 'styles/main.css' %}"-->
+    <title>Create Collection Reference</title>
     <link rel="stylesheet" href="{% static 'styles/createStyle.css' %}">
-
-    
+    <style>
+        .contenedor {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .image-container {
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .form-container {
+            width: 55%;
+        }
+        .form-container table {
+            width: 100%;
+        }        
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>    
+
+    <h1>Crear Nueva Referencia</h1>
     
-    <h1>Create New Collection Reference</h1>
     <!-- Formulario para crear una nueva referencia -->
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        
+        <div class="contenedor">
+            <!-- Zona izquierda: Selección y vista previa de la imagen -->
+            <div class="image-container">
+                <label for="foto_referencia">FOTO REFERENCIA</label>
+                <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
+                <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />
+            </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <td>
-                        <table>
-                            <tr>
-                                <td><label for="foto_referencia"> FOTO REFERENCIA </label></td>
-                                <td>{{ form.foto_referencia }}</td>
-                            </tr>
-                        </table>
-                    </td>                 
-                    <td> ITEM </td>
-                    <td> VALOR</td>
-                </tr>
-            </thead>
-            <tr>
-                
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="referencia"> REFERENCIA </label></td>                
-                <td><input type="text" placeholder="1" required/>{{ form.referencia }}</td>
-            </tr>            
-            <tr>
-                <td></td>                
-                <td><label for="codigoSapMD"> SAP MD Code: </label></td>
-                <td> <input type="text" placeholder="MD00101">  {{ form.codigo_sap_md }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="codigoSapPT"> SAP PT Code: </label></td>
-                <td> <input type="text" placeholder="PT00101"> {{ form.codigo_sap_pt }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="nombreSistema"> System Name: </label></td>
-                <td><input type="text" placeholder="RIVIERA ANKLE DRESS" required/> {{ form.nombre_sistema }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="descripcionColor"> Color Description: </label></td>
-                <td>{{ form.descripcion_color }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="fotoTela"> Fabric Photo: </label></td>
-                <td><select name="creativo">
-                    {% for creativo in miCreativo %}
-                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
-                    {% endfor %}
-                </select>{{ form.foto_tela }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="creativo"> Creativo: </label></td>
-                <td>
-                    <select name="creativo">
-                    {% for creativo in miCreativo %}
-                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
-                    {% endfor %}
-                </select>
-            </td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="tela"> Fabric: </label></td>
-                <td>{{ form.tela }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="status"> Status: </label></td>
-                <td>{{ form.status }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="modista"> Tailor: </label></td>
-                <td>{{ form.modista }}</td>
-            </tr>
-            <tr>
-                <td></td>                
-                <td><label for="largo"> Length: </label></td>
-                <td>{{ form.largo }}</td>
-            </tr>
-            
-            <button type="submit">Create Reference</button>
+            <!-- Zona derecha: Labels, inputs y selects -->
+            <div class="form-container">
+                <table>
+                    <tr>
+                        <td><label for="referencia">REFERENCIA:</label></td>
+                        <td><input id="ref" name="referencia" type="text" placeholder="1" required /></td>
+                    </tr>    
+                    <tr>
+                        <td><label for="nombreSistema">Nombre Sistema:</label></td>
+                        <td><input name="nombreSistema" type="text" placeholder="2" required /></td>
+                    </tr>            
+                    <tr>
+                        <td><label for="codigoSapMD">Código MD:</label></td>
+                        <td><input name="codigoSapMD" type="text" placeholder="MD00101"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="codigoSapPT">Código PT:</label></td>
+                        <td><input name="codigoSapPT" type="text" placeholder="PT00101"></td>
+                    </tr>            
+                    <tr>
+                        <td><label for="descripcionColor">Descripción Color:</label></td>
+                        <td>
+                            <select name="descripcionColor" id="descripcionColorSelect" onchange="buscarCodColor()" required>
+                                <option value="" hidden>Elegir una opción</option>
+                                <option value="NULL">Ninguno</option>
+                                {% for color_ref in miColorReferencia %}
+                                    <option value="{{color_ref.id}}" data-codigo="{{ color_ref.codigoColor }}">
+                                        {{color_ref.descripcionColor}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr> 
+                    <tr id="codigoColorRow" style="display: none;">            
+                        <td><label for="codigoColor">Código Color:</label></td>
+                        <td><input name="codigoColor" type="text" id="codigoColorInput" disabled></td>
+                    </tr>                
+                    <tr>
+                        <td><label for="creativo">Creativo:</label></td>
+                        <td>
+                            <select name="creativo">
+                                <option value="" hidden>Elegir un Creativo</option>
+                                {% for creativo in miCreativo %}
+                                    <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="tecnico">Técnico:</label></td>
+                        <td>
+                            <select name="tecnico">
+                                <option value="" hidden>Elegir un Técnico</option>
+                                {% for tecnico in miTecnico %}
+                                    <option value="{{tecnico.id}}">{{tecnico.nombreTecnico}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>                
+                    <tr>
+                        <td><label for="status">Status:</label></td>
+                        <td>
+                            <select name="status">
+                                <option value="" hidden>Elegir un Estado</option>
+                                {% for status in miStatus %}
+                                    <option value="{{status.id}}">{{status.status}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
 
-        </table>
+        <!-- Botón para crear referencia -->
+        <div class="button-container">
+            <button type="submit">Crear Referencia</button>
+        </div>
+        
     </form>
-    <!--div> <p></p> <button type="submit">Create Reference</button></div-->
 
     <p><a href="{% url 'index' %}">Back to list</a></p>
+
+    <script>
+        function buscarCodColor() {
+            let selectElement = document.getElementById('descripcionColorSelect');
+            let selectedOption = selectElement.options[selectElement.selectedIndex];
+            let codigoColor = selectedOption.getAttribute('data-codigo');
+            document.getElementById('codigoColorInput').value = codigoColor;
+
+            let codigoColorRow = document.getElementById('codigoColorRow');
+            if (selectElement.value !== "") {
+                codigoColorRow.style.display = "table-row";
+            } else {
+                codigoColorRow.style.display = "none";
+            }
+        }
+
+        function previewImage(event) {
+            let input = event.target;
+            let imgPreview = document.getElementById('img-preview');
+
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                imgPreview.style.display = 'none';
+            }
+        }
+    </script>
+
 </body>
 </html>
 {% endblock content %}

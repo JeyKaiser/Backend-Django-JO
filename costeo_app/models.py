@@ -54,6 +54,11 @@ class Variacion(models.Model):
     id = models.AutoField(primary_key=True)
     es_variacion = models.CharField(max_length=10, null=True, blank=True)
 
+class Color_Referencia(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigoColor = models.CharField(max_length=20, null=True, blank=True)
+    descripcionColor = models.CharField(max_length=200, null=True, blank=True)
+
 
 class Collection(models.Model):
     id = models.AutoField(primary_key=True)
