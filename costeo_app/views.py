@@ -1,12 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection
-from .forms import CustomUserCreationForm, CollectionForm
+from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout, authenticate
+from .forms import CustomUserCreationForm, CollectionForm
+from django.core.files.storage import FileSystemStorage
+from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-from django.core.files.storage import FileSystemStorage
-
 
 def signup(request):
     if request.method == 'POST':
@@ -68,6 +68,9 @@ def create_collection(request):
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()
     codigoColor =  Color_Referencia.objects.all()
+    linea = Linea.objects.all()
+    sublinea = Sublinea.objects.all()
+    #lineaSublinea = lineaSublinea.objects.all()
     
 
     if request.method == 'POST':
@@ -88,14 +91,24 @@ def create_collection(request):
         form = CollectionForm()
         
     return render(request, 'colecciones/create.html', {
-        'form'       : form,
-        'miCreativo' : creativo,
-        'miTecnico'  : tecnico,
-        'miStatus'   : status,
-        'miTipo'     : tipo,
-        'miVariacion': variacion,
-        'miColorReferencia': codigoColor,
+        'form'              : form,
+        'miCreativo'        : creativo,
+        'miTecnico'         : tecnico,
+        'miStatus'          : status,
+        'miTipo'            : tipo,
+        'miVariacion'       : variacion,
+        'miColorReferencia' : codigoColor,
+        'miLinea'           : linea,
+        'miSublinea'        : sublinea,
+        #'miLineaSublinea'   : lineaSublinea,
         })
+
+
+
+def obtener_sublineas(request, linea_id):
+    sublineas = Sublinea.objects.filter(linea_id=linea_id)
+    sublinea_list = list(sublineas.values('id', 'nombre_sublinea'))
+    return JsonResponse(sublinea_list, safe=False)
 
 
 

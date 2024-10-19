@@ -18,6 +18,7 @@ class CollectionForm(forms.ModelForm):
             'tecnico',
             'status',
             'linea'
+            'sublinea',            
         ]
 
 

@@ -8,31 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Collection Reference</title>
-    <link rel="stylesheet" href="{% static 'styles/createStyle.css' %}">
-    <style>
-        .contenedor {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .image-container {
-            width: 40%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        .form-container {
-            width: 55%;
-        }
-        .form-container table {
-            width: 100%;
-        }        
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'styles/createStyle.css' %}">    
 </head>
 <body>    
 
@@ -42,15 +18,23 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
-        <div class="contenedor">
-            <!-- Zona izquierda: Selección y vista previa de la imagen -->
+        <div class="contenedor"> 
+            
             <div class="image-container">
                 <label for="foto_referencia">FOTO REFERENCIA</label>
                 <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
                 <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />
+                <div>
+                    <select name="status">
+                        <option value="" hidden>Elegir un Estado</option>
+                        {% for status in miStatus %}
+                            <option value="{{status.id}}">{{status.status}}</option>
+                        {% endfor %}
+                        <option value="NULL">Ninguno</option>
+                    </select>
+                </div>
             </div>
-
-            <!-- Zona derecha: Labels, inputs y selects -->
+            
             <div class="form-container">
                 <table>
                     <tr>
@@ -123,8 +107,26 @@
                             </select>
                         </td>
                     </tr>
+                    <tr>
+                        <td><label for="linea"> Linea: </label></td>
+                        <td>
+                            <select id="linea" name="linea">
+                                <option value="">Seleccione una línea</option>
+                                {% for linea in miLinea %}
+                                    <option value="{{ linea.id }}">{{ linea.nombre_linea }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="sublinea" name="sublinea">
+                                <option value="">Seleccione una sublinea</option>
+                                <!-- Las sublineas serán cargadas aquí dinámicamente -->
+                            </select>
+                        </td>  
+                    </tr>
                 </table>
             </div>
+
         </div>
 
         <!-- Botón para crear referencia -->
@@ -166,6 +168,29 @@
                 imgPreview.style.display = 'none';
             }
         }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+    $('#linea').change(function() {
+        var lineaId = $(this).val();
+        if (lineaId) {
+        $.ajax({
+            url: '/obtener_sublineas/' + lineaId + '/',
+            type: 'GET',
+            success: function(data) {
+            $('#sublinea').empty();
+            $('#sublinea').append('<option value="">Seleccione una sublinea</option>');
+            $.each(data, function(index, sublinea) {
+                $('#sublinea').append('<option value="' + sublinea.id + '">' + sublinea.nombre_sublinea + '</option>');
+            });
+            }
+        });
+        } else {
+        $('#sublinea').empty();
+        $('#sublinea').append('<option value="">Seleccione una sublinea</option>');
+        }
+    });
     </script>
 
 </body>

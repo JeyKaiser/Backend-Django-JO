@@ -10,11 +10,7 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('coleccion/', views.RegisterReference, name='RegisterReference'),
     path('create/', views.create_collection, name='create_collection'),
-    #path('proyecto/', views.proyecto, name='proyecto'),
-    #path('proyecto/<int:id>', views.project_detail, name='project_detail'),
-    #path('tasks/', views.tasks, name='tasks'),
-    #path('create_task/', views.create_task, name='create_task'),
-    #path('create_project/', views.create_project, name='create_project'),   
+    path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),  
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     

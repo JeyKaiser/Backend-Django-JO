@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Create your models here.
 class Tela(models.Model):
-    id = models.AutoField(primary_key=True)
     cod_tela = models.CharField(max_length=30, null=True, blank=True)
     descripcion_tela = models.CharField(max_length=200, null=True, blank=True)
     ancho = models.CharField(max_length=50, null=True, blank=True)
@@ -13,57 +12,61 @@ class Tela(models.Model):
         return self.cod_tela
 
 class Foto(models.Model):
-    id = models.AutoField(primary_key=True)
     tipoFoto = models.CharField(max_length=30, null=True, blank=True)
     rutaFoto = models.CharField(max_length=200, null=True, blank=True)
     def __str__(self):
         return self.tipoFoto
 
 class Tecnico(models.Model):
-    id = models.AutoField(primary_key=True)
     nombreTecnico = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return self.nombreTecnico
 
 class Creativo(models.Model):
-    id = models.AutoField(primary_key=True)
     nombreCreativo = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return self.nombreCreativo
 
 class Status(models.Model):
-    id = models.AutoField(primary_key=True)
     status = models.CharField(max_length=100, null=True, blank=True)
     def __str__(self):
         return self.status
 
-class Linea(models.Model):
-    id = models.AutoField(primary_key=True)
-    linea = models.CharField(max_length=50, null=True, blank=True)
-    sublinea = models.CharField(max_length=50, null=True, blank=True)
-    def __str__(self):
-        return self.linea
-
 class Tipo(models.Model):
-    id = models.AutoField(primary_key=True)
     tipo = models.CharField(max_length=50, null=True, blank=True)
     def __str__(self):
         return self.tipo
     
 class Variacion(models.Model):
-    id = models.AutoField(primary_key=True)
     es_variacion = models.CharField(max_length=10, null=True, blank=True)
 
 class Color_Referencia(models.Model):
-    id = models.AutoField(primary_key=True)
     codigoColor = models.CharField(max_length=20, null=True, blank=True)
     descripcionColor = models.CharField(max_length=200, null=True, blank=True)
+
+class Linea(models.Model):
+    nombre_linea = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre_linea
+
+class Sublinea(models.Model):
+    nombre_sublinea = models.CharField(max_length=100, unique=True)
+    def __str__(self):
+        return self.nombre_sublinea
+
+class LineaSublinea(models.Model):
+    linea = models.ForeignKey(Linea, on_delete=models.CASCADE)
+    sublinea = models.ForeignKey(Sublinea, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.linea} - {self.sublinea}'
+
 
 
 class Collection(models.Model):
     id = models.AutoField(primary_key=True)
     referencia = models.CharField(max_length=30, null=True, blank=True)
-    fotoReferencia = models.ForeignKey(Foto, on_delete=models.CASCADE,          related_name='colecciones_foto_referencia', null=True, blank=True)
+    fotoReferencia = models.ForeignKey(Foto, on_delete=models.CASCADE, related_name='colecciones_foto_referencia', null=True, blank=True)
     codigoSapMD = models.CharField(max_length=30, null=True, blank=True)
     codigoSapPT = models.CharField(max_length=30, null=True, blank=True)
     nombreSistema = models.CharField(max_length=30, null=True, blank=True)
