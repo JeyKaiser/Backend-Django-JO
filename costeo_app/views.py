@@ -70,7 +70,7 @@ def create_collection(request):
     codigoColor =  Color_Referencia.objects.all()
     linea = Linea.objects.all()
     sublinea = Sublinea.objects.all()
-    #lineaSublinea = lineaSublinea.objects.all()
+    colorRef= Color_Referencia.objects.all()
     
 
     if request.method == 'POST':
@@ -100,6 +100,7 @@ def create_collection(request):
         'miColorReferencia' : codigoColor,
         'miLinea'           : linea,
         'miSublinea'        : sublinea,
+        'miColorReferencia' : colorRef,
         #'miLineaSublinea'   : lineaSublinea,
         })
 

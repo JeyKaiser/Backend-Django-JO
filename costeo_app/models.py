@@ -41,8 +41,8 @@ class Variacion(models.Model):
     es_variacion = models.CharField(max_length=10, null=True, blank=True)
 
 class Color_Referencia(models.Model):
-    codigoColor = models.CharField(max_length=20, null=True, blank=True)
-    descripcionColor = models.CharField(max_length=200, null=True, blank=True)
+    codigoColor = models.CharField(max_length=200, null=True, blank=True)
+    descripcionColor = models.CharField(max_length=20, null=True, blank=True)
 
 class Linea(models.Model):
     nombre_linea = models.CharField(max_length=100, unique=True)
@@ -60,7 +60,6 @@ class LineaSublinea(models.Model):
 
     def __str__(self):
         return f'{self.linea} - {self.sublinea}'
-
 
 
 class Collection(models.Model):

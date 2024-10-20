@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+l{% extends "layouts/base.html" %}
 {% block content %}
 {% load static %}
 
@@ -23,40 +23,31 @@
             <div class="image-container">
                 <label for="foto_referencia">FOTO REFERENCIA</label>
                 <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
-                <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />
-                <div>
-                    <select name="status">
-                        <option value="" hidden>Elegir un Estado</option>
-                        {% for status in miStatus %}
-                            <option value="{{status.id}}">{{status.status}}</option>
-                        {% endfor %}
-                        <option value="NULL">por arreglar --poner abajo</option>
-                    </select>
-                </div>
-            </div>
+                <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />                
+            </div>         
             
             <div class="form-container">
                 <table>
                     <tr>
                         <td><label for="referencia">REFERENCIA:</label></td>
-                        <td><input id="ref" name="referencia" type="text" placeholder="1" required /></td>
+                        <td><input id="ref" name="referencia" type="text" placeholder="" required /></td>
                     </tr>    
                     <tr>
                         <td><label for="nombreSistema">Nombre Sistema:</label></td>
-                        <td><input name="nombreSistema" type="text" placeholder="2" required /></td>
+                        <td><input name="nombreSistema" type="text" required /></td>
                     </tr>            
                     <tr>
-                        <td><label for="codigoSapMD">Código MD:</label></td>
-                        <td><input name="codigoSapMD" type="text" placeholder="MD00101"></td>
+                        <td><label for="codigoSapMD" >Código MD:</label></td>
+                        <td><input name="codigoSapMD" type="text" value="MD"></td>
                     </tr>
                     <tr>
-                        <td><label for="codigoSapPT">Código PT:</label></td>
-                        <td><input name="codigoSapPT" type="text" placeholder="PT00101"></td>
+                        <td><label for="codigoSapPT" >Código PT:</label></td>
+                        <td><input name="codigoSapPT" type="text" value="PT"></td>
                     </tr>            
                     <tr>
-                        <td><label for="descripcionColor">Descripción Color:</label></td>
+                        <td><label for="codigoColor">Código Color:</label></td>
                         <td>
-                            <select name="descripcionColor" id="descripcionColorSelect" onchange="buscarCodColor()" required>
+                            <select name="codigoColor" id="codigoColorSelect" onchange="buscarCodColor()" required>
                                 <option value="" hidden>Elegir una opción</option>
                                 <option value="NULL">Ninguno</option>
                                 {% for color_ref in miColorReferencia %}
@@ -66,11 +57,10 @@
                                 {% endfor %}
                             </select>
                         </td>
-                    </tr> 
-                    <tr id="codigoColorRow" style="display: none;">            
-                        <td><label for="codigoColor">Código Color:</label></td>
-                        <td><input name="codigoColor" type="text" id="codigoColorInput" disabled></td>
-                    </tr>                
+                        <td>                            
+                            <label class="label-color" for="codigoColor" id="codigoColorLabel"></label>
+                        </td>
+                    </tr>                                   
                     <tr>
                         <td><label for="creativo">Creativo:</label></td>
                         <td>
@@ -140,18 +130,20 @@
 
     <script>
         function buscarCodColor() {
-            let selectElement = document.getElementById('descripcionColorSelect');
+            let selectElement = document.getElementById('codigoColorSelect');
             let selectedOption = selectElement.options[selectElement.selectedIndex];
             let codigoColor = selectedOption.getAttribute('data-codigo');
-            document.getElementById('codigoColorInput').value = codigoColor;
-
-            let codigoColorRow = document.getElementById('codigoColorRow');
-            if (selectElement.value !== "") {
-                codigoColorRow.style.display = "table-row";
+            
+            // Actualizar el contenido del label con el código de color
+            let codigoColorLabel = document.getElementById('codigoColorLabel');
+            
+            if (selectElement.value !== "" && selectElement.value !== "NULL") {
+                codigoColorLabel.textContent = codigoColor;  // Mostrar el código de color en el label
             } else {
-                codigoColorRow.style.display = "none";
+                codigoColorLabel.textContent = "";  // Limpiar el label si no se selecciona nada
             }
         }
+        
 
         function previewImage(event) {
             let input = event.target;

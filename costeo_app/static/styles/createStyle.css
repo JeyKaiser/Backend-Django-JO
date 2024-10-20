@@ -27,6 +27,13 @@ h1 {
     text-align: center;
     margin-top: 20px;
 }
+.label-color {
+    padding-left: 10px;  
+    margin-left: 10px;   /* Ajustar el margen izquierdo */
+    display: inline-block;  /* Para mantener el label en línea con el select */
+    vertical-align: middle;  /* Alinear verticalmente con el select */
+    font-weight: bold;  /* Opcional: si quieres resaltar el texto */
+}
 
 label {
     font-size: 14px;
