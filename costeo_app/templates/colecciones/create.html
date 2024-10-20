@@ -30,7 +30,7 @@
                         {% for status in miStatus %}
                             <option value="{{status.id}}">{{status.status}}</option>
                         {% endfor %}
-                        <option value="NULL">Ninguno</option>
+                        <option value="NULL">por arreglar --poner abajo</option>
                     </select>
                 </div>
             </div>
@@ -169,29 +169,32 @@
             }
         }
     </script>
-
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript">
-    $('#linea').change(function() {
-        var lineaId = $(this).val();
-        if (lineaId) {
-        $.ajax({
-            url: '/obtener_sublineas/' + lineaId + '/',
-            type: 'GET',
-            success: function(data) {
-            $('#sublinea').empty();
-            $('#sublinea').append('<option value="">Seleccione una sublinea</option>');
-            $.each(data, function(index, sublinea) {
-                $('#sublinea').append('<option value="' + sublinea.id + '">' + sublinea.nombre_sublinea + '</option>');
+    <script>
+        $(document).ready(function(){
+            $('#linea').change(function(){
+                let lineaId = $(this).val();
+                if(lineaId){
+                    $.ajax({
+                        url: '/obtener_sublineas/' + lineaId + '/',  
+                        type: 'GET',
+                        success: function(data){
+                            $('#sublinea').empty();  
+                            $('#sublinea').append('<option value="">Seleccione una sublinea</option>');  
+                            $.each(data, function(key, sublinea){
+                                $('#sublinea').append('<option value="'+ sublinea.id +'">'+ sublinea.nombre_sublinea +'</option>');
+                            });
+                        }
+                    });
+                }else{
+                    $('#sublinea').empty();  // Si no hay línea seleccionada, limpia el select de sublinea
+                    $('#sublinea').append('<option value="">Seleccione una sublinea</option>');
+                }
             });
-            }
         });
-        } else {
-        $('#sublinea').empty();
-        $('#sublinea').append('<option value="">Seleccione una sublinea</option>');
-        }
-    });
     </script>
+
 
 </body>
 </html>

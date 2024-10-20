@@ -10,7 +10,7 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('coleccion/', views.RegisterReference, name='RegisterReference'),
     path('create/', views.create_collection, name='create_collection'),
-    path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),  
+    path('obtener_sublineas/<int:id_linea>/', views.obtener_sublineas, name='obtener_sublineas'),
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     

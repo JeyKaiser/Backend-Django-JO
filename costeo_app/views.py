@@ -105,8 +105,12 @@ def create_collection(request):
 
 
 
-def obtener_sublineas(request, linea_id):
-    sublineas = Sublinea.objects.filter(linea_id=linea_id)
+#def obtener_sublineas(request, id_linea):
+#    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=id_linea)    
+#    return JsonResponse(list(sublineas.values()), safe=False)
+
+def obtener_sublineas(request, id_linea):
+    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=id_linea)
     sublinea_list = list(sublineas.values('id', 'nombre_sublinea'))
     return JsonResponse(sublinea_list, safe=False)
 
