@@ -60,8 +60,13 @@ def index(request):
     return render(request, "index.html")
 
 
-# Crear una nueva referencia
-def create_collection(request):
+
+def lista_Referencias(request):
+    print("lista")
+    return render(request, 'colecciones/listReferencias.html')
+
+
+def create_reference(request):
     status = Status.objects.all()
     creativo = Creativo.objects.all()
     tecnico = Tecnico.objects.all()
@@ -75,18 +80,21 @@ def create_collection(request):
 
     if request.method == 'POST':
         form = CollectionForm(request.POST, request.FILES)
-        print(request.POST.get('referencia'),         #------
+        print(request.POST.get('referencia'),           
+            request.POST.get('fotoReferencia'),         
             request.POST.get('nombreSistema'),
             request.POST.get('codigoSapMD'),
             request.POST.get('codigoSapPT'),
-            request.POST.get('descripcionColor'),         #------
+            request.POST.get('descripcionColor'),         
             request.POST.get('creativo'),
             request.POST.get('tecnico'),            
             request.POST.get('status'),
+            request.POST.get('codigoColor'),
+            request.POST.get('linea')
             )   #ejemplo
         if form.is_valid():
             form.save()
-            return redirect('create_collection')
+            return redirect('create_collection')           
     else:
         form = CollectionForm()
         
@@ -100,7 +108,7 @@ def create_collection(request):
         'miColorReferencia' : codigoColor,
         'miLinea'           : linea,
         'miSublinea'        : sublinea,
-        'miColorReferencia' : colorRef,
+        'miDescripcionRef'  : colorRef,
         #'miLineaSublinea'   : lineaSublinea,
         })
 

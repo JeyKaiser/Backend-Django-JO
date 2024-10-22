@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Lista de Colecciones</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    
+{% block content %}
+<body>    
+    <div class="container mt-5">
+        <h1>Lista de Colecciones</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Referencia</th>
+                    <th>Foto Referencia</th>
+                    <th>Código SAP MD</th>
+                    <th>Código SAP PT</th>
+                    <th>Nombre Sistema</th>
+                    <th>Descripción Color</th>
+                    <th>Código Color</th>
+                    <th>Foto Tela</th>
+                    <th>Nombre Referente</th>
+                    <th>Línea</th>
+                    <th>Creativo</th>
+                    <th>Técnico</th>
+                    <th>Status</th>
+                    <th>Tallaje</th>
+                    <th>Largo</th>
+                    <th>Modista</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coleccion in colecciones %}
+                <tr>
+                    <td>{{ coleccion.id }}</td>
+                    <td>{{ coleccion.referencia }}</td>
+                    <td><img src="{{ coleccion.fotoReferencia.url }}" alt="Foto Referencia" width="50"></td>
+                    <td>{{ coleccion.codigoSapMD }}</td>
+                    <td>{{ coleccion.codigoSapPT }}</td>
+                    <td>{{ coleccion.nombreSistema }}</td>
+                    <td>{{ coleccion.descripcionColor }}</td>
+                    <td>{{ coleccion.codigoColor }}</td>
+                    <td><img src="{{ coleccion.fotoTela.url }}" alt="Foto Tela" width="50"></td>
+                    <td>{{ coleccion.nombreReferente }}</td>
+                    <td>{{ coleccion.linea }}</td>
+                    <td>{{ coleccion.creativo }}</td>
+                    <td>{{ coleccion.tecnico }}</td>
+                    <td>{{ coleccion.status }}</td>
+                    <td>{{ coleccion.tallaje }}</td>
+                    <td>{{ coleccion.largo }}</td>
+                    <td>{{ coleccion.modista }}</td>
+                    <td>
+                        <a href="{% url 'editar_coleccion' coleccion.id %}" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="{% url 'eliminar_coleccion' coleccion.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="18" class="text-center">No hay colecciones disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'index' %}" class="btn btn-primary">Agregar Nueva Colección</a>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+{% endblock %}
+</html>
