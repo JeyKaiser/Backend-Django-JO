@@ -62,8 +62,11 @@ def index(request):
 
 
 def lista_Referencias(request):
-    print("lista")
-    return render(request, 'colecciones/listReferencias.html')
+    coleccion = Collection.objects.all()
+    #print(coleccion.values())
+    return render(request, 'colecciones/listReferencias.html',{
+        'miColeccion': coleccion,
+    })
 
 
 def create_reference(request):
@@ -91,10 +94,10 @@ def create_reference(request):
             request.POST.get('status'),
             request.POST.get('codigoColor'),
             request.POST.get('linea')
-            )   #ejemplo
+            )   
         if form.is_valid():
             form.save()
-            return redirect('create_collection')           
+            return redirect('collection')           
     else:
         form = CollectionForm()
         
@@ -112,11 +115,6 @@ def create_reference(request):
         #'miLineaSublinea'   : lineaSublinea,
         })
 
-
-
-#def obtener_sublineas(request, id_linea):
-#    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=id_linea)    
-#    return JsonResponse(list(sublineas.values()), safe=False)
 
 def obtener_sublineas(request, id_linea):
     sublineas = Sublinea.objects.filter(lineasublinea__linea_id=id_linea)
@@ -166,7 +164,6 @@ def RegisterReference(request):
             tecnico_id    = tecnico_id,
             linea_id      = linea_id,
         )
-
         return redirect('RegisterReference')
 
     return render(request, 'colecciones/register_ref.html', {
