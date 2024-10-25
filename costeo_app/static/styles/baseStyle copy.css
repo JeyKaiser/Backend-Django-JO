@@ -1,53 +1,61 @@
 body {
     font-family: 'Open Sans', sans-serif;
+    font-size: 12px;
     background-color: #F4F4F4; /* Color pastel tierra */
     margin: 0;
-    padding: 0;    
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Altura del viewport */
+    padding: 0px;    
+    /*justify-content: center;
+    align-items: center;*/
+    height: 100vh; 
 }
-.main-container{
-    width: 100%;
-    height: 100vh;
-    display:flex;
-    justify-content: center;
-    align-items: center;
+.master{
+    display: grid;    
+    min-height: 100dvb;
+    grid-template-rows: auto 1fr auto;
+    /*background: blue;*/
 }
+.logo{
+    display: grid;
+    place-items: center;
+    margin: 10px 20px;
+}
+
 
 .navbar ul {
     display: flex;
     justify-content: space-between;
     background: #AA9D8C;
-    padding: 10px 40px;
+    padding: 10px 30px;
+    margin: 5px;
 }
-
 .navbar ul li {
     list-style: none;
 }
-
 .navbar ul li a {    
     color: #ffffff;
     text-decoration: none;    
 }
-
 .navbar ul li a:hover {    
     color: aquamarine;   
 }
 
+
 .container {
-    max-width: 1200px;
-    background: #DADBD6;
-    margin: auto;
-    padding: 20px 10px;    
+    display: flex;
+    background: #b9e314;
+    margin: 5px 5px;
+    padding: 0px 10px;     
 }
 
-.card {
-    background: whitesmoke;
-    color: black;
+
+.footer{
+    display: flex;
+    justify-content: center;
     padding: 5px;
-    margin-bottom: 2px;
+    margin: 0px 5px;
+    background: #c4a98b;
 }
+
 
 input.input, textarea.input{
     background: wheat;
@@ -131,4 +139,22 @@ input:focus {
     .form-containerbase {
         padding: 1.5rem;
     }
+}
+
+
+
+
+
+.main-container{
+    width: 100%;
+    height: 100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.card {
+    background: whitesmoke;
+    color: black;
+    padding: 5px;
+    margin-bottom: 2px;
 }

@@ -1,12 +1,6 @@
-{% extends "layouts/base.html" %}
-{% block content %}
+{% extends 'layouts/base.html' %}
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Referencias</title>
+{% block styles %}
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -74,10 +68,13 @@
             color: white;
         } 
         
-    </style>
-</head>
-<body>
+    </style>    
+{% endblock styles %}
 
+{% block content %}
+<h1>Crear Referencia</h1>
+
+        
     <div class="form-container">
         <div class="highlight">CREAR NUEVA REFERENCIA</div>
         
@@ -197,6 +194,7 @@
             }
         }
     </script>
-</body>
-</html>
-{% endblock %}
+
+    
+
+{% endblock content %}

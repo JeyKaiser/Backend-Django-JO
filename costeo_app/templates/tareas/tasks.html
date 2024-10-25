@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tareas</title>
-    {% extends "layouts/base.html" %}
-        
-</head>
-<body>
+{% extends 'layouts/base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
     
-    {% block content %}
         <h1>Mis Tareas</h1>
         <ul>
             <li><a href= "{% url 'create_task' %}" >      Crear nueva tarea</a></li>
@@ -31,8 +27,6 @@
                 <h3>Nombre proyecto: {{ tareas.proyecto_id }}</h3>
             </article>  
         </div>
-        {% endfor %}    
-    {% endblock content %}
+        {% endfor %}
     
-</body>
-</html>
+{% endblock content %}

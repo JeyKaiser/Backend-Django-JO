@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear tarea</title>
-</head>
-<body>
-    {% extends "layouts/base.html" %}
+{% extends 'layouts/base.html' %}
 
-    {% block content %}
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
     
         <h1>CREAR NUEVA TAREA</h1>
         <form method="POST" action="">
@@ -24,8 +20,6 @@
                 Save 
             </button>        
         </form>
-        
-    {% endblock  %}
+    
 
-</body>
-</html>
+{% endblock content %}

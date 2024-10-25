@@ -1,24 +1,17 @@
-{% extends "layouts/base.html" %}    
-{% block content %}  
-{% csrf_token %}
+{% extends 'layouts/base.html' %}
 
-<!DOCTYPE html>
-<html lang="es">
+{% block styles %}    
+{% endblock styles %}
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index Page</title>
-  </head>
+{% block content %}
 
-  <body> 
+    {% csrf_token %}
 
-    <h1>Bienvenidos a </h1>    
-
+    <h1>Bienvenidos a </h1>
     <div>
         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Beatae exercitationem vitae temporibus distinctio aliquam vero quas voluptate et voluptatem perferendis, ullam laudantium maiores nihil eius eaque unde nesciunt facere, eveniet at? Vero architecto assumenda aut, saepe sit, necessitatibus repudiandae quo fuga aperiam voluptatem dicta nisi et rem ducimus commodi placeat sint ex, reprehenderit unde dolorem quasi. Fuga dicta totam quas!
     </div>
 
-  </body>
-  </html>
-  {% endblock %}
+    
+
+{% endblock content %}

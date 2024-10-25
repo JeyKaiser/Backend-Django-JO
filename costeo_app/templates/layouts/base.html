@@ -5,37 +5,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Django Project</title>
-    <link rel="stylesheet" href="{% static 'styles/main.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/baseStyle.css' %}">
+    {% block styles %}
+        
+    {% endblock styles %}
 </head>
 <body>
-    <header>        
-        <img src="{% static "yourCompany.jpg" %}" alt="" width="70" >       
+
+    <div class="master">
+
+        <header>
+                <div class="logo">
+                    <img src="{% static "yourCompany.png" %}" alt="" width="70" > 
+                </div>  
+                <div class="menu">
+                    <nav class="navbar">
+                    <ul>
+                        <li><a href= "{% url 'index' %}" >       Inicio</a></li>
+                        <li><a href= "{% url 'about' %}" >       Sobre Nosotros</a></li>            
+                        <li><a href= "{% url 'create_reference' %}" >Crear Referencia</a></li>
+                        <li><a href= "{% url 'collection' %}">         Colección</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href= "{% url 'logout' %}" >   Salir</a></li>
+                        {% else %}
+                        <li><a href= "{% url 'signin' %}" >   Iniciar</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>        
+        </header>
         
-    </header>
-
-    <nav class="navbar container">
-        <ul>
-            <li><a href= "{% url 'index' %}" >            Inicio</a></li>
-            <li><a href= "{% url 'about' %}" >            Sobre Nosotros</a></li>            
-            <li><a href= "{% url 'create_reference' %}" >Crear Referencia</a></li>
-            <li><a href= "{% url 'collection' %}">         Colección</a></li>
-            {% if user.is_authenticated %}
-                <li><a href= "{% url 'logout' %}" >   Salir</a></li>
-            {% else %}
-                <li><a href= "{% url 'signin' %}" >   Iniciar</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    <main class= "container">
-        <div>
-            {% block content %}
-            <!-- El contenido específico de cada página irá aquí -->
-            {% endblock %}
-        </div>
-    </main>    
-
-    <footer>
-        <p>© 2024 Diseño JO</p>
-    </footer>
+        <main class= "container">
+            <div>
+                {% block content %}
+                <!-- El contenido específico de cada página irá aquí -->
+                {% endblock content %}
+            </div>
+        </main>    
+        
+        <footer class="footer">
+            <p>© 2024 Diseño JO</p>
+        </footer>
+    
+    </div>
 </body>
 </html>
