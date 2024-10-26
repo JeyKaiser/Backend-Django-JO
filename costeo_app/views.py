@@ -64,7 +64,7 @@ def index(request):
 def lista_Referencias(request):
     coleccion = Collection.objects.all()
     #print(coleccion.values())
-    return render(request, 'colecciones/listReferencias.html',{
+    return render(request, 'colecciones/coleccion.html',{
         'miColeccion': coleccion,
     })
 

@@ -1,7 +1,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
-    background-color: #F4F4F4; /* Color pastel tierra */
+    font-size: 13px;
+    background-color: #F4F4F4; 
     margin: 0;
     padding: 0px;    
     /*justify-content: center;
@@ -42,7 +42,7 @@ body {
 
 .container {
     display: flex;
-    background: #b9e314;
+    background: #fff;
     margin: 5px 5px;
     padding: 0px 10px;     
 }

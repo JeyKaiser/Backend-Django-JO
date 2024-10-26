@@ -1,16 +1,15 @@
 {% extends 'layouts/base.html' %}
 
-{% block styles %}
-    <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"-->
+{% block styles %}  
+    {% load static %}
+    <link rel="stylesheet" href="{% static "styles/coleccionStyle.css" %}">
 {% endblock styles %}
 
 {% block content %}
     {% csrf_token %}
-    <h1>Crear Referencia</h1>
-
-    <div class="container mt-5">
-        <h1 class="text-center">SPRING SUMMER 2025</h1>
-        <table class="table table-bordered table-striped table-hover">
+    <h1>SPRING SUMMER 2025</h1>
+    <div class="container">
+        <table class="table">
             <thead>
                 <tr>
                     <th class="label pd-5">Referencia</th>
@@ -34,7 +33,7 @@
             </thead>
             <tbody>
                 {% for coleccion in miColeccion %}
-                <tr>                    
+                <tr>
                     <td>{{ coleccion.referencia }}</td>
                     <td><img src="{{ coleccion.fotoReferencia.url }}" alt="Foto Referencia" width="50"></td>
                     <td>{{ coleccion.codigoSapMD }}</td>
@@ -52,8 +51,8 @@
                     <td>{{ coleccion.largo }}</td>
                     <td>{{ coleccion.modista }}</td>
                     <td>
-                        <a href="{% url 'index' %}" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="{% url 'index' %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a href="{% url 'index' %}" class="btn-warning">Editar  </a>
+                        <a href="{% url 'index' %}" class="btn-danger"> Eliminar</a>
                     </td>
                 </tr>
                 {% empty %}
@@ -63,12 +62,10 @@
                 {% endfor %}
             </tbody>
         </table>
-        <a href="{% url 'create_reference' %}" class="btn btn-primary">Agregar Nueva Referencia</a>
     </div>
-    
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+    <div>
+        <a href="{% url 'create_reference' %}" class="button">Agregar Nueva Referencia</a>
+    </div>
+
 
 {% endblock content %}
