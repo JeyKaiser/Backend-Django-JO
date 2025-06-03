@@ -1,3 +1,6 @@
+from rest_framework import generics
+from .models import Producto
+from .serializers import ProductoSerializer
 from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, get_object_or_404, redirect
@@ -177,9 +180,6 @@ def RegisterReference(request):
 
 
 
-
-
-
 def about(request):
     return render(request, "about.html")
 
@@ -190,3 +190,8 @@ def signout(request):
     return redirect('signin')
 
 
+
+
+class ProductoListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
