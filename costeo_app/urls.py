@@ -3,8 +3,12 @@ from django.urls import path
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
-from costeo_app.views import ProductoListCreateAPIView  # ✅ Este sí existe
+from rest_framework.routers import DefaultRouter
+from costeo_app.views import ProductoListCreateAPIView, TecnicoViewSet
 
+
+router = DefaultRouter()
+router.register(r'tecnicos', TecnicoViewSet)
 
 #coments
 urlpatterns = [
@@ -17,5 +21,6 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'), 
+    path('api/', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,15 +1,16 @@
-from rest_framework import generics
-from .models import Producto
-from .serializers import ProductoSerializer
+from rest_framework import generics,viewsets
+from .models import Producto, Collection
+from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer
 from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from .forms import CustomUserCreationForm, CollectionForm
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
+
 
 def signup(request):
     if request.method == 'POST':
@@ -178,8 +179,6 @@ def RegisterReference(request):
     })
 
 
-
-
 def about(request):
     return render(request, "about.html")
 
@@ -191,7 +190,14 @@ def signout(request):
 
 
 
-
 class ProductoListCreateAPIView(generics.ListCreateAPIView):
     queryset = Producto.objects.all()
     serializer_class = ProductoSerializer
+
+class CollectionCreateView(generics.CreateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializer
+
+class TecnicoViewSet(viewsets.ModelViewSet):
+    queryset = Tecnico.objects.all()
+    serializer_class = TecnicoSerializer
