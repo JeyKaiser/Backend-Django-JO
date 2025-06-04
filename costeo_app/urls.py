@@ -4,11 +4,14 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from costeo_app.views import ProductoListCreateAPIView, TecnicoViewSet
+from .views import ProductoListCreateAPIView, TecnicoViewSet, TelaViewSet, CreativoViewSet, lista_coleccion
 
 
 router = DefaultRouter()
 router.register(r'tecnicos', TecnicoViewSet)
+router.register(r'telas', TelaViewSet)
+router.register(r'creativos', CreativoViewSet)
+
 
 #coments
 urlpatterns = [
@@ -17,10 +20,12 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('coleccion/', views.lista_Referencias, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
-    path('obtener_sublineas/<int:id_linea>/', views.obtener_sublineas, name='obtener_sublineas'),
+    #path('obtener_sublineas/<int:id_linea>/', views.obtener_sublineas, name='obtener_sublineas'),
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'), 
     path('api/', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('api/colecciones/', lista_coleccion),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

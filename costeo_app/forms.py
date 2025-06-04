@@ -7,18 +7,22 @@ class CollectionForm(forms.ModelForm):
     class Meta:
         model = Collection
         fields = [
-            'referencia', 
-            'fotoReferencia', 
-            'nombreSistema', 
-            'codigoSapMD', 
-            'codigoSapPT',
-            'codigoColor',                       
-            'descripcionColor',                       
+            'referencia',
+            'foto_referencia',
+            'codigo_sap_md',
+            'codigo_sap_pt',
+            'nombre_sistema',
+            'descripcion_color',
+            'codigo_color',
+            'foto_tela',
+            'nombre_referente',
+            'linea',
             'creativo',
             'tecnico',
             'status',
-            'linea'
-            #'sublinea',            
+            'tallaje',
+            'largo',
+            'modista',
         ]
 
 

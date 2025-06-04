@@ -2,153 +2,146 @@
 
 {% block styles %}
     <!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"-->
-    
 {% endblock styles %}
     {% load static %}
     <link rel="stylesheet" href="styles/createStyle.html">
 
 {% block content %}
-    
-        <h1>Crear Nueva Referencia</h1>    
-        <!-- Formulario para crear una nueva referencia -->
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            <div class="contenedor"> 
-                
-                <div class="image-container">
-                    <label for="foto_referencia">FOTO REFERENCIA</label>
-                    <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
-                    <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />                
-                </div>         
-                
-                <div class="form-container">
-                    <table>
-                        <tr>
-                            <td><label for="referencia">REFERENCIA:</label></td>
-                            <td><input id="ref" name="referencia" type="text" placeholder="" required /></td>
-                        </tr>    
-                        <tr>
-                            <td><label for="nombreSistema">Nombre Sistema:</label></td>
-                            <td><input name="nombreSistema" type="text" required /></td>
-                        </tr>            
-                        <tr>
-                            <td><label for="codigoSapMD" >Código MD:</label></td>
-                            <td><input name="codigoSapMD" type="text" value="MD"></td>
-                        </tr>
-                        <tr>
-                            <td><label for="codigoSapPT" >Código PT:</label></td>
-                            <td><input name="codigoSapPT" type="text" value="PT"></td>
-                        </tr>            
-                        <tr>
-                            <td><label for="codigoColor">Código Color:</label></td>
-                            <td>
-                                <select name="codigoColor" id="codigoColorSelect" onchange="buscarCodColor()" required>
-                                    <option value="" hidden>Elegir una opción</option>
-                                    <option value="NULL">Ninguno</option>
-                                    {% for color_ref in miColorReferencia %}
-                                        <option value="{{color_ref.id}}" data-codigo="{{ color_ref.codigoColor }}">
-                                            {{color_ref.descripcionColor}}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>                            
-                                <label class="label-color" for="codigoColor" id="codigoColorLabel"></label>
-                            </td>
-                        </tr>                                   
-                        <tr>
-                            <td><label for="creativo">Creativo:</label></td>
-                            <td>
-                                <select name="creativo">
-                                    <option value="" hidden>Elegir un Creativo</option>
-                                    {% for creativo in miCreativo %}
-                                        <option value="{{creativo.id}}">{{creativo.nombreCreativo}}</option>
-                                    {% endfor %}
-                                    <option value="NULL">Ninguno</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="tecnico">Técnico:</label></td>
-                            <td>
-                                <select name="tecnico">
-                                    <option value="" hidden>Elegir un Técnico</option>
-                                    {% for tecnico in miTecnico %}
-                                        <option value="{{tecnico.id}}">{{tecnico.nombreTecnico}}</option>
-                                    {% endfor %}
-                                    <option value="NULL">Ninguno</option>
-                                </select>
-                            </td>
-                        </tr>                
-                        <tr>
-                            <td><label for="status">Status:</label></td>
-                            <td>
-                                <select name="status">
-                                    <option value="" hidden>Elegir un Estado</option>
-                                    {% for status in miStatus %}
-                                        <option value="{{status.id}}">{{status.status}}</option>
-                                    {% endfor %}
-                                    <option value="NULL">Ninguno</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="linea"> Linea: </label></td>
-                            <td>
-                                <select id="linea" name="linea">
-                                    <option value="">Seleccione una línea</option>
-                                    {% for linea in miLinea %}
-                                        <option value="{{ linea.id }}">{{ linea.nombre_linea }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <select id="sublinea" name="sublinea">
-                                    <option value="">Seleccione una sublinea</option>
-                                </select>
-                            </td>  
-                        </tr>
-                    </table>
-                </div>
+    <h1>Crear Nueva Referencia</h1>    
+    <!-- Formulario para crear una nueva referencia -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="contenedor"> 
+            <div class="image-container">
+                <label for="foto_referencia">FOTO REFERENCIA</label>
+                <input type="file" name="foto" accept="image/*" id="foto" onchange="previewImage(event)" class="form-input" />
+                <img id="img-preview" src="" alt="Vista previa" class="image-preview" style="display: none; max-width: 100%; height: auto;" />                
+            </div>         
+            <div class="form-container">
+                <table>
+                    <tr>
+                        <td><label for="referencia">REFERENCIA:</label></td>
+                        <td><input id="ref" name="referencia" type="text" placeholder="" required /></td>
+                    </tr>    
+                    <tr>
+                        <td><label for="nombre_sistema">Nombre Sistema:</label></td>
+                        <td><input name="nombre_sistema" type="text" required /></td>
+                    </tr>            
+                    <tr>
+                        <td><label for="codigo_sap_md" >Código MD:</label></td>
+                        <td><input name="codigo_sap_md" type="text" value="MD"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="codigo_sap_pt" >Código PT:</label></td>
+                        <td><input name="codigo_sap_pt" type="text" value="PT"></td>
+                    </tr>            
+                    <tr>
+                        <td><label for="codigo_color">Código Color:</label></td>
+                        <td>
+                            <select name="codigo_color" id="codigoColorSelect" onchange="buscarCodColor()" required>
+                                <option value="" hidden>Elegir una opción</option>
+                                <option value="NULL">Ninguno</option>
+                                {% for color_ref in miColorReferencia %}
+                                    <option value="{{color_ref.id}}" data-codigo="{{ color_ref.codigo_color }}">
+                                        {{color_ref.descripcion_color}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>                            
+                            <label class="label-color" for="codigo_color" id="codigoColorLabel"></label>
+                        </td>
+                    </tr>                                   
+                    <tr>
+                        <td><label for="creativo">Creativo:</label></td>
+                        <td>
+                            <select name="creativo">
+                                <option value="" hidden>Elegir un Creativo</option>
+                                {% for creativo in miCreativo %}
+                                    <option value="{{creativo.id}}">{{creativo.nombre_creativo}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="tecnico">Técnico:</label></td>
+                        <td>
+                            <select name="tecnico">
+                                <option value="" hidden>Elegir un Técnico</option>
+                                {% for tecnico in miTecnico %}
+                                    <option value="{{tecnico.id}}">{{tecnico.nombre_tecnico}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>                
+                    <tr>
+                        <td><label for="status">Status:</label></td>
+                        <td>
+                            <select name="status">
+                                <option value="" hidden>Elegir un Estado</option>
+                                {% for status in miStatus %}
+                                    <option value="{{status.id}}">{{status.status}}</option>
+                                {% endfor %}
+                                <option value="NULL">Ninguno</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="linea"> Línea: </label></td>
+                        <td>
+                            <select id="linea" name="linea">
+                                <option value="">Seleccione una línea</option>
+                                {% for linea in miLinea %}
+                                    <option value="{{ linea.id }}">{{ linea.nombre_linea }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="sublinea" name="sublinea">
+                                <option value="">Seleccione una sublinea</option>
+                            </select>
+                        </td>  
+                    </tr>
+                </table>
             </div>
+        </div>
+        <div class="button-container">
+            <button type="submit">Crear Referencia</button>
+        </div>
+    </form>
 
-            <div class="button-container">
-                <button type="submit">Crear Referencia</button>
-            </div>
-        </form>
+    <p><a href="{% url 'index' %}">Back to list</a></p>
 
-        <p><a href="{% url 'index' %}">Back to list</a></p>
-    
-
-        <script>
-            function buscarCodColor() {
-                let selectElement = document.getElementById('codigoColorSelect');
-                let selectedOption = selectElement.options[selectElement.selectedIndex];
-                let codigoColor = selectedOption.getAttribute('data-codigo');
-                let codigoColorLabel = document.getElementById('codigoColorLabel');
-                if (selectElement.value !== "" && selectElement.value !== "NULL") {
-                    codigoColorLabel.textContent = codigoColor;
-                } else {
-                    codigoColorLabel.textContent = "";
-                }
+    <script>
+        function buscarCodColor() {
+            let selectElement = document.getElementById('codigoColorSelect');
+            let selectedOption = selectElement.options[selectElement.selectedIndex];
+            let codigoColor = selectedOption.getAttribute('data-codigo');
+            let codigoColorLabel = document.getElementById('codigoColorLabel');
+            if (selectElement.value !== "" && selectElement.value !== "NULL") {
+                codigoColorLabel.textContent = codigoColor;
+            } else {
+                codigoColorLabel.textContent = "";
             }
+        }
 
-            function previewImage(event) {
-                let input = event.target;
-                let imgPreview = document.getElementById('img-preview');
-                if (input.files && input.files[0]) {
-                    let reader = new FileReader();
-                    reader.onload = function(e) {
-                        imgPreview.src = e.target.result;
-                        imgPreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(input.files[0]);
-                } else {
-                    imgPreview.style.display = 'none';
-                }
+        function previewImage(event) {
+            let input = event.target;
+            let imgPreview = document.getElementById('img-preview');
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                imgPreview.style.display = 'none';
             }
-        </script>
+        }
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -174,5 +167,4 @@
             });
         });
     </script>
-
 {% endblock content %}

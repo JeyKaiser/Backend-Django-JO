@@ -1,7 +1,7 @@
 from rest_framework import generics,viewsets
-from .models import Producto, Collection
-from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer
-from .models import CustomUser, Status, Foto, Creativo, Tecnico, Color_Referencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
+from .models import Producto, Collection, Tela
+from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
+from .models import CustomUser, Status, Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
@@ -10,6 +10,8 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 def signup(request):
@@ -79,94 +81,86 @@ def create_reference(request):
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()
-    codigoColor =  Color_Referencia.objects.all()
+    codigo_color = ColorReferencia.objects.all()
     linea = Linea.objects.all()
     sublinea = Sublinea.objects.all()
-    colorRef= Color_Referencia.objects.all()
-    
+    color_ref = ColorReferencia.objects.all()
 
     if request.method == 'POST':
         form = CollectionForm(request.POST, request.FILES)
-        print(request.POST.get('referencia'),           
-            request.POST.get('fotoReferencia'),         
-            request.POST.get('nombreSistema'),
-            request.POST.get('codigoSapMD'),
-            request.POST.get('codigoSapPT'),
-            request.POST.get('descripcionColor'),         
+        print(
+            request.POST.get('referencia'),
+            request.POST.get('foto_referencia'),
+            request.POST.get('nombre_sistema'),
+            request.POST.get('codigo_sap_md'),
+            request.POST.get('codigo_sap_pt'),
+            request.POST.get('descripcion_color'),
             request.POST.get('creativo'),
-            request.POST.get('tecnico'),            
+            request.POST.get('tecnico'),
             request.POST.get('status'),
-            request.POST.get('codigoColor'),
+            request.POST.get('codigo_color'),
             request.POST.get('linea')
-            )   
+        )
         if form.is_valid():
             form.save()
-            return redirect('collection')           
+            return redirect('collection')
     else:
         form = CollectionForm()
-        
+
     return render(request, 'colecciones/create.html', {
-        'form'              : form,
-        'miCreativo'        : creativo,
-        'miTecnico'         : tecnico,
-        'miStatus'          : status,
-        'miTipo'            : tipo,
-        'miVariacion'       : variacion,
-        'miColorReferencia' : codigoColor,
-        'miLinea'           : linea,
-        'miSublinea'        : sublinea,
-        'miDescripcionRef'  : colorRef,
-        #'miLineaSublinea'   : lineaSublinea,
-        })
-
-
-def obtener_sublineas(request, id_linea):
-    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=id_linea)
-    sublinea_list = list(sublineas.values('id', 'nombre_sublinea'))
-    return JsonResponse(sublinea_list, safe=False)
-
-
+        'form': form,
+        'miCreativo': creativo,
+        'miTecnico': tecnico,
+        'miStatus': status,
+        'miTipo': tipo,
+        'miVariacion': variacion,
+        'miColorReferencia': codigo_color,
+        'miLinea': linea,
+        'miSublinea': sublinea,
+        'miDescripcionRef': color_ref,
+        # 'miLineaSublinea': lineaSublinea,
+    })
 
 def RegisterReference(request):
     status = Status.objects.all()
-    creativo = Creativo.objects.all() 
+    creativo = Creativo.objects.all()
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()
 
     if request.method == "POST":
-        referencia  = request.POST.get('referencia')
-        nombreRef   = request.POST.get('nombreRef')
-        codigoSapMD = request.POST.get('codigoSapMD')
-        codigoSapPT = request.POST.get('codigoSapPT')
-        status_id   = request.POST.get('status')
+        referencia = request.POST.get('referencia')
+        nombre_referente = request.POST.get('nombre_referente')
+        codigo_sap_md = request.POST.get('codigo_sap_md')
+        codigo_sap_pt = request.POST.get('codigo_sap_pt')
+        status_id = request.POST.get('status')
         creativo_id = request.POST.get('creativo')
-        tecnico_id  = request.POST.get('tecnico')
-        tipo_id     = request.POST.get('tipo')
-        variacion_id= request.POST.get('variacion')
-        linea_id    = request.POST.get('linea')
+        tecnico_id = request.POST.get('tecnico')
+        tipo_id = request.POST.get('tipo')
+        variacion_id = request.POST.get('variacion')
+        linea_id = request.POST.get('linea')
 
-        print(referencia, nombreRef, codigoSapMD, codigoSapPT, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
+        print(referencia, nombre_referente, codigo_sap_md, codigo_sap_pt, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
 
-        fotoRef = request.FILES.get('foto')
+        foto_ref = request.FILES.get('foto')
         foto_referencia = None
-        if fotoRef:            
+        if foto_ref:
             fs = FileSystemStorage()
-            filename = fs.save(fotoRef.name, fotoRef)
+            filename = fs.save(foto_ref.name, foto_ref)
             uploaded_file_url = fs.url(filename)
-            foto_referencia = Foto.objects.create(rutaFoto=uploaded_file_url)  
-        
+            foto_referencia = Foto.objects.create(ruta_foto=uploaded_file_url)
+
         # Crear la nueva colección en la base de datos
         nueva_coleccion = Collection.objects.create(
-            referencia    = referencia,
-            fotoReferencia= foto_referencia,
-            codigoSapMD   = codigoSapMD,
-            codigoSapPT   = codigoSapPT,
-            nombreSistema = nombreRef,
-            status_id     = status_id,
-            creativo_id   = creativo_id,
-            tecnico_id    = tecnico_id,
-            linea_id      = linea_id,
+            referencia=referencia,
+            foto_referencia=foto_referencia,
+            codigo_sap_md=codigo_sap_md,
+            codigo_sap_pt=codigo_sap_pt,
+            nombre_referente=nombre_referente,
+            status_id=status_id,
+            creativo_id=creativo_id,
+            tecnico_id=tecnico_id,
+            linea_id=linea_id,
         )
         return redirect('RegisterReference')
 
@@ -201,3 +195,23 @@ class CollectionCreateView(generics.CreateAPIView):
 class TecnicoViewSet(viewsets.ModelViewSet):
     queryset = Tecnico.objects.all()
     serializer_class = TecnicoSerializer
+
+class TelaViewSet(viewsets.ModelViewSet):
+    queryset = Tela.objects.all()
+    serializer_class = TelaSerializer
+
+class CreativoViewSet(viewsets.ModelViewSet):
+    queryset = Creativo.objects.all()
+    serializer_class = CreativoSerializer
+
+
+
+@api_view(['GET'])
+def lista_coleccion(request):
+    nombre = request.GET.get('nombre')
+    # Simulación básica
+    data = [
+        {'producto': 'Vestido largo', 'coleccion': nombre},
+        {'producto': 'Chaqueta de cuero', 'coleccion': nombre},
+    ]
+    return Response(data)
