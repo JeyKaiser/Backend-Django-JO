@@ -4,7 +4,7 @@ from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from .views import ProductoListCreateAPIView, TecnicoViewSet, TelaViewSet, CreativoViewSet, lista_coleccion
+from .views import obtener_sublineas ,ProductoListCreateAPIView, TecnicoViewSet, TelaViewSet, CreativoViewSet, lista_coleccion
 
 
 router = DefaultRouter()
@@ -20,7 +20,7 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('coleccion/', views.lista_Referencias, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
-    #path('obtener_sublineas/<int:id_linea>/', views.obtener_sublineas, name='obtener_sublineas'),
+    path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'), 

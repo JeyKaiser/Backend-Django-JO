@@ -3,16 +3,21 @@ import environ
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve()#.parent.parent
 
 # environ init
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / '.env')
+environ.Env.read_env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+#PORT= env('PORT_DB'),
+
+print(env('SECRET_KEY'))
+print(env('HOST_DB'))
+print(env('PASS_DB'))
 
 
 
@@ -72,9 +77,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('NAME_DB'),
         'USER': env('USER_DB'),
-        'PASSWORD': env('PASSWORD_DB'),
+        'PASSWORD': env('PASS_DB'),
         'HOST': env('HOST_DB'),
-        'PORT': '3306',
+        'PORT': env('PORT_DB'),
         'ATOMIC_REQUESTS': True,
         'CONN_HEALTH_CHECKS': True,
         'OPTIONS': {
@@ -106,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -128,6 +133,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'costeo_app.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3002", # frontend local
-    "http://127.0.0.1:3002",
+    "http://localhost:3000", # frontend local
+    "http://127.0.0.1:3000",
 ]

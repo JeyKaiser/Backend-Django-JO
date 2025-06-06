@@ -65,6 +65,15 @@ def index(request):
     title = 'Django-Course!!'
     return render(request, "index.html")
 
+from .models import Sublinea
+
+def obtener_sublineas(request, linea_id):
+    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=linea_id)
+    data = [
+        {"id": s.id, "nombre_sublinea": s.nombre_sublinea}
+        for s in sublineas
+    ]
+    return JsonResponse(data, safe=False)
 
 
 def lista_Referencias(request):
@@ -84,6 +93,7 @@ def create_reference(request):
     codigo_color = ColorReferencia.objects.all()
     linea = Linea.objects.all()
     sublinea = Sublinea.objects.all()
+    lineaSublinea = LineaSublinea.objects.all()
     color_ref = ColorReferencia.objects.all()
 
     if request.method == 'POST':
@@ -99,7 +109,8 @@ def create_reference(request):
             request.POST.get('tecnico'),
             request.POST.get('status'),
             request.POST.get('codigo_color'),
-            request.POST.get('linea')
+            request.POST.get('linea'),
+            request.POST.get('lineasublinea'),
         )
         if form.is_valid():
             form.save()
@@ -118,7 +129,7 @@ def create_reference(request):
         'miLinea': linea,
         'miSublinea': sublinea,
         'miDescripcionRef': color_ref,
-        # 'miLineaSublinea': lineaSublinea,
+        'miLineaSublinea': lineaSublinea,
     })
 
 def RegisterReference(request):
