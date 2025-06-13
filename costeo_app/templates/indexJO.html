@@ -1,0 +1,73 @@
+{% extends 'layouts/base.html' %}
+
+{% block styles %} 
+    <style>
+        
+    </style>
+
+{% endblock styles %}
+
+{% block content %}
+
+    {% csrf_token %}
+
+    <div>
+      <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>PageExample</title>
+  <style>
+    /* Aquí iría el CSS o puedes conectarlo a un archivo externo */
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <main>
+      <section class="collection-grid">
+        <!-- Tarjetas de colección -->
+        <article class="card yellow">
+            <img src="winter-sun.jpg" alt="Winter Sun">
+            <h3>WINTER SUN</h3>
+        </article>
+
+        <article class="card blue">
+          <img src="resort-rtw.jpg" alt="Resort RTW">
+          <h3>RESORT RTW</h3>
+        </article>
+
+        <article class="card green">
+          <img src="spring-summer.jpg" alt="Spring Summer">
+          <h3>SPRING SUMMER</h3>
+        </article>
+
+        <article class="card orange">
+          <img src="summer-vacation.jpg" alt="Summer Vacation">
+          <h3>SUMMER VACATION</h3>
+        </article>
+
+        <article class="card brown">
+          <img src="pre-fall.jpg" alt="Pre Fall">
+          <h3>PRE - FALL</h3>
+        </article>
+
+        <article class="card wine">
+          <img src="fall-winter.jpg" alt="Fall Winter">
+          <h3>FALL WINTER</h3>
+        </article>
+
+        <article class="card olive">
+          <img src="capsule.jpg" alt="Capsule">
+          <h3>CAPSULE</h3>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+        
+    </div>    
+
+{% endblock content %}

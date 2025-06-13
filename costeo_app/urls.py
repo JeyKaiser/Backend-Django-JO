@@ -11,6 +11,8 @@ router = DefaultRouter()
 router.register(r'tecnicos', TecnicoViewSet)
 router.register(r'telas', TelaViewSet)
 router.register(r'creativos', CreativoViewSet)
+#router.register(r'productos', ProductoListCreateAPIView, basename='producto')
+#router.register(r'colecciones', lista_coleccion, basename='coleccion')
 
 
 #coments
@@ -23,9 +25,11 @@ urlpatterns = [
     path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
-    path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'), 
-    path('api/', include(router.urls)),
+
     path('api/', include(router.urls)),
     path('api/colecciones/', lista_coleccion),
+    path('api/index1/', ProductoListCreateAPIView.as_view(), name='index1'),    
+    path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'),    
+    path('indexJO/', views.indexJO, name='indexJO'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

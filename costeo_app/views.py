@@ -1,17 +1,17 @@
-from rest_framework import generics,viewsets
-from .models import Producto, Collection, Tela
-from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
-from .models import CustomUser, Status, Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
+from .models import Producto, Collection, Tela, CustomUser, Status
+from .models import Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
+from .forms import CustomUserCreationForm, CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from .forms import CustomUserCreationForm, CollectionForm
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
+from rest_framework import generics,viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
 
 
 def signup(request):
@@ -65,7 +65,9 @@ def index(request):
     title = 'Django-Course!!'
     return render(request, "index.html")
 
-from .models import Sublinea
+def indexJO(request):    
+    return render(request, "indexJO.html")
+
 
 def obtener_sublineas(request, linea_id):
     sublineas = Sublinea.objects.filter(lineasublinea__linea_id=linea_id)
@@ -132,6 +134,7 @@ def create_reference(request):
         'miLineaSublinea': lineaSublinea,
     })
 
+
 def RegisterReference(request):
     status = Status.objects.all()
     creativo = Creativo.objects.all()
@@ -192,6 +195,7 @@ def signout(request):
     logout(request)
     print('Salir de la sesión')
     return redirect('signin')
+
 
 
 
