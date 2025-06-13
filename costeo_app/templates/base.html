@@ -1,0 +1,42 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grid Layout Web</title>
+    <link rel="stylesheet" href="{% static "styles/styles.css" %}" >
+    
+</head>
+
+<body>
+    <div class="grid-layout">
+        <aside class="sidebar">
+            <h2>Vista Previa</h2>
+            <nav>
+                <ul>
+                    <li><a href="#">Creativos</a></li>
+                    <li><a href="#">Técnicos</a></li>
+                    <li><a href="#">Trazadores</a></li>
+                    <li><a href="#">Ficha Técnica</a></li>
+                </ul>
+            </nav>
+            <div class="messages">MENSAJES</div>
+        </aside>
+       
+    {% include "header.html" %}
+    <main class="main">
+        {% block container %}
+
+        {% endblock container %}   
+    </main> 
+
+      
+        
+        
+
+    </div>
+</body>
+
+</html>

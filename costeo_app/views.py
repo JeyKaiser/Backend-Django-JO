@@ -66,7 +66,8 @@ def index(request):
     return render(request, "index.html")
 
 def indexJO(request):    
-    return render(request, "indexJO.html")
+    # return render(request, "indexJO.html")
+    return render(request, "colecciones/colecciones.html")
 
 
 def obtener_sublineas(request, linea_id):

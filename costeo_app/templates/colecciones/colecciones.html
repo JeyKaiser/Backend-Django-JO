@@ -1,0 +1,44 @@
+{% extends 'base.html'%}
+{% load static %}
+
+{% block container %}
+
+    <h2>COLECCIONES</h2>
+            <div class="coleccion-grid">
+                <div class="card" style="--bg: #FEEA4D">
+                    {% comment %} {% static "img/winter-sun.jpg" %} {% endcomment %}
+                    <img src="{% static "img/winter-sun.jpg" %}" alt="Winter Sun">
+                    <span>WINTER SUN</span>
+                </div>
+                <div class="card" style="--bg: #70A7FF">
+                    <img src="{% static "img/resort-rtw.jpg" %}" alt="Resort RTW">
+                    <span>RESORT RTW</span>
+                </div>
+                <div class="card" style="--bg: #81C963">
+                    <img src="{% static "img/spring-summer.jpg" %}" alt="Spring Summer">
+                    <span>SPRING SUMMER</span>
+                </div>
+                <div class="card" style="--bg: #FF935F">
+                    <img src="{% static "img/summer-vacation.jpg" %}" alt="Summer Vacation">
+                    <span>SUMMER VACATION</span>
+                </div>
+                <div class="card" style="--bg: #C6B9B1">
+                    <img src="{% static "img/pre-fall.jpg" %}" alt="Pre Fall">
+                    <span>PRE - FALL</span>
+                </div>
+                <div class="card" style="--bg: #B03C5C">
+                    <img src="{% static "img/fall-winter.jpg" %}" alt="Fall Winter">
+                    <span>FALL WINTER</span>
+                </div>
+                <div class="card" style="--bg: #939A24">
+                    <img src="{% static "img/capsule.jpg" %}" alt="Capsule">
+                    <span>CAPSULE</span>
+                </div>
+            </div>        
+        </div>
+
+{% endblock %}
+
+{% comment %} {% block content %} {% endcomment %}
+
+            
