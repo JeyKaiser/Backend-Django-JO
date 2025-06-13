@@ -1,5 +1,6 @@
-pip install django==4.2
-pip install django-environ==0.8.0
-pip install mysqlclient
-pip install pandas openpyxl
-pip install pylint-django
+django==4.2
+django-environ==0.8.0
+mysqlclient
+pandas openpyxl
+pylint-django
+hdbcli

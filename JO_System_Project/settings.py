@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'costeo_app',
+    'usuarios',
     'corsheaders',
     'rest_framework',
 ]
@@ -134,7 +135,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'costeo_app.CustomUser'
+AUTH_USER_MODEL = 'usuarios.CustomUser'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # frontend local

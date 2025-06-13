@@ -17,8 +17,8 @@ router.register(r'creativos', CreativoViewSet)
 
 #coments
 urlpatterns = [
-    path('', views.signup, name='signup'),
-    path('signin/', views.signin, name='signin'),  
+    # path('', views.signup, name='signup'),
+    # path('signin/', views.signin, name='signin'),  
     path('index/', views.index, name='index'),
     path('coleccion/', views.lista_Referencias, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
