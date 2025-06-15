@@ -1,42 +1,106 @@
-
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
+  {% load static %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django Project</title>
+    <!-- En base.html -->
+    <link rel="stylesheet" href="{% static 'styles/baseStyle.css' %}" />
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/components/sidebar.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/components/navbar.css' %}" /> {% endcomment %}
+    {% comment %} <link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}" /> {% endcomment %}
+   
+    {% block styles %}{% endblock styles %}
+    <style></style>
+  </head>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Grid Layout Web</title>
-    <link rel="stylesheet" href="{% static "styles/styles.css" %}" >
-    
-</head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar-container">
+      <div>
+        <div class="preview-box">
+          <p>Vista Previa</p>
+        </div>
 
-<body>
-    <div class="grid-layout">
-        <aside class="sidebar">
-            <h2>Vista Previa</h2>
-            <nav>
-                <ul>
-                    <li><a href="#">Creativos</a></li>
-                    <li><a href="#">Técnicos</a></li>
-                    <li><a href="#">Trazadores</a></li>
-                    <li><a href="#">Ficha Técnica</a></li>
-                </ul>
-            </nav>
-            <div class="messages">MENSAJES</div>
-        </aside>
-       
-    {% include "header.html" %}
-    <main class="main">
-        {% block container %}
+        <ul class="sidebar-menu">
+          <li><a href="#">Inicio</a></li>
+          <li><a href="#">Colecciones</a></li>
+          <li><a href="#">Productos</a></li>
+          <li><a href="#">Categorías</a></li>
+          <li><a href="#">Configuración</a></li>
+        </ul>
+      </div>
 
-        {% endblock container %}   
-    </main> 
-
-      
-        
-        
-
+      <div class="ad-box">
+        <p>Espacio Publicitario</p>
+      </div>
     </div>
-</body>
 
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Gestión</a></li>
+          <li><a href="#">Reportes</a></li>
+        </ul>
+      </div>
+
+      <form>
+        <input type="search" placeholder="Buscar..." />
+        <button type="submit">Buscar</button>
+      </form>
+    </nav>
+    <!-- Contenido Principal -->
+<main class="container">
+  <header class="colecciones-header">
+    <h2>COLECCIONES</h2>
+  </header>
+
+  <div class="coleccion-grid">
+    <div class="card" style="--bg: #feea4d">
+      <img src="{% static 'img/winter-sun.jpg' %}" alt="Winter Sun" />
+      <span>WINTER SUN</span>
+    </div>
+    <div class="card" style="--bg: #70a7ff">
+      <img src="{% static 'img/resort-rtw.jpg' %}" alt="Resort RTW" />
+      <span>RESORT RTW</span>
+    </div>
+    <div class="card" style="--bg: #81c963">
+      <img src="{% static 'img/spring-summer.jpg' %}" alt="Spring Summer" />
+      <span>SPRING SUMMER</span>
+    </div>
+    <div class="card" style="--bg: #ff935f">
+      <img src="{% static 'img/summer-vacation.jpg' %}" alt="Summer Vacation" />
+      <span>SUMMER VACATION</span>
+    </div>
+    <div class="card" style="--bg: #c6b9b1">
+      <img src="{% static 'img/pre-fall.jpg' %}" alt="Pre Fall" />
+      <span>PRE - FALL</span>
+    </div>
+    <div class="card" style="--bg: #b03c5c">
+      <img src="{% static 'img/fall-winter.jpg' %}" alt="Fall Winter" />
+      <span>FALL WINTER</span>
+    </div>
+    <div class="card" style="--bg: #939a24">
+      <img src="{% static 'img/capsule.jpg' %}" alt="Capsule" />
+      <span>CAPSULE</span>
+    </div>
+  </div>
+
+</main>
+
+    {% block content %} 
+    
+    <!-- Bloque de contenido para templates hijos -->
+
+    {% endblock content %}
+
+    </main>
+
+    <footer class="footer">
+      <p>© 2024 Diseño JO</p>
+    </footer>
+  </body>
 </html>

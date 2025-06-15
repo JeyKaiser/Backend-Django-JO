@@ -1,20 +1,21 @@
 from pathlib import Path
-import environ
 import os
+import environ
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve()#.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # environ init
 env = environ.Env()
-environ.Env.read_env()
+environ.Env.read_env(BASE_DIR / '.env')
+# print(">>> PASS_DB:", env('PASS_DB', default='NO ENCONTRADO'))
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-#PORT= env('PORT_DB'),
 
 #print(env('SECRET_KEY'))
 #print(env('HOST_DB'))
@@ -29,8 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'costeo_app',
     'usuarios',
+    'costeo_app',
     'corsheaders',
     'rest_framework',
 ]
@@ -53,7 +54,7 @@ ROOT_URLCONF = 'JO_System_Project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,10 +68,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {

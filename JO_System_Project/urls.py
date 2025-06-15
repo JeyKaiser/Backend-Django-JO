@@ -13,8 +13,15 @@ from costeo_app import views
 
 
 #esta forma INCLUDE trae la lista de modulos path, que hay en cada archivo urls.py de cada app que estan relacionados a sus vistas, SI seria mejor, ya que cada app tendria su lista de urls/vista
+# urlpatterns = [
+#     path('admin/'   ,admin.site.urls),
+#     path(''         ,include('costeo_app.urls')),
+#     path('usuarios/',include('usuarios.urls'))
+#     ]
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('costeo_app.urls')),
-    path('usuarios/',include('usuarios.urls'))
+    path('admin/' ,admin.site.urls),
+    path(''       ,include('usuarios.urls')),
+    path('costeo/' ,include('costeo_app.urls')),
     ]

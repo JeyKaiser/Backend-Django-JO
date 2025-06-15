@@ -1,23 +1,14 @@
-{% extends 'layouts/base.html' %}
+{% extends 'base.html' %}
+{% load static %}
+
 
 {% block styles %} 
-    <style>
-        h1{
-            text-align: center;
-        }
-    </style>
+<link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}">
+<link rel="stylesheet" href="{% static 'styles/components/cards.css' %}">
 
 {% endblock styles %}
 
 {% block content %}
 
-    {% csrf_token %}
-
-    <h1> SPRING SUMMER </h1>
-    <div>
-        Spring-Summer representa un momento de renovación y audacia en el calendario de la moda, donde los diseñadores exploran el juego de texturas ligeras y cortes frescos que anticipan la calidez y vitalidad de la temporada. Desde un enfoque profesional, esta etapa no solo desafía a las casas de moda a innovar en la funcionalidad y estética de cada pieza, sino que también las impulsa a conectar profundamente con el consumidor contemporáneo, quien busca prendas que combinen versatilidad con una expresión de libertad y sofisticación. La paleta cromática suele inclinarse hacia tonos vibrantes y naturales, reflejando la energía del verano, mientras que los tejidos se vuelven más fluidos, ofreciendo una combinación entre comodidad y distinción. Este enfoque permite que cada diseño proyecte una historia, consolidando el prestigio y la identidad de la firma en un mercado que busca tanto autenticidad como adaptación a las tendencias globales.
-    </div>
-
-    
 
 {% endblock content %}

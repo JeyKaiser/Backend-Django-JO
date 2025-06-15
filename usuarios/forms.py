@@ -21,4 +21,10 @@ class CustomUserCreationForm(UserCreationForm):
         if CustomUser.objects.filter(email=email).exists():
             raise forms.ValidationError('Ya existe una cuenta con este correo electrónico.')
         return email
+    
+
+class SigninForm(forms.Form):
+    username = forms.CharField(label='Usuario', max_length=150)
+    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+
 

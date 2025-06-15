@@ -19,6 +19,7 @@ router.register(r'creativos', CreativoViewSet)
 urlpatterns = [
     # path('', views.signup, name='signup'),
     # path('signin/', views.signin, name='signin'),  
+    #path('', views.index, name='indexeee'),
     path('index/', views.index, name='index'),
     path('coleccion/', views.lista_Referencias, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
@@ -30,6 +31,5 @@ urlpatterns = [
     path('api/colecciones/', lista_coleccion),
     path('api/index1/', ProductoListCreateAPIView.as_view(), name='index1'),    
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'),    
-    path('indexJO/', views.indexJO, name='indexJO'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
