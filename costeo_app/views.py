@@ -26,6 +26,14 @@ def index(request):
     # }
     # return JsonResponse(context, status=200, safe=False) 
 
+def anio_coleccion(request):
+    return render(request, 'colecciones/anio_coleccion.html')
+    # if request.method == 'POST':
+    #     anio = request.POST.get('anio')
+    #     coleccion = Collection.objects.filter(foto_referencia__ruta_foto__icontains=anio)
+    #     return render(request, 'colecciones/coleccion.html', {'miColeccion': coleccion})
+    # else:
+    #     return render(request, 'colecciones/anio_coleccion.html')
 
 
 def obtener_sublineas(request, linea_id):

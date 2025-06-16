@@ -26,6 +26,7 @@ urlpatterns = [
     path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
+    path('anio-coleccion/', views.anio_coleccion, name='anio_coleccion'),
 
     path('api/', include(router.urls)),
     path('api/colecciones/', lista_coleccion),
