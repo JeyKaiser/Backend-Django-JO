@@ -29,7 +29,7 @@ urlpatterns = [
     path('anio-coleccion/', views.anio_coleccion, name='anio_coleccion'),
 
     path('api/', include(router.urls)),
-    path('api/colecciones/', lista_coleccion),
+    path('api/colecciones/', lista_coleccion, name='coleccion-list'),
     path('api/index1/', ProductoListCreateAPIView.as_view(), name='index1'),    
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'),    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

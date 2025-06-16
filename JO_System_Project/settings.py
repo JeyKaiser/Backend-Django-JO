@@ -15,11 +15,16 @@ environ.Env.read_env(BASE_DIR / '.env')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
+
+HANA_DB_ADDRESS = env.str('HANA_DB_ADDRESS')
+HANA_DB_PASS = env.str('HANA_DB_PASS')
+HANA_DB_PORT = env.str('HANA_DB_PORT')
+HANA_DB_USER = env.str('HANA_DB_USER')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
-#print(env('SECRET_KEY'))
-#print(env('HOST_DB'))
-#print(env('PASS_DB'))
+# print(env('SECRET_KEY'))
+# print(env('HOST_DB'))
+# print(env('PASS_DB'))
 
 # Application definition
 
@@ -34,6 +39,7 @@ INSTALLED_APPS = [
     'costeo_app',
     'corsheaders',
     'rest_framework',
+    'sap',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('NAME_DB'),
         'USER': env('USER_DB'),
-        'PASSWORD': env('PASS_DB'),
+        'PASSWORD': env('PASS_DB', default='NO ENCONTRADO'),
         'HOST': env('HOST_DB'),
         'PORT': env('PORT_DB'),
         'ATOMIC_REQUESTS': True,

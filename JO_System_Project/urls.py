@@ -21,7 +21,8 @@ from costeo_app import views
 
 
 urlpatterns = [
-    path('admin/' ,admin.site.urls),
-    path(''       ,include('usuarios.urls')),
-    path('costeo/' ,include('costeo_app.urls')),
+        path('admin/' ,admin.site.urls),
+        path(''       ,include('usuarios.urls')),
+        path('costeo/' ,include('costeo_app.urls')),
+        path('sap/' ,include('sap.urls')),
     ]

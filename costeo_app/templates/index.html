@@ -55,6 +55,19 @@
       <span>CAPSULES</span>
     </div>
   </a>
+
+  {% for modelo in modelos %}
+  {% comment %} {{modelo.U_GSP_Picture}} {% endcomment %}
+    <a href="">
+      <div class="card" style="--bg: #939a24">
+        <img src="{{modelo.U_GSP_Picture}}" alt="Capsule" />
+        <span>{{modelo.U_GSP_REFERENCE}}</span>
+        <span>{{modelo.U_GSP_Desc}}</span>
+      </div>
+    </a>
+  {% endfor %}
 </div>
+
+
 
 {% endblock content %}

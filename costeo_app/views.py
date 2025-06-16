@@ -14,10 +14,21 @@ from rest_framework.response import Response
 from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
 from django.contrib.auth.decorators import login_required
 
+from sap.views import modelsExample
+
         
 @login_required
 def index(request):
-    return render(request, "index.html")  
+
+    data = modelsExample()
+
+    context = {
+        "modelos": data[0:100],
+    }
+
+
+
+    return render(request, "index.html", context)  
     # title = 'Django-Course!!'   
     # context = {
     #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
