@@ -102,8 +102,8 @@ def models(request):
     # else:
     #     listData = []
     cursor.close()
-
     return Response(data)
+
 
 def modelsExample():
 

@@ -1,12 +1,18 @@
-{% extends 'base.html' %} {% load static %} {% block styles %}
+{% extends 'base.html' %} 
+{% load static %}
+ {% block styles %}
 <link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}" />
 <link rel="stylesheet" href="{% static 'styles/components/cards.css' %}" />
-{% endblock styles %} {% block content %}
+{% endblock styles %} 
+
+{% block content %}
+
 <header class="colecciones-header">
   <h2>COLECCIONES</h2>
 </header>
 
 <div class="coleccion-grid">
+
   <a href="{% url 'anio_coleccion' %}">
     <div class="card" style="--bg: #feea4d">
       <img src="{% static 'img/winter-sun.jpg' %}" alt="Winter Sun" />
@@ -56,8 +62,8 @@
     </div>
   </a>
 
-  {% for modelo in modelos %}
   {% comment %} {{modelo.U_GSP_Picture}} {% endcomment %}
+  {% for modelo in modelos %}
     <a href="">
       <div class="card" style="--bg: #939a24">
         <img src="{{modelo.U_GSP_Picture}}" alt="Capsule" />
@@ -65,7 +71,8 @@
         <span>{{modelo.U_GSP_Desc}}</span>
       </div>
     </a>
-  {% endfor %}
+  {% endfor %} 
+  
 </div>
 
 

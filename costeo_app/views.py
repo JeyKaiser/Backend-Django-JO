@@ -19,16 +19,12 @@ from sap.views import modelsExample
         
 @login_required
 def index(request):
-
     data = modelsExample()
-
     context = {
         "modelos": data[0:100],
     }
-
-
-
     return render(request, "index.html", context)  
+    
     # title = 'Django-Course!!'   
     # context = {
     #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
@@ -36,6 +32,7 @@ def index(request):
     #     "apellido": 'Gossdfsdfsdfsfsdfez',
     # }
     # return JsonResponse(context, status=200, safe=False) 
+
 
 def anio_coleccion(request):
     return render(request, 'colecciones/anio_coleccion.html')
@@ -45,6 +42,15 @@ def anio_coleccion(request):
     #     return render(request, 'colecciones/coleccion.html', {'miColeccion': coleccion})
     # else:
     #     return render(request, 'colecciones/anio_coleccion.html')
+
+
+def referencias(request):
+    # return render(request, 'colecciones/referencias.html')
+    data = modelsExample()
+    context = {
+        "modelos": data[0:100],
+    }
+    return render(request, "colecciones/referencias.html", context)
 
 
 def obtener_sublineas(request, linea_id):

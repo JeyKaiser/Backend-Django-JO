@@ -9,9 +9,6 @@ from django.conf.urls.static import static
 
 #coments
 urlpatterns = [
-    # path('', views.signup, name='signup'),
-    # path('signin/', views.signin, name='signin'),  
-    #path('', views.index, name='indexeee'),
     path('models/', views.models, name='models'),
 ]
 

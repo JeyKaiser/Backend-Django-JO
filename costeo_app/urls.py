@@ -16,10 +16,7 @@ router.register(r'creativos', CreativoViewSet)
 
 
 #coments
-urlpatterns = [
-    # path('', views.signup, name='signup'),
-    # path('signin/', views.signin, name='signin'),  
-    #path('', views.index, name='indexeee'),
+urlpatterns = [    
     path('index/', views.index, name='index'),
     path('coleccion/', views.lista_Referencias, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
@@ -27,6 +24,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('logout/', views.signout, name='logout'),
     path('anio-coleccion/', views.anio_coleccion, name='anio_coleccion'),
+    path('referencias/', views.referencias, name='referencias'),
 
     path('api/', include(router.urls)),
     path('api/colecciones/', lista_coleccion, name='coleccion-list'),
