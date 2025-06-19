@@ -23,8 +23,17 @@ class CustomUserCreationForm(UserCreationForm):
         return email
     
 
+# class SigninForm(forms.Form):
+#     username = forms.CharField(label='Usuario', max_length=150)
+#     password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
+
+
 class SigninForm(forms.Form):
-    username = forms.CharField(label='Usuario', max_length=150)
-    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
-
-
+    username = forms.CharField(label="Usuario", widget=forms.TextInput(attrs={
+        'class': 'input-field',
+        'placeholder': 'Ingresa tu usuario'
+    }))
+    password = forms.CharField(label="Contraseña", widget=forms.PasswordInput(attrs={
+        'class': 'input-field',
+        'placeholder': 'Ingresa tu contraseña'
+    }))

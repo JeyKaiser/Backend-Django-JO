@@ -20,7 +20,7 @@ def queryGetSapModels(collection):
 
 
 def querySelectDataBase(database):
-    query = 'SET SCHEMA "'+database+'";'
+    query = 'SET SCHEMA "' + database + '";'
     return query
 
 

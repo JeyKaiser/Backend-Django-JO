@@ -71,7 +71,7 @@ def models(request):
     # database = request.GET.get('database')
     database = 'SBOJOZF'
     # collection = request.GET.get('collection')
-    collection = '094'
+    collection = '105'
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
@@ -111,7 +111,7 @@ def modelsExample():
     # database = request.GET.get('database')
     database = 'SBOJOZF'
     # collection = request.GET.get('collection')
-    collection = '094'
+    collection = '105'
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
