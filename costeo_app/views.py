@@ -30,22 +30,68 @@ def index(request):
     # return JsonResponse(context, status=200, safe=False) 
 
 
-def anio_coleccion(request):
-    return render(request, 'colecciones/anio_coleccion.html')
-    # if request.method == 'POST':
-    #     anio = request.POST.get('anio')
-    #     coleccion = Collection.objects.filter(foto_referencia__ruta_foto__icontains=anio)
-    #     return render(request, 'colecciones/coleccion.html', {'miColeccion': coleccion})
-    # else:
-    #     return render(request, 'colecciones/anio_coleccion.html')
+def anio_coleccion(request, coleccion):
+    coleccion_data = {
+        # 'WINTER_SUN':['063','085','105'],
+        # 'RESORT_RTW':['065','084','106'], 
+        # 'SPRING_SUMMER':['067','088','110'],
+        # 'SUMMER_VACATION':['070','088','111'],
+        # 'PRE_FALL':['071','094','112'],
+        # 'FALL_WINTER':['075','096','113'],
+        # # 'CAPSULES':['071','091','114'],
 
-
-def referencias(request):
-    # return render(request, 'colecciones/referencias.html')
-    data = modelsExample()
-    context = {
-        "modelos": data[0:100],
+        'WINTER_SUN': [
+            {'id': '063', 'img': 'img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
+            {'id': '085', 'img': 'img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
+            {'id': '105', 'img': 'img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
+        ],
+        'RESORT_RTW': [
+            {'id': '065', 'img': 'img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
+            {'id': '084', 'img': 'img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
+            {'id': '106', 'img': 'img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
+        ],
+        'SPRING_SUMMER': [
+            {'id': '067', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
+            {'id': '088', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
+            {'id': '110', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
+        ],
+        'SUMMER_VACATION': [
+            {'id': '070', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
+            {'id': '088', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+            # {'id': '111', 'img': 'img/4.SUMMERVACATION/Summer Vacation 2026.png', 'bg': '#6594c0', 'label': '2026'},
+        ],
+        'PRE_FALL': [
+            {'id': '071', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
+            {'id': '094', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+            # {'id': '112', 'img': 'img/5.PREFALL/Pre Fall 2026.png', 'bg': '#d4a5a5', 'label': '2026'},
+        ],
+        'FALL_WINTER': [
+            {'id': '075', 'img': 'img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
+            {'id': '096', 'img': 'img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+            # {'id': '113', 'img': 'img/6.FALLWINTER/Fall Winter 2026.png', 'bg': '#6594c0', 'label': '2026'},
+        ],
     }
+
+    cards = coleccion_data.get(coleccion.upper(), [])
+
+    context = {
+        'coleccion': coleccion,
+        'cards': cards,
+    }
+    return render(request, "colecciones/anio_coleccion.html", context)
+    
+
+    
+def referencias(request, collection_id):   
+    # id=request.GET.get('collection_id', collection_id)   
+    # print("ID de colección:", id)
+
+    data = modelsExample(request, collection_id)
+
+    context = {
+        "modelos": data[0:100],        
+    }
+
     return render(request, "colecciones/referencias.html", context)
 
 
@@ -58,10 +104,10 @@ def obtener_sublineas(request, linea_id):
     return JsonResponse(data, safe=False)
 
 
-def lista_Referencias(request):
+def collection_list(request):
     coleccion = Collection.objects.all()
     #print(coleccion.values())
-    return render(request, 'colecciones/coleccion.html',{
+    return render(request, 'colecciones/colecciones.html',{
         'miColeccion': coleccion,
     })
 

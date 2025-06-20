@@ -1,4 +1,3 @@
-
 from time import time
 from .HANA.conf import conn
 from .HANA.queries import (
@@ -53,6 +52,9 @@ from .HANA.queries import (
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import render
+from django.http import JsonResponse
+# from django.db import connection  
 
 #from picking.packinglist.filterCharacters import filterCharacters
 
@@ -65,6 +67,7 @@ operatingSystem = platform.system()
 console = Console()
 
 @api_view(['GET'])
+
 def models(request):
 
     console.log(f"iniciando consulta a sap")
@@ -105,24 +108,23 @@ def models(request):
     return Response(data)
 
 
-def modelsExample():
+def modelsExample(request, collection_id):
 
     console.log(f"iniciando consulta a sap")
     # database = request.GET.get('database')
-    database = 'SBOJOZF'
     # collection = request.GET.get('collection')
-    collection = '105'
+    database = 'SBOJOZF'
+    collection = str(collection_id)
+    print(f"Collection: {collection}")
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryGetSapModels(collection))
-    # listData = []
+    cursor.execute(queryGetSapModels(collection))    
     rows = cursor.fetchall()
 
+    data = []
     if len(rows) > 0:
         column_names = [column[0] for column in cursor.description]
-        data = []
-
         for row in rows:
             item = dict(zip(column_names, row))
             picture = item.get("U_GSP_Picture")
@@ -131,18 +133,8 @@ def modelsExample():
                 item["U_GSP_Picture"] = "https://johannaortiz.net/media/ImagesJOServer/" + picture
             data.append(item)
 
-    console.log(rows)
-    # if (len(rows) > 0):
-    #     for data in rows:
-    #         listData.append({
-    #             'colorName': data[0]
-    #         })
-
-    #     nameColor = listData[0]['colorName']
-    # else:
-    #     listData = []
-    cursor.close()
-
+    print(rows)    
+    cursor.close()    
     return data
 
 
