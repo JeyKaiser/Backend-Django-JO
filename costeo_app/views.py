@@ -18,12 +18,8 @@ from sap.views import modelsExample
 
         
 @login_required
-def index(request):
-    data = modelsExample()
-    context = {
-        "modelos": data[0:100],
-    }
-    return render(request, "index.html", context)  
+def index(request):    
+    return render(request, "index.html")  
     
     # title = 'Django-Course!!'   
     # context = {

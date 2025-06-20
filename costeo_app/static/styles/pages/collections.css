@@ -60,8 +60,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
-    padding: 30px 0;
-    max-width: 1000px;
+    padding: 30px 100px;
+    /* max-width: 1000px; */
     margin: 0 auto;
 }
 
@@ -126,7 +126,7 @@
     }
 
     .coleccion-grid {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         padding: 20px 0;
     }
