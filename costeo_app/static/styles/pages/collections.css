@@ -77,7 +77,7 @@
     }
 }
 
-.card {
+/* .card {
     animation: fadeInUp 0.6s ease-out;
 }
 
@@ -89,9 +89,9 @@
 .card:nth-child(6) { animation-delay: 0.6s; }
 .card:nth-child(7) { animation-delay: 0.7s; }
 
-/* ======== CARD SOMBRA SEGÚN COLOR ======== */
+======== CARD SOMBRA SEGÚN COLOR ======== */
 /* Esto sí se mantiene */
-.card[style*="--bg: #FEEA4D"]:hover {
+/* .card[style*="--bg: #FEEA4D"]:hover {
     box-shadow: 0 15px 35px rgba(254, 234, 77, 0.4);
 }
 
@@ -117,7 +117,8 @@
 
 .card[style*="--bg: #939A24"]:hover {
     box-shadow: 0 15px 35px rgba(147, 154, 36, 0.4);
-}
+} */
+
 
 /* ======== RESPONSIVE ======== */
 @media (max-width: 768px) {

@@ -1,11 +1,10 @@
 from . import views
-from django.urls import path
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from .views import obtener_sublineas ,ProductoListCreateAPIView, TecnicoViewSet, TelaViewSet, CreativoViewSet, lista_coleccion
-
+from .views import ProtectedDataView
 
 router = DefaultRouter()
 router.register(r'tecnicos', TecnicoViewSet)
@@ -29,6 +28,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/colecciones/', lista_coleccion, name='coleccion-list'),
     path('api/index1/', ProductoListCreateAPIView.as_view(), name='index1'),    
-    path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'),    
+    path('api/productos/', ProductoListCreateAPIView.as_view(), name='producto-list-create'),   
+
+    path('some-protected-data/', ProtectedDataView.as_view(), name='protected_data'), 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

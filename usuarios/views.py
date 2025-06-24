@@ -74,9 +74,8 @@ def signin(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 # Aquí sí se llama a la función login con el usuario autenticado
-                login(request, user)
-                # Cambia esto a una URL válida de tu app (ej: 'index' en costeo_app)
-                return redirect('index')  # Asegúrate de que 'index.html' sea una URL válida en tu proyecto
+                login(request, user)                
+                return redirect('index')
             else:
                 return render(request, 'signin.html', {
                     'miSignin': form,

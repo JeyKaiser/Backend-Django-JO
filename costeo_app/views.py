@@ -13,6 +13,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
 from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from sap.views import modelsExample
 
@@ -256,3 +258,10 @@ def lista_coleccion(request):
         {'producto': 'Chaqueta de cuero', 'coleccion': nombre},
     ]
     return Response(data)
+
+
+class ProtectedDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "¡Estos son datos protegidos, " + request.user.username + "!"})
