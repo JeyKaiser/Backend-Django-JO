@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from costeo_app import views
-from costeo_app.views import AnioColeccionAPIView, TestDataAPIView, ReferenciasAPIView 
+from costeo_app.views import AnioColeccionAPIView, TestDataAPIView, ReferenciasAPIView, TelasAPIView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -11,10 +11,10 @@ from rest_framework_simplejwt.views import (
 
 
 urlpatterns = [
-        path('admin/' ,admin.site.urls),
-        path(''       ,include('usuarios.urls')),
+        path('admin/'  ,admin.site.urls),
+        path(''        ,include('usuarios.urls')),
         path('costeo/' ,include('costeo_app.urls')),
-        path('sap/' ,include('sap.urls')),
+        path('sap/'    ,include('sap.urls')),
 
         # Rutas para la autenticación JWT (las que usará Next.js)
         # http://localhost:8000/api/token/ para obtener tokens (login)
@@ -26,6 +26,7 @@ urlpatterns = [
 
         path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),       
         path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
+        path('api/telas/<str:referencia_id>/', TelasAPIView.as_view(), name= "telas_referencia"),       
 
         path('api/test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
 ]

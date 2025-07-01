@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from sap.views import modelsExample
+from sap.views import referenciasPorAno, telasPorReferencia
 
         
 @login_required
@@ -98,30 +98,40 @@ class AnioColeccionAPIView(APIView):
             print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
             return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class ReferenciasAPIView(APIView):
     def get(self, request, collection_id): # 'collection_id' será el ID que viene de Next.js
         
         print(f"Django [ReferenciasAPIView]: Recibida solicitud para collection_id: '{collection_id}'")
 
         try:
-            data_from_db = modelsExample(request, collection_id)
+            data_from_db = referenciasPorAno(request, collection_id)
+            modelos = data_from_db[:10]
 
-            modelos = data_from_db[0:100]
-
-            print(f"Django [ReferenciasAPIView]: Enviando {len(modelos)} modelos.")
-            # Devuelve los datos directamente como JSON
-            return Response(modelos, status=status.HTTP_200_OK)
+            print(f"Django [ReferenciasAPIView]: Enviando {len(modelos)} modelos.")            
+            return Response(modelos, status=status.HTTP_200_OK)         # Devuelve los datos directamente como JSON
 
         except Exception as e:
             print(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para ID '{collection_id}': {e}")
             return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+    
+class TelasAPIView(APIView):
+    def get(self, request, referencia_id):
+        print("")
+        try:
+            print("")
+            data_from_db = telasPorReferencia(request, referencia_id)
+            return Response(data_from_db, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Django [ReferenciasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}")
+            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     
 def anio_coleccion(request, coleccion):
-    print("CHACON: ", coleccion)
+    print("Django: ", coleccion)
     coleccion_data = {       
 
         'winter-sun': [
@@ -171,10 +181,10 @@ def referencias(request, collection_id):
     # print("ID de colección:", id)
     print("JEFERSON: ",collection_id)
 
-    data = modelsExample(request, collection_id)
+    data = referenciasPorAno(request, collection_id)
 
-    context = {
-        "modelos": data[0:100],        
+    context = {        
+        "modelos": data[0:10],        
     }
 
     return render(request, "colecciones/referencias.html", context)

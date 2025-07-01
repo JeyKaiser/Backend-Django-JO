@@ -1,22 +1,48 @@
 
 import time
-
+import logging
 from rich.console import Console
-console = Console()
 
+console = Console()
 saleOrderDbs= ("ORDR","RDR1")   # Tablas de bases de datos de orden de venta
 saleQuotationDbs = ("OQUT", "QUT1")  #Tablas de bases de datos de oferta de venta
+logger = logging.getLogger(__name__)
 
 
-def queryGetSapModels(collection):
+def queryReferenciasPorAno(collection):
     query = f"""
         SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"   --, * 
         FROM "@GSP_TCMODEL" T0
         WHERE U_GSP_COLLECTION = '{collection}'
-        AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT', 'MD');
+        AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT');
     """
     console.log(query)
     return query
+
+
+def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetros
+    query = f"""
+        SELECT
+        T1."U_GSP_REFERENCE",
+        T2."U_GSP_SchLinName",
+        T2."U_GSP_ItemCode",
+        T2."U_GSP_ItemName",
+        T3."BWidth1"
+        FROM SBOJOZF."@GSP_TCMODEL" T1
+        INNER JOIN SBOJOZF."@GSP_TCMODELMAT" T2
+            ON T1."Code" = T2."U_GSP_ModelCode"
+        INNER JOIN SBOJOZF."OITM" T3
+            ON T2."U_GSP_ItemCode" = T3."ItemCode"
+        WHERE T1."U_GSP_REFERENCE" = '{ptCode}'
+            AND T1."U_GSP_COLLECTION" = '{collection}'
+            AND LEFT (T2."U_GSP_ItemCode", 3) IN ('TEN','TE0')
+        ORDER BY "U_GSP_SchLinName" DESC;"""
+    logger.info(f"Consulta SQL generada para telas: {query}")
+    return query
+
+    
+
+
 
 
 def querySelectDataBase(database):
