@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Salario por Quincena</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            flex-grow: 1;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button#clearButton {
+            background-color: #6c757d;
+        }
+        button#clearButton:hover {
+            background-color: #5a6268;
+        }
+        #resultBox {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #28a745;
+            border-radius: 5px;
+            background-color: #d4edda;
+            color: #155724;
+            display: none; /* Initially hidden */
+        }
+        #resultBox h2 {
+            text-align: center;
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+        #resultBox table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        #resultBox th, #resultBox td {
+            border: 1px solid #c3e6cb;
+            padding: 8px;
+            text-align: left;
+        }
+        #resultBox th {
+            background-color: #c3e6cb;
+            font-weight: bold;
+        }
+        #resultBox .total-row {
+            font-weight: bold;
+            background-color: #b8e2c0;
+        }
+        #resultBox .neto-row {
+            font-weight: bold;
+            background-color: #88d49e;
+            font-size: 1.2em;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Salario</h1>
+
+        <div class="form-group">
+            <label for="salarioBase">Salario Básico Mensual</label>
+            <input type="number" id="salarioBase" value="0" min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="horasExtrasDiurnas">Horas Extras Diurnas (en esta quincena):</label>
+            <input type="number" id="horasExtrasDiurnas" value="0" min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="horasExtrasNocturnas">Horas Extras Nocturnas (en esta quincena):</label>
+            <input type="number" id="horasExtrasNocturnas" value="0" min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="horasExtrasDominicalesDiurnas">Horas Extras Dominicales Diurnas (en esta quincena):</label>
+            <input type="number" id="horasExtrasDominicalesDiurnas" value="0" min="0">
+        </div>
+
+        <div class="form-group">
+            <label for="horasExtrasDominicalesNocturnas">Horas Extras Dominicales Nocturnas (en esta quincena):</label>
+            <input type="number" id="horasExtrasDominicalesNocturnas" value="0" min="0">
+        </div>
+
+        <div class="button-group">
+            <button onclick="calcularSalario()">Calcular Salario</button>
+            <button id="clearButton" onclick="limpiarInputs()">Limpiar</button>
+        </div>
+
+        <div id="resultBox" class="hidden">
+            <h2>Resumen del Salario Quincenal</h2>
+
+            <h3>Devengado</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Salario Básico Quincenal</td>
+                        <td id="displaySalarioBase"></td>
+                    </tr>
+                    <tr>
+                        <td>Auxilio de Transporte Quincenal</td>
+                        <td id="displayAuxilioTransporte"></td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras Diurnas</td>
+                        <td id="displayValorHorasExtrasDiurnas"></td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras Nocturnas</td>
+                        <td id="displayValorHorasExtrasNocturnas"></td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras Dominicales Diurnas</td>
+                        <td id="displayValorHorasExtrasDominicalesDiurnas"></td>
+                    </tr>
+                    <tr>
+                        <td>Horas Extras Dominicales Nocturnas</td>
+                        <td id="displayValorHorasExtrasDominicalesNocturnas"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>TOTAL DEVENGADO</strong></td>
+                        <td id="displayTotalDevengado"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Deducciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Deducción Salud (4%)</td>
+                        <td id="displayDeduccionSalud"></td>
+                    </tr>
+                    <tr>
+                        <td>Deducción Pensión (4%)</td>
+                        <td id="displayDeduccionPension"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td><strong>TOTAL DEDUCCIONES</strong></td>
+                        <td id="displayTotalDeducciones"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table style="margin-top: 20px;">
+                <tbody>
+                    <tr class="neto-row">
+                        <td><strong>SALARIO NETO A PAGAR</strong></td>
+                        <td id="displaySalarioNeto"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const AUXILIO_TRANSPORTE_MENSUAL = 200000;
+        // Asumiendo un valor de hora normal. En una aplicación real, esto se calcularía en base al salario base mensual / 240 (horas promedio al mes).
+        const VALOR_HORA_NORMAL = 10000; 
+
+        function calcularSalario() {
+            const salarioBaseMensual = parseFloat(document.getElementById('salarioBase').value) || 0;
+            const horasExtrasDiurnas = parseFloat(document.getElementById('horasExtrasDiurnas').value) || 0;
+            const horasExtrasNocturnas = parseFloat(document.getElementById('horasExtrasNocturnas').value) || 0;
+            const horasExtrasDominicalesDiurnas = parseFloat(document.getElementById('horasExtrasDominicalesDiurnas').value) || 0;
+            const horasExtrasDominicalesNocturnas = parseFloat(document.getElementById('horasExtrasDominicalesNocturnas').value) || 0;
+
+            // Calcular salario base y auxilio de transporte para la quincena
+            const salarioBaseQuincenal = salarioBaseMensual / 2;
+            const auxilioTransporteQuincenal = AUXILIO_TRANSPORTE_MENSUAL / 2;
+
+            // Recargos de horas extras (ajusta estos porcentajes según la legislación laboral colombiana)
+            const recargoExtraDiurna = 1.25; // 25% de recargo
+            const recargoExtraNocturna = 1.75; // 75% de recargo
+            const recargoDominicalDiurna = 2.0; // 100% de recargo sobre la hora normal + valor de la hora = 2.0x
+            const recargoDominicalNocturna = 2.5; // 150% de recargo sobre la hora normal + valor de la hora = 2.5x
+
+            const valorHorasExtrasDiurnas = horasExtrasDiurnas * VALOR_HORA_NORMAL * recargoExtraDiurna;
+            const valorHorasExtrasNocturnas = horasExtrasNocturnas * VALOR_HORA_NORMAL * recargoExtraNocturna;
+            const valorHorasExtrasDominicalesDiurnas = horasExtrasDominicalesDiurnas * VALOR_HORA_NORMAL * recargoDominicalDiurna;
+            const valorHorasExtrasDominicalesNocturnas = horasExtrasDominicalesNocturnas * VALOR_HORA_NORMAL * recargoDominicalNocturna;
+
+            const totalHorasExtras = valorHorasExtrasDiurnas + valorHorasExtrasNocturnas + valorHorasExtrasDominicalesDiurnas + valorHorasExtrasDominicalesNocturnas;
+
+            const totalDevengado = salarioBaseQuincenal + auxilioTransporteQuincenal + totalHorasExtras;
+
+            // Deducciones se calculan sobre el total devengado de la quincena
+            const deduccionSalud = totalDevengado * 0.04; // 8% de salud (como lo solicitaste)
+            const deduccionPension = totalDevengado * 0.04; // 4% de pensión
+            const totalDeducciones = deduccionSalud + deduccionPension;
+
+            const salarioNeto = totalDevengado - totalDeducciones;
+
+            // Formato de moneda para Colombia
+            const formatter = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            });
+
+            // Mostrar resultados en la tabla
+            document.getElementById('displaySalarioBase').textContent = formatter.format(salarioBaseQuincenal);
+            document.getElementById('displayAuxilioTransporte').textContent = formatter.format(auxilioTransporteQuincenal);
+            document.getElementById('displayValorHorasExtrasDiurnas').textContent = formatter.format(valorHorasExtrasDiurnas);
+            document.getElementById('displayValorHorasExtrasNocturnas').textContent = formatter.format(valorHorasExtrasNocturnas);
+            document.getElementById('displayValorHorasExtrasDominicalesDiurnas').textContent = formatter.format(valorHorasExtrasDominicalesDiurnas);
+            document.getElementById('displayValorHorasExtrasDominicalesNocturnas').textContent = formatter.format(valorHorasExtrasDominicalesNocturnas);
+            document.getElementById('displayTotalDevengado').textContent = formatter.format(totalDevengado);
+            document.getElementById('displayDeduccionSalud').textContent = formatter.format(deduccionSalud);
+            document.getElementById('displayDeduccionPension').textContent = formatter.format(deduccionPension);
+            document.getElementById('displayTotalDeducciones').textContent = formatter.format(totalDeducciones);
+            document.getElementById('displaySalarioNeto').textContent = formatter.format(salarioNeto);
+
+            // Hacer visible el cuadro de resultados
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function limpiarInputs() {
+            document.getElementById('salarioBase').value = '0';
+            document.getElementById('horasExtrasDiurnas').value = '0';
+            document.getElementById('horasExtrasNocturnas').value = '0';
+            document.getElementById('horasExtrasDominicalesDiurnas').value = '0';
+            document.getElementById('horasExtrasDominicalesNocturnas').value = '0';
+            document.getElementById('resultBox').style.display = 'none'; // Ocultar el resultado
+        }
+    </script>
+</body>
+</html>

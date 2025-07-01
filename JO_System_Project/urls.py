@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from costeo_app import views
-from costeo_app.views import AnioColeccionAPIView, TestDataAPIView, ReferenciasAPIView, TelasAPIView
+from costeo_app.views import AnioColeccionAPIView, TestDataAPIView, ReferenciasAPIView, TelasAPIView, InsumosAPIView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -26,7 +26,8 @@ urlpatterns = [
 
         path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),       
         path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
-        path('api/telas/<str:referencia_id>/', TelasAPIView.as_view(), name= "telas_referencia"),       
+        path('api/telas/<str:referencia_id>/', TelasAPIView.as_view(), name= "telas_referencia"),
+        path('api/insumos/<str:referencia_id>/', InsumosAPIView.as_view(), name="insumos_referencia"),       
 
         path('api/test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
 ]

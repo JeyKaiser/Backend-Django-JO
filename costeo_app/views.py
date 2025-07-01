@@ -8,6 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
+import logging
 from rest_framework import generics,viewsets,status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,8 +16,10 @@ from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerial
 from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from sap.views import referenciasPorAno, telasPorReferencia, insumosPorReferencia
 
-from sap.views import referenciasPorAno, telasPorReferencia
+
+logger = logging.getLogger(__name__)
 
         
 @login_required
@@ -73,15 +76,15 @@ class AnioColeccionAPIView(APIView):
             ],
             'summer-vacation': [
                 {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-                {'id': '088', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
             ],
             'pre-fall': [
                 {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-                {'id': '094', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
             ],
             'fall-winter': [
                 {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-                {'id': '096', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
             ],
         }
 
@@ -106,7 +109,7 @@ class ReferenciasAPIView(APIView):
 
         try:
             data_from_db = referenciasPorAno(request, collection_id)
-            modelos = data_from_db[:10]
+            modelos = data_from_db[:]                                 #CANTIDAD DE CARDS QUE QUE GENERAN [0:100] 
 
             print(f"Django [ReferenciasAPIView]: Enviando {len(modelos)} modelos.")            
             return Response(modelos, status=status.HTTP_200_OK)         # Devuelve los datos directamente como JSON
@@ -151,17 +154,17 @@ def anio_coleccion(request, coleccion):
         ],
         'summer-vacation': [
             {'id': '070', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-            {'id': '088', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+            {'id': '094', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
             # {'id': '111', 'img': 'img/4.SUMMERVACATION/Summer Vacation 2026.png', 'bg': '#6594c0', 'label': '2026'},
         ],
         'pre-fall': [
             {'id': '071', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-            {'id': '094', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+            {'id': '096', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
             # {'id': '112', 'img': 'img/5.PREFALL/Pre Fall 2026.png', 'bg': '#d4a5a5', 'label': '2026'},
         ],
         'fall-winter': [
             {'id': '075', 'img': 'img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-            {'id': '096', 'img': 'img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+            {'id': '102', 'img': 'img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
             # {'id': '113', 'img': 'img/6.FALLWINTER/Fall Winter 2026.png', 'bg': '#6594c0', 'label': '2026'},
         ],
     }
@@ -175,6 +178,40 @@ def anio_coleccion(request, coleccion):
     return render(request, "colecciones/anio_coleccion.html", context)
 
 
+class TelasAPIView(APIView):
+    def get(self, request, referencia_id):
+        logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        try:
+            data_from_db = telasPorReferencia(request, referencia_id)
+            return Response(data_from_db, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# NUEVA APIView para Insumos
+class InsumosAPIView(APIView):
+    def get(self, request, referencia_id):
+        logger.info(f"Django [InsumosAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        try:
+            # Llama a la nueva función de lógica de negocio para insumos
+            data_from_db = insumosPorReferencia(request, referencia_id)
+            return Response(data_from_db, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [InsumosAPIView]: ERROR al obtener INSUMOS para la referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener insumos: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 def referencias(request, collection_id):   
     # id=request.GET.get('collection_id', collection_id)   
@@ -184,7 +221,7 @@ def referencias(request, collection_id):
     data = referenciasPorAno(request, collection_id)
 
     context = {        
-        "modelos": data[0:10],        
+        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100]      
     }
 
     return render(request, "colecciones/referencias.html", context)

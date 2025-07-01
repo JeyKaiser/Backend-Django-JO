@@ -11,10 +11,11 @@ logger = logging.getLogger(__name__)
 
 def queryReferenciasPorAno(collection):
     query = f"""
-        SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"   --, * 
+        SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"  
         FROM "@GSP_TCMODEL" T0
         WHERE U_GSP_COLLECTION = '{collection}'
-        AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT');
+        AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT')
+        ORDER BY T0.U_GSP_REFERENCE ASC;
     """
     console.log(query)
     return query
@@ -40,8 +41,26 @@ def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetro
     logger.info(f"Consulta SQL generada para telas: {query}")
     return query
 
-    
 
+def queryInsumosPorReferencia(ptCode, collection):
+    query = f"""
+        SELECT
+        T1."U_GSP_REFERENCE",
+        T2."U_GSP_SchLinName",
+        T2."U_GSP_ItemCode",
+        T2."U_GSP_ItemName",
+        T3."BWidth1" -- T3.* si quieres todas las columnas de OITM, pero solo BWidth1 fue especificado
+        FROM SBOJOZF."@GSP_TCMODEL" T1
+        INNER JOIN SBOJOZF."@GSP_TCMODELMAT" T2
+            ON T1."Code" = T2."U_GSP_ModelCode"
+        INNER JOIN SBOJOZF."OITM" T3
+            ON T2."U_GSP_ItemCode" = T3."ItemCode"
+        WHERE T1."U_GSP_REFERENCE" = '{ptCode}'
+            AND T1."U_GSP_COLLECTION" = '{collection}'
+            AND LEFT (T2."U_GSP_ItemCode", 3) IN ('INN','IN0') -- Condición específica para insumos
+        ORDER BY "U_GSP_SchLinName" DESC;"""
+    logger.info(f"Consulta SQL generada para insumos: {query}")
+    return query
 
 
 
