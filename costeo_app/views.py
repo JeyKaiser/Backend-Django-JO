@@ -101,19 +101,14 @@ class AnioColeccionAPIView(APIView):
 
 
 class ReferenciasAPIView(APIView):
-    def get(self, request, collection_id): # 'collection_id' será el ID que viene de Next.js
-        
-        print(f"Django [ReferenciasAPIView]: Recibida solicitud para collection_id: '{collection_id}'")
-
+    def get(self, request, collection_id):
+        logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
         try:
+            # Llama a la función referenciasPorAno, que ahora devuelve una lista directamente
             data_from_db = referenciasPorAno(request, collection_id)
-            modelos = data_from_db[:]                                 #CANTIDAD DE CARDS QUE QUE GENERAN [0:100] 
-
-            print(f"Django [ReferenciasAPIView]: Enviando {len(modelos)} modelos.")            
-            return Response(modelos, status=status.HTTP_200_OK)         # Devuelve los datos directamente como JSON
-
+            return Response(data_from_db, status=status.HTTP_200_OK)
         except Exception as e:
-            print(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para ID '{collection_id}': {e}")
+            logger.error(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para la colección '{collection_id}': {e}", exc_info=True)
             return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

@@ -12,7 +12,7 @@ from .HANA.queries import (
     queryReferenciasPorAno,
     queryTelasPorReferencia,
     queryInsumosPorReferencia,
-    querySearchPTCode,
+    querySearchPTCode,    
 
     queryGetInfoReferenceSAPitemCode,
     # queryGetInfoStatusPickingBilledByCardNameAndCollection,
@@ -104,14 +104,14 @@ def models(request):                #consulta GET
 
 
 def referenciasPorAno(request, collection_id):
-    console.log(f"iniciando consulta a sap para colecccion_id {collection_id}")    
+    logger.info(f"iniciando consulta a sap para coleccion_id {collection_id}")
     database = 'SBOJOZF'
-    collection = str(collection_id)
+    collection = str(collection_id) # Usamos 'collection' como antes
     print(f"Collection: {collection}")
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryReferenciasPorAno(collection))    
+    cursor.execute(queryReferenciasPorAno(collection)) # Usamos 'collection' aquí
     rows = cursor.fetchall()
 
     data = []
@@ -127,10 +127,8 @@ def referenciasPorAno(request, collection_id):
 
     logger.debug(f"Datos raw obtenidos de la DB (antes de procesar): {rows}")
     logger.info(f"Datos procesados a devolver a Next.js: {data}")
-    # print(rows)    
-    cursor.close()    
+    cursor.close()
     return data
-
 
 
 def telasPorReferencia(request, referencia_id):
@@ -162,6 +160,7 @@ def telasPorReferencia(request, referencia_id):
     logger.info(f"Datos procesados a devolver a Next.js (telas): {data}")
     cursor.close()
     return data
+
 
 class TelasAPIView(APIView):
     def get(self, request, referencia_id):

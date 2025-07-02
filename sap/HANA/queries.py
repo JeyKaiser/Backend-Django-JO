@@ -80,7 +80,15 @@ def querySearchPTCode(ptCode):
     logger.info(f"Consulta SQL generada para búsqueda de PT Code: {query}")
     return query
 
-
+# CONSULTA PARA OBTENER EL NOMBRE DE LA COLECCIÓN
+def queryGetCollectionName(collectionId):
+    query = f"""
+        SELECT "Name"
+        FROM SBOJOZF."@GSP_TCCOLLECTION"
+        WHERE "Code" = '{collectionId}';
+    """
+    logger.info(f"Consulta SQL generada para obtener nombre de colección: {query}")
+    return query
 
 
 
