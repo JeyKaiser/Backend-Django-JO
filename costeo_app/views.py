@@ -8,24 +8,22 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-import logging
 from rest_framework import generics,viewsets,status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
 from django.contrib.auth.decorators import login_required
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from sap.views import referenciasPorAno, telasPorReferencia, insumosPorReferencia
-
+from sap.views import referenciasPorAno, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
+from rest_framework.views import APIView
+import logging
 
 logger = logging.getLogger(__name__)
 
         
 @login_required
 def index(request):    
-    return render(request, "index.html")  
-    
+    return render(request, "index.html")      
     # title = 'Django-Course!!'   
     # context = {
     #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
@@ -120,18 +118,6 @@ class ReferenciasAPIView(APIView):
 
 
     
-class TelasAPIView(APIView):
-    def get(self, request, referencia_id):
-        print("")
-        try:
-            print("")
-            data_from_db = telasPorReferencia(request, referencia_id)
-            return Response(data_from_db, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Django [ReferenciasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}")
-            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
     
 def anio_coleccion(request, coleccion):
     print("Django: ", coleccion)
@@ -178,38 +164,40 @@ def anio_coleccion(request, coleccion):
     return render(request, "colecciones/anio_coleccion.html", context)
 
 
-class TelasAPIView(APIView):
+# --- NUEVA APIView COMBINADA ---
+class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
-        logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
         try:
-            data_from_db = telasPorReferencia(request, referencia_id)
-            return Response(data_from_db, status=status.HTTP_200_OK)
+            # Llama a la función combinada que obtiene telas e insumos
+            combined_data = getModeloDetalle(request, referencia_id)
+            return Response(combined_data, status=status.HTTP_200_OK)
         except Exception as e:
-            logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# NUEVA APIView para Insumos
-class InsumosAPIView(APIView):
-    def get(self, request, referencia_id):
-        logger.info(f"Django [InsumosAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-        try:
-            # Llama a la nueva función de lógica de negocio para insumos
-            data_from_db = insumosPorReferencia(request, referencia_id)
-            return Response(data_from_db, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"Django [InsumosAPIView]: ERROR al obtener INSUMOS para la referencia '{referencia_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener insumos: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# class TelasAPIView(APIView):
+#     def get(self, request, referencia_id):
+#         logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+#         try:
+#             data_from_db = telasPorReferencia(request, referencia_id)
+#             return Response(data_from_db, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
+#             return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
-
-
-
-
-
-
+# # NUEVA APIView para Insumos
+# class InsumosAPIView(APIView):
+#     def get(self, request, referencia_id):
+#         logger.info(f"Django [InsumosAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+#         try:
+#             # Llama a la nueva función de lógica de negocio para insumos
+#             data_from_db = insumosPorReferencia(request, referencia_id)
+#             return Response(data_from_db, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             logger.error(f"Django [InsumosAPIView]: ERROR al obtener INSUMOS para la referencia '{referencia_id}': {e}", exc_info=True)
+#             return Response({'detail': f'Error al obtener insumos: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
     
@@ -225,6 +213,62 @@ def referencias(request, collection_id):
     }
 
     return render(request, "colecciones/referencias.html", context)
+
+
+class ModeloDetalleAPIView(APIView):
+    def get(self, request, referencia_id):
+        logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        try:
+            combined_data = getModeloDetalle(request, referencia_id)
+            return Response(combined_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# NUEVA APIView para la búsqueda de PT Code
+class PTSearchAPIView(APIView):
+    def get(self, request):
+        pt_code = request.GET.get('ptCode', '').strip() # Obtiene el ptCode de los query parameters
+        logger.info(f"Django [PTSearchAPIView]: Solicitud GET recibida para búsqueda de PT Code: {pt_code}")
+
+        if not pt_code:
+            return Response({'detail': 'Parámetro "ptCode" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Llama a la función de lógica de negocio para buscar el PT Code
+            # Esta función devolverá el primer resultado encontrado (PT Code y Collection)
+            search_result = searchPTCode(pt_code)
+
+            if search_result:
+                return Response(search_result, status=status.HTTP_200_OK)
+            else:
+                return Response({'detail': f"Código PT '{pt_code}' no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Django [PTSearchAPIView]: ERROR al buscar PT Code '{pt_code}': {e}", exc_info=True)
+            return Response({'detail': f'Error al realizar la búsqueda: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def obtener_sublineas(request, linea_id):
@@ -343,17 +387,6 @@ def RegisterReference(request):
         'miTipo': tipo,
         'miVariacion': variacion,
     })
-
-
-def about(request):
-    return render(request, "about.html")
-
-
-def signout(request):
-    logout(request)
-    print('Salir de la sesión')
-    return redirect('signin')
-
 
 
 

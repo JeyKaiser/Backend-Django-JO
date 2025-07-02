@@ -8,9 +8,11 @@ from .HANA.queries import (
     queryGetInfoReferenceSAPCodebarsItemMaster, queryGetInfoReferenceSAPCodebarsSaleOrder
 )
 from .HANA.queries import (
+    querySelectDataBase,
     queryReferenciasPorAno,
     queryTelasPorReferencia,
     queryInsumosPorReferencia,
+    querySearchPTCode,
 
     queryGetInfoReferenceSAPitemCode,
     # queryGetInfoStatusPickingBilledByCardNameAndCollection,
@@ -56,12 +58,13 @@ from rest_framework.response import Response
 from django.shortcuts import render
 from django.http import JsonResponse
 import logging 
-logger = logging.getLogger(__name__)
 import time
 import os
 from rich.console import Console
 import platform
 from rest_framework.views import APIView
+from rest_framework import status
+logger = logging.getLogger(__name__)
 
 
 operatingSystem = platform.system()
@@ -130,28 +133,21 @@ def referenciasPorAno(request, collection_id):
 
 
 
-def telasPorReferencia(request, referencia_id): # Cambiado collection_id por referencia_id para claridad
+def telasPorReferencia(request, referencia_id):
     logger.info(f"Buscando telas en la Base de datos para referencia: {referencia_id}")
-
-    # Obtener collectionId de los parámetros de la URL (query parameters)
     collection_id = request.GET.get('collectionId')
     if not collection_id:
         logger.error("Django [telasPorReferencia]: collectionId no proporcionado en los query parameters.")
-        # Podrías lanzar una excepción o devolver un error aquí si collectionId es obligatorio
-        return [] # O manejar el error de otra manera
+        return []
 
     database = 'SBOJOZF'
-    # La variable 'collection' ahora es el collection_id que viene de Next.js
-    # y se usará en la consulta SQL junto con referencia_id (ptCode)
     collection = str(collection_id)
-    ptCode = str(referencia_id) # El referencia_id de la URL es el ptCode
+    ptCode = str(referencia_id)
 
     logger.info(f"Referencia (ptCode): {ptCode}, Colección: {collection}")
 
     cursor = conn.cursor()
-    cursor.execute(querySelectDataBase(database)) # Asegúrate de que esta función existe y es accesible
-
-    # Llama a queryTelasPorReferencia con AMBOS parámetros
+    cursor.execute(querySelectDataBase(database))
     cursor.execute(queryTelasPorReferencia(ptCode, collection))
     rows = cursor.fetchall()
     data = []
@@ -160,12 +156,10 @@ def telasPorReferencia(request, referencia_id): # Cambiado collection_id por ref
         column_names = [column[0] for column in cursor.description]
         for row in rows:
             item = dict(zip(column_names, row))
-            # No hay U_GSP_Picture en la consulta de telas, así que esta parte ya no es necesaria
-            # Si tu consulta de telas tuviera una columna de imagen, la lógica sería similar
             data.append(item)
 
-    logger.debug(f"Datos raw obtenidos de la DB (antes de procesar): {rows}")
-    logger.info(f"Datos procesados a devolver a Next.js: {data}")
+    logger.debug(f"Datos raw obtenidos de la DB (telas - antes de procesar): {rows}")
+    logger.info(f"Datos procesados a devolver a Next.js (telas): {data}")
     cursor.close()
     return data
 
@@ -196,7 +190,6 @@ def insumosPorReferencia(request, referencia_id):
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
-    # Llama a la nueva consulta de insumos
     cursor.execute(queryInsumosPorReferencia(ptCode, collection))
     rows = cursor.fetchall()
     data = []
@@ -211,3 +204,48 @@ def insumosPorReferencia(request, referencia_id):
     logger.info(f"Datos procesados a devolver a Next.js (insumos): {data}")
     cursor.close()
     return data
+
+
+# --- NUEVA FUNCIÓN COMBINADA ---
+def getModeloDetalle(request, referencia_id):
+    logger.info(f"Obteniendo detalle completo del modelo para referencia: {referencia_id}")
+    
+    # Reutiliza las funciones existentes para obtener los datos
+    telas_data = telasPorReferencia(request, referencia_id)
+    insumos_data = insumosPorReferencia(request, referencia_id)
+
+    # Combina los resultados en un solo diccionario
+    combined_data = {
+        'telas': telas_data,
+        'insumos': insumos_data
+    }
+    
+    logger.info(f"Datos combinados del modelo para {referencia_id}: {combined_data}")
+    return combined_data
+
+
+# NUEVA FUNCIÓN para buscar PT Code
+def searchPTCode(pt_code):
+    logger.info(f"Buscando PT Code en la Base de datos: {pt_code}")
+
+    database = 'SBOJOZF' # Tu base de datos
+    cursor = conn.cursor()
+    cursor.execute(querySelectDataBase(database))
+
+    # Llama a la nueva consulta de búsqueda
+    cursor.execute(querySearchPTCode(pt_code))
+    row = cursor.fetchone() # Usamos fetchone() porque buscamos el primer match
+
+    search_result = None
+    if row:
+        column_names = [column[0] for column in cursor.description]
+        # Creamos un diccionario con el resultado
+        search_result = dict(zip(column_names, row))
+        logger.info(f"PT Code '{pt_code}' encontrado: {search_result}")
+    else:
+        logger.info(f"PT Code '{pt_code}' no encontrado en la base de datos.")
+
+    cursor.close()
+    return search_result # Devolverá un diccionario o None
+
+

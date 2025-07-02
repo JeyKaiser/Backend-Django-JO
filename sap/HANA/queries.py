@@ -63,10 +63,55 @@ def queryInsumosPorReferencia(ptCode, collection):
     return query
 
 
-
 def querySelectDataBase(database):
     query = 'SET SCHEMA "' + database + '";'
     return query
+
+# NUEVA FUNCIÓN DE CONSULTA PARA BUSCAR PT CODE
+def querySearchPTCode(ptCode):  
+    upper_ptCode = ptCode.upper()  
+    query = f"""
+        SELECT TOP 1
+        "U_GSP_REFERENCE",
+        "U_GSP_COLLECTION"
+        FROM SBOJOZF."@GSP_TCMODEL"
+        WHERE UPPER("U_GSP_REFERENCE") = '{upper_ptCode}'
+        ORDER BY "U_GSP_COLLECTION" DESC;"""
+    logger.info(f"Consulta SQL generada para búsqueda de PT Code: {query}")
+    return query
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def queryLastRowReferences(days):
