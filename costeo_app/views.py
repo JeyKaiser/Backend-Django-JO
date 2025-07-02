@@ -20,19 +20,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-        
-@login_required
-def index(request):    
-    return render(request, "index.html")      
-    # title = 'Django-Course!!'   
-    # context = {
-    #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
-    #     "nombre": 'Daniel',
-    #     "apellido": 'Gossdfsdfsdfsfsdfez',
-    # }
-    # return JsonResponse(context, status=200, safe=False) 
-
-
 
 class TestDataAPIView(APIView):
     def get(self, request, test_id): # 'test_id' es el parámetro de la URL
@@ -98,6 +85,55 @@ class AnioColeccionAPIView(APIView):
         else:
             print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
             return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class AnioColeccionAPIView1(APIView):
+    def get(self, request, coleccion): 
+        print(f"Django [AnioColeccionAPIView]: Slug recibido: '{coleccion}'")
+
+        coleccion_data = {
+            'winter-sun': [
+                {'id': '063', 'img': '/img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
+                {'id': '085', 'img': '/img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
+                {'id': '105', 'img': '/img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
+            ],
+            'resort-rtw': [
+                {'id': '065', 'img': '/img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
+                {'id': '084', 'img': '/img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
+                {'id': '106', 'img': '/img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
+            ],
+            'spring-summer': [
+                {'id': '067', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
+                {'id': '088', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
+                {'id': '110', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
+            ],
+            'summer-vacation': [
+                {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
+                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+            ],
+            'pre-fall': [
+                {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
+                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+            ],
+            'fall-winter': [
+                {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
+                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+            ],
+        }
+
+        # Busca la colección directamente con el slug recibido
+        cards = coleccion_data.get(coleccion, [])
+
+        if cards:
+            print(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' encontrada. Enviando {len(cards)} tarjetas.")
+            return Response({
+                'nombre_coleccion': coleccion, # Puedes devolver el slug o un nombre legible
+                'anios': cards
+            }, status=status.HTTP_200_OK)
+        else:
+            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
+            return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class ReferenciasAPIView(APIView):
@@ -111,53 +147,7 @@ class ReferenciasAPIView(APIView):
             logger.error(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para la colección '{collection_id}': {e}", exc_info=True)
             return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-    
-    
-def anio_coleccion(request, coleccion):
-    print("Django: ", coleccion)
-    coleccion_data = {       
-
-        'winter-sun': [
-            {'id': '063', 'img': 'img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
-            {'id': '085', 'img': 'img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
-            {'id': '105', 'img': 'img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
-        ],
-        'resort-rtw': [
-            {'id': '065', 'img': 'img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
-            {'id': '084', 'img': 'img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
-            {'id': '106', 'img': 'img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
-        ],
-        'spring-summer': [
-            {'id': '067', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
-            {'id': '088', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
-            {'id': '110', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
-        ],
-        'summer-vacation': [
-            {'id': '070', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-            {'id': '094', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
-            # {'id': '111', 'img': 'img/4.SUMMERVACATION/Summer Vacation 2026.png', 'bg': '#6594c0', 'label': '2026'},
-        ],
-        'pre-fall': [
-            {'id': '071', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-            {'id': '096', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
-            # {'id': '112', 'img': 'img/5.PREFALL/Pre Fall 2026.png', 'bg': '#d4a5a5', 'label': '2026'},
-        ],
-        'fall-winter': [
-            {'id': '075', 'img': 'img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-            {'id': '102', 'img': 'img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
-            # {'id': '113', 'img': 'img/6.FALLWINTER/Fall Winter 2026.png', 'bg': '#6594c0', 'label': '2026'},
-        ],
-    }
-
-    cards = coleccion_data.get(coleccion, [])
-
-    context = {
-        'coleccion': coleccion,
-        'cards': cards,
-    }
-    return render(request, "colecciones/anio_coleccion.html", context)
-
+  
 
 # --- NUEVA APIView COMBINADA ---
 class ModeloDetalleAPIView(APIView):
@@ -196,18 +186,7 @@ class ModeloDetalleAPIView(APIView):
 
 
     
-def referencias(request, collection_id):   
-    # id=request.GET.get('collection_id', collection_id)   
-    # print("ID de colección:", id)
-    print("JEFERSON: ",collection_id)
 
-    data = referenciasPorAno(request, collection_id)
-
-    context = {        
-        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100]      
-    }
-
-    return render(request, "colecciones/referencias.html", context)
 
 
 class ModeloDetalleAPIView(APIView):
@@ -247,6 +226,75 @@ class PTSearchAPIView(APIView):
 
 
 
+#   ------- D J A N G O   T E M P L A T E S  -------
+
+@login_required
+def index(request):    
+    return render(request, "index.html")      
+    # title = 'Django-Course!!'   
+    # context = {
+    #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
+    #     "nombre": 'Daniel',
+    #     "apellido": 'Gossdfsdfsdfsfsdfez',
+    # }    
+    # return JsonResponse(context, status=200, safe=False) 
+
+ 
+def anio_coleccion(request, coleccion):
+    print("Django: ", coleccion)
+    coleccion_data = {       
+
+        'winter-sun': [
+            {'id': '063', 'img': 'img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
+            {'id': '085', 'img': 'img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
+            {'id': '105', 'img': 'img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
+        ],
+        'resort-rtw': [
+            {'id': '065', 'img': 'img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
+            {'id': '084', 'img': 'img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
+            {'id': '106', 'img': 'img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
+        ],
+        'spring-summer': [
+            {'id': '067', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
+            {'id': '088', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
+            {'id': '110', 'img': 'img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
+        ],
+        'summer-vacation': [
+            {'id': '070', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
+            {'id': '094', 'img': 'img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+            # {'id': '111', 'img': 'img/4.SUMMERVACATION/Summer Vacation 2026.png', 'bg': '#6594c0', 'label': '2026'},
+        ],
+        'pre-fall': [
+            {'id': '071', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
+            {'id': '096', 'img': 'img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+            # {'id': '112', 'img': 'img/5.PREFALL/Pre Fall 2026.png', 'bg': '#d4a5a5', 'label': '2026'},
+        ],
+        'fall-winter': [
+            {'id': '075', 'img': 'img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
+            {'id': '102', 'img': 'img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+            # {'id': '113', 'img': 'img/6.FALLWINTER/Fall Winter 2026.png', 'bg': '#6594c0', 'label': '2026'},
+        ],
+    }
+    cards = coleccion_data.get(coleccion, [])
+    context = {
+        'coleccion': coleccion,
+        'cards': cards,
+    }
+    return render(request, "colecciones/anio_coleccion.html", context)
+
+
+def referencias(request, collection_id):   
+    # id=request.GET.get('collection_id', collection_id)   
+    # print("ID de colección:", id)
+    print("JEFERSON: ",collection_id)
+
+    data = referenciasPorAno(request, collection_id)
+
+    context = {        
+        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100]      
+    }
+
+    return render(request, "colecciones/referencias.html", context)
 
 
 

@@ -3,7 +3,14 @@ from django.urls import path, include
 from costeo_app import views
 from django.conf import settings
 from django.conf.urls.static import static
-from costeo_app.views import AnioColeccionAPIView, TestDataAPIView, ReferenciasAPIView, PTSearchAPIView, ModeloDetalleAPIView
+from costeo_app.views import (
+      AnioColeccionAPIView,
+      AnioColeccionAPIView1, 
+      TestDataAPIView, 
+      ReferenciasAPIView, 
+      PTSearchAPIView, 
+      ModeloDetalleAPIView
+)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -26,7 +33,8 @@ urlpatterns = [
         path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
         path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
 
-        path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),       
+        path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView1.as_view(), name='api_anio_coleccion1'),       
+        path('api/anio_coleccion/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),       
         path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
         #path('api/telas/<str:referencia_id>/', TelasAPIView.as_view(), name= "telas_referencia"),
         #path('api/insumos/<str:referencia_id>/', InsumosAPIView.as_view(), name="insumos_referencia"),
