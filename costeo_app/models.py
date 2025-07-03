@@ -3,7 +3,51 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from rest_framework import serializers
 
 
-# Create your models here.
+class Referencia(models.Model):
+    # Asume que U_GSP_REFERENCE es el ID/código único de la referencia que viene de SAP
+    # Este campo debe coincidir con el {collectionId} en tu URL de Next.js
+    codigo_referencia = models.CharField(max_length=50, unique=True, primary_key=True)
+    nombre = models.CharField(max_length=255)
+    imagen_url = models.URLField(max_length=500, blank=True, null=True)
+    # Otros campos generales que describan la referencia, si los tienes
+
+    def __str__(self):
+        return f"{self.codigo_referencia} - {self.nombre}"
+
+    # Opcional: Podrías definir una propiedad para las fases si quieres que Django las exponga
+    # Esto es solo un placeholder, la lógica real de fases vendrá de SAP o configuración
+    @property
+    def fases_disponibles(self):
+        # Esta es una simulación. En una aplicación real, aquí consultarías SAP
+        # o tendrías una configuración para saber qué fases aplican a esta referencia.
+        # Por ahora, devolvemos todas las fases que mencionaste.
+        return [
+            {"slug": "jo", "nombre": "JO"},
+            {"slug": "md-creacion-ficha", "nombre": "MD CREACION FICHA"},
+            {"slug": "md-creativo", "nombre": "MD CREATIVO"},
+            {"slug": "md-corte", "nombre": "MD CORTE"},
+            {"slug": "md-confeccion", "nombre": "MD CONFECCION"},
+            {"slug": "md-fitting", "nombre": "MD FITTING"},
+            {"slug": "md-tecnico", "nombre": "MD TECNICO"},
+            {"slug": "md-trazador", "nombre": "MD TRAZADOR"},
+            {"slug": "costeo", "nombre": "COSTEO"},
+            {"slug": "pt-tecnico", "nombre": "PT TECNICO"},
+            {"slug": "pt-cortador", "nombre": "PT CORTADOR"},
+            {"slug": "pt-fitting", "nombre": "PT FITTING"},
+            {"slug": "pt-trazador", "nombre": "PT TRAZADOR"},
+        ]
+
+
+
+
+
+
+
+
+
+
+
+#----------------------------  MODELS PARA LA APLICACION DE COSTEO TEMPLATES DE DJANGO
 class Tela(models.Model):
     cod_tela = models.CharField(max_length=30, null=True, blank=True)
     descripcion_tela = models.CharField(max_length=200, null=True, blank=True)
@@ -90,9 +134,6 @@ class Collection(models.Model):
     def __str__(self):
         return self.referencia
     
-# El serializador debe ir en serializers.py, no aquí
-
-
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)

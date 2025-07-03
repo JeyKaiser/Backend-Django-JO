@@ -1,48 +1,72 @@
+# JO_System_Project/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from costeo_app import views
+from costeo_app import views # No es estrictamente necesario importar 'views' aquí si solo usas clases APIView
 from django.conf import settings
 from django.conf.urls.static import static
+
+# Importa TODAS tus clases de APIView directamente aquí
 from costeo_app.views import (
-      AnioColeccionAPIView,
-      AnioColeccionAPIView1, 
-      TestDataAPIView, 
-      ReferenciasAPIView, 
-      PTSearchAPIView, 
-      ModeloDetalleAPIView
+    AnioColeccionAPIView,
+    TestDataAPIView,
+    ReferenciasAPIView,
+    PTSearchAPIView,
+    ReferenciaDetailView,
+    ModeloDetalleAPIView,
+    # Asegúrate de importar ProductoListCreateAPIView y lista_coleccion si son APIViews
+    ProductoListCreateAPIView, # Si es una APIView que quieres en la ruta principal
+    lista_coleccion, # Si es una función/vista de API que quieres en la ruta principal
 )
+
+# Importaciones JWT
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
-    TokenVerifyView,   
+    TokenVerifyView,
 )
+
+#Si usas DefaultRouter para ViewSets, defínelo aquí o en un archivo de urls de API separado
+#from rest_framework.routers import DefaultRouter
+#router = DefaultRouter()
+#router.register(r'tecnicos', TecnicoViewSet) # Asegúrate de importar TecnicoViewSet, etc.
+#router.register(r'telas', TelaViewSet)
+#router.register(r'creativos', CreativoViewSet)
 
 
 
 urlpatterns = [
-        path('admin/'  ,admin.site.urls),
-        path(''        ,include('usuarios.urls')),
-        path('costeo/' ,include('costeo_app.urls')),
-        path('sap/'    ,include('sap.urls')),
+    path('admin/', admin.site.urls),
+    path('', include('usuarios.urls')),          # Rutas de la app usuarios (ej. login tradicional si existe)
+    path('costeo/', include('costeo_app.urls')), # Rutas de la app costeo_app (solo si tiene vistas no-API o sub-APIs específicas)
+    path('sap/', include('sap.urls')),           # Rutas de la app sap
+    path('api/', include('costeo_app.urls')),
 
-        # Rutas para la autenticación JWT (las que usará Next.js)
-        # http://localhost:8000/api/token/ para obtener tokens (login)
-        path("api/", include("costeo_app.urls")),
-        path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-        # http://localhost:8000/api/token/refresh/ para refrescar el token de acceso
-        path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-        path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    # --- RUTAS DE API CENTRALIZADAS PARA NEXT.JS ---
+    # Autenticación JWT
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
-        path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView1.as_view(), name='api_anio_coleccion1'),       
-        path('api/anio_coleccion/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),       
-        path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
-        #path('api/telas/<str:referencia_id>/', TelasAPIView.as_view(), name= "telas_referencia"),
-        #path('api/insumos/<str:referencia_id>/', InsumosAPIView.as_view(), name="insumos_referencia"),
-        path('api/modelo-detalle/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name="modelo_detalle"),
+    # APIs de Colecciones y Referencias
+    path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),
+    path('api/referencias/<str:collection_id>/', ReferenciaDetailView.as_view(), name='api_referencias'),
+    # path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
+    path('api/modelo-detalle/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
 
-        path('api/search-pt/', PTSearchAPIView.as_view(), name="search_pt_code"),       
+    # APIs de búsqueda y productos
+    path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'), # Renombrado para consistencia
+    # Si ProductoListCreateAPIView y lista_coleccion son APIs, defínelas aquí:
+    path('api/productos/', ProductoListCreateAPIView.as_view(), name='api_producto_list_create'),
+    path('api/colecciones-list/', lista_coleccion, name='api_coleccion_list'), # Renombrado para evitar conflicto con /colecciones/<str:coleccion>/anios/
 
-        path('api/test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
+    # API de Prueba (la que ya funciona)
+    path('api/test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
+
+    # Si usas el router para ViewSets, inclúyelo aquí
+    #path('api/', include(router.urls)), # Esto incluirá /api/tecnicos, /api/telas, etc.
 ]
+
+# Configuración para servir archivos estáticos y media en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,4 +1,4 @@
-from .models import Producto, Collection, Tela, Status
+from .models import Producto, Collection, Tela, Status, Referencia
 from .models import Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from .forms import  CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -8,19 +8,60 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db import transaction
-from rest_framework import generics,viewsets,status
+from rest_framework import generics, viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer
+from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer, ReferenciaSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from sap.views import referenciasPorAno, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
 from rest_framework.views import APIView
+from django.http import Http404
+
 import logging
+
 
 logger = logging.getLogger(__name__)
 
 
+class ReferenciaDetailView(generics.RetrieveAPIView):
+    queryset = Referencia.objects.all() # Esto es necesario si confías en la DB
+    serializer_class = ReferenciaSerializer
+    lookup_field = 'codigo_referencia' # Esto le dice a DRF que use este campo para buscar en la URL
+
+    # Este método get_object busca directamente en la DB.
+    # NO uses la simulación si ya tienes datos o vas a crearlos.
+    # Elimina completamente el bloque de simulación si estás confiando en la DB.
+    # Si quieres una simulación para *casos no encontrados en DB*, puedes ponerla en un `except Http404`:
+    def get_object(self):
+        try:
+            # Primero intenta obtenerlo de la base de datos real
+            print("Buscando referencia en la base de datos...")
+            #return super().get_object()
+        except Http404:
+            # Si no se encuentra en la base de datos, intenta con la simulación
+            print("Buscando referencia en la simulacion...")
+            codigo_referencia = self.kwargs[self.lookup_field]
+            if codigo_referencia == "PT666666":
+                referencia = Referencia(
+                    codigo_referencia="PT666666",
+                    nombre="Chaqueta Casual Urbana",
+                    imagen_url="http://localhost:8000/media/referencias/chaqueta_ejemplo.jpg"
+                )
+                return referencia
+            elif codigo_referencia == "PT00001":
+                referencia = Referencia(
+                    codigo_referencia="PT00001",
+                    nombre="Vestido Noche Elegante",
+                    imagen_url="http://localhost:8000/media/referencias/vestido_ejemplo.jpg"
+                )
+                return referencia
+            else:
+                # Si no se encuentra ni en DB ni en simulación, lanza 404
+                raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada.")
+
+
+#---------------------------------------------------------------------------------------------
 class TestDataAPIView(APIView):
     def get(self, request, test_id): # 'test_id' es el parámetro de la URL
         print(f"Django: [TestDataAPIView] Recibida solicitud para test_id: {test_id}") # Log en la terminal de Django
@@ -34,7 +75,7 @@ class TestDataAPIView(APIView):
         
         print(f"Django: [TestDataAPIView] Enviando respuesta: {data}") # Log en la terminal de Django
         return Response(data, status=status.HTTP_200_OK)
-    
+
 
 
 class AnioColeccionAPIView(APIView):
@@ -87,54 +128,6 @@ class AnioColeccionAPIView(APIView):
             return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
         
 
-class AnioColeccionAPIView1(APIView):
-    def get(self, request, coleccion): 
-        print(f"Django [AnioColeccionAPIView]: Slug recibido: '{coleccion}'")
-
-        coleccion_data = {
-            'winter-sun': [
-                {'id': '063', 'img': '/img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
-                {'id': '085', 'img': '/img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
-                {'id': '105', 'img': '/img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
-            ],
-            'resort-rtw': [
-                {'id': '065', 'img': '/img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
-                {'id': '084', 'img': '/img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
-                {'id': '106', 'img': '/img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
-            ],
-            'spring-summer': [
-                {'id': '067', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
-                {'id': '088', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
-                {'id': '110', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
-            ],
-            'summer-vacation': [
-                {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
-            ],
-            'pre-fall': [
-                {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
-            ],
-            'fall-winter': [
-                {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
-            ],
-        }
-
-        # Busca la colección directamente con el slug recibido
-        cards = coleccion_data.get(coleccion, [])
-
-        if cards:
-            print(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' encontrada. Enviando {len(cards)} tarjetas.")
-            return Response({
-                'nombre_coleccion': coleccion, # Puedes devolver el slug o un nombre legible
-                'anios': cards
-            }, status=status.HTTP_200_OK)
-        else:
-            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
-            return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
-
-
 
 class ReferenciasAPIView(APIView):
     def get(self, request, collection_id):
@@ -150,6 +143,7 @@ class ReferenciasAPIView(APIView):
   
 
 # --- NUEVA APIView COMBINADA ---
+
 class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
@@ -162,33 +156,7 @@ class ModeloDetalleAPIView(APIView):
             return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-# class TelasAPIView(APIView):
-#     def get(self, request, referencia_id):
-#         logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-#         try:
-#             data_from_db = telasPorReferencia(request, referencia_id)
-#             return Response(data_from_db, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
-#             return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-# # NUEVA APIView para Insumos
-# class InsumosAPIView(APIView):
-#     def get(self, request, referencia_id):
-#         logger.info(f"Django [InsumosAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-#         try:
-#             # Llama a la nueva función de lógica de negocio para insumos
-#             data_from_db = insumosPorReferencia(request, referencia_id)
-#             return Response(data_from_db, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             logger.error(f"Django [InsumosAPIView]: ERROR al obtener INSUMOS para la referencia '{referencia_id}': {e}", exc_info=True)
-#             return Response({'detail': f'Error al obtener insumos: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-    
-
-
-
+#NUEVA APIView para obtener el detalle del modelo
 class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
