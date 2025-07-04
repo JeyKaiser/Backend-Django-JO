@@ -49,8 +49,9 @@ urlpatterns = [
 
     # APIs de Colecciones y Referencias
     path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),
-    path('api/referencias/<str:collection_id>/', ReferenciaDetailView.as_view(), name='api_referencias'),
+    path('api/referencias/<str:codigo_referencia>/', ReferenciasAPIView.as_view(), name='api_referencias'),
     # path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
+    # path('api/referencias/<str:collection_id>/', ReferenciaDetailView.as_view(), name='api_referencias'),
     path('api/modelo-detalle/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
 
     # APIs de búsqueda y productos

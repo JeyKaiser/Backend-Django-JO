@@ -4,7 +4,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Importa solo los ViewSets si los registras aquí
-from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet #, lista_coleccion, ProductoListCreateAPIView
+from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView, ReferenciasPorAnioListView#, lista_coleccion, ProductoListCreateAPIView
 
 router = DefaultRouter()
 router.register(r'tecnicos', TecnicoViewSet)
@@ -18,9 +18,13 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('coleccion/', views.collection_list, name='collection'),
     path('anio_coleccion/<str:coleccion>/', views.anio_coleccion, name='anio_coleccion'), # Esta es la vista basada en template
-    path('referencias/<str:collection_id>', views.referencias, name='referencias'), # Esta es la vista basada en template
     path('create/', views.create_reference, name='create_reference'),
     path('obtener_sublineas/<int:linea_id>/', views.obtener_sublineas, name='obtener_sublineas'),
+    path('referencias/<str:collection_id>', views.referencias, name='referencias'), # Esta es la vista basada en template
+    path('referencias/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),
+     path('referencias-por-anio/<str:collection_id>/', ReferenciasPorAnioListView.as_view(), name='referencias-por-anio-list'),
+    # path('referencias/<str:codigo_referencia>/', ReferenciasPorAnioListView.as_view(), name='referencia-detail'),
+
 
     # Incluye las URLs del router para tus ViewSets
     path('', include(router.urls)), # Esto incluirá /tecnicos, /telas, /creativos directamente bajo /costeo/

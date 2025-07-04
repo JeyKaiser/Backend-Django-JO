@@ -23,42 +23,91 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class ReferenciaDetailView(generics.RetrieveAPIView):
-    queryset = Referencia.objects.all() # Esto es necesario si confías en la DB
+    # Ya no necesitas queryset si vas a sobrescribir get_object completamente para simulación
+    # queryset = Referencia.objects.all()
     serializer_class = ReferenciaSerializer
-    lookup_field = 'codigo_referencia' # Esto le dice a DRF que use este campo para buscar en la URL
+    lookup_field = 'codigo_referencia' # Esto DEBE coincidir con el nombre del parámetro en la URL
 
-    # Este método get_object busca directamente en la DB.
-    # NO uses la simulación si ya tienes datos o vas a crearlos.
-    # Elimina completamente el bloque de simulación si estás confiando en la DB.
-    # Si quieres una simulación para *casos no encontrados en DB*, puedes ponerla en un `except Http404`:
     def get_object(self):
+        # La forma correcta y robusta de obtener el valor del lookup_field
+        # self.kwargs es el diccionario de argumentos capturados por la URL
+        # self.lookup_field es el nombre de la clave que esperamos ('codigo_referencia')
         try:
-            # Primero intenta obtenerlo de la base de datos real
-            print("Buscando referencia en la base de datos...")
-            #return super().get_object()
-        except Http404:
-            # Si no se encuentra en la base de datos, intenta con la simulación
-            print("Buscando referencia en la simulacion...")
-            codigo_referencia = self.kwargs[self.lookup_field]
-            if codigo_referencia == "PT666666":
-                referencia = Referencia(
-                    codigo_referencia="PT666666",
-                    nombre="Chaqueta Casual Urbana",
-                    imagen_url="http://localhost:8000/media/referencias/chaqueta_ejemplo.jpg"
-                )
-                return referencia
-            elif codigo_referencia == "PT00001":
-                referencia = Referencia(
-                    codigo_referencia="PT00001",
-                    nombre="Vestido Noche Elegante",
-                    imagen_url="http://localhost:8000/media/referencias/vestido_ejemplo.jpg"
-                )
-                return referencia
-            else:
-                # Si no se encuentra ni en DB ni en simulación, lanza 404
-                raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada.")
+            codigo_referencia = self.kwargs[self.lookup_field] # Esta es la línea 31
+        except KeyError:
+            # Esto NO debería ocurrir si la URL está bien configurada
+            raise Http404(f"La URL no proporcionó el parámetro esperado '{self.lookup_field}'.")
+
+        # --- SIMULACIÓN DE DATOS REVISADA ---
+        if codigo_referencia == "PT01660":
+            referencia = Referencia(
+                codigo_referencia="PT01660",
+                nombre="Chaqueta Casual Urbana",
+                imagen_url="http://localhost:8000/media/referencias/chaqueta_ejemplo.jpg"
+            )
+            return referencia
+        elif codigo_referencia == "PT00001":
+            referencia = Referencia(
+                codigo_referencia="PT00001",
+                nombre="Vestido Noche Elegante",
+                imagen_url="http://localhost:8000/media/referencias/vestido_ejemplo.jpg"
+            )
+            return referencia
+        else:
+            # Si no es un ID simulado, intenta buscar en la base de datos real
+            # (Si no tienes datos reales en DB, esto lanzará otro Http404)
+            # Descomenta la siguiente línea SI planeas tener datos reales en tu DB para Referencia.
+            # return super().get_object()
+            raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada en la simulación.")
+
+class ReferenciasPorAnioListView(APIView):
+    def get(self, request, collection_id, format=None):
+        if collection_id == "063": # Asumiendo que 063 es un ID de año válido
+            data = [
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_063_pt00001.jpg",
+                    "U_GSP_REFERENCE": "PT00001",
+                    "U_GSP_Desc": "Vestido Casual Primavera",
+                },
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_063_pt00002.jpg",
+                    "U_GSP_REFERENCE": "PT00002",
+                    "U_GSP_Desc": "Pantalón de Lino Verano",
+                },
+                # Añade más referencias para 063 si necesitas
+            ]
+        elif collection_id == "085": # Otro ID de año
+            data = [
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_085_pt01660.jpg",
+                    "U_GSP_REFERENCE": "PT01660",
+                    "U_GSP_Desc": "Chaqueta Invierno Elegante",
+                },
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_085_pt01661.jpg",
+                    "U_GSP_Desc": "Bufanda de Lana Tejida",
+                },
+            ]
+        elif collection_id == "071": # Otro ID de año
+            data = [
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_071_pt02000.jpg",
+                    "U_GSP_REFERENCE": "PT02000",
+                    "U_GSP_Desc": "Camisa de Seda Fresca",
+                },
+                {
+                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_071_pt02001.jpg",
+                    "U_GSP_Desc": "Falda Midi Estampada",
+                },
+            ]
+        else:
+            data = []
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
 
 
 #---------------------------------------------------------------------------------------------
