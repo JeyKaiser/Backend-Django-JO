@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer, ReferenciaSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
-from sap.views import referenciasPorAno, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
+from sap.views import referenciasPorAnio, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
 from rest_framework.views import APIView
 from django.http import Http404
 
@@ -22,6 +22,78 @@ import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+class AnioColeccionAPIView(APIView):
+    def get(self, request, coleccion): # 'coleccion' será el slug de Next.js (ej. "winter-sun")
+        print(f"Django [AnioColeccionAPIView]: Slug recibido: '{coleccion}'")
+        nombre_legible = {
+            'winter-sun': 'Winter Sun',
+            'resort-rtw': 'Resort RTW',
+            'spring-summer': 'Spring Summer',
+            'summer-vacation': 'Summer Vacation',
+            'pre-fall': 'Pre Fall RTW',
+            'fall-winter': 'Fall Winter',
+        }
+
+        coleccion_data = {
+            'winter-sun': [
+                {'id': '063', 'img': '/img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
+                {'id': '085', 'img': '/img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
+                {'id': '105', 'img': '/img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
+            ],
+            'resort-rtw': [
+                {'id': '065', 'img': '/img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
+                {'id': '084', 'img': '/img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
+                {'id': '106', 'img': '/img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
+            ],
+            'spring-summer': [
+                {'id': '067', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
+                {'id': '088', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
+                {'id': '110', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
+            ],
+            'summer-vacation': [
+                {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
+                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
+            ],
+            'pre-fall': [
+                {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
+                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
+            ],
+            'fall-winter': [
+                {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
+                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
+            ],
+        }
+        # Busca la colección directamente con el slug recibido
+        cards = coleccion_data.get(coleccion, [])
+
+        if cards:
+            print(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' encontrada. Enviando {len(cards)} tarjetas.")
+            return Response({
+                'nombre_coleccion': nombre_legible.get(coleccion, coleccion),
+                'anios': cards
+            }, status=status.HTTP_200_OK)
+        else:
+            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
+            return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+class ReferenciasAnioAPIView(APIView):
+    print("Django: [ReferenciasAPIView] Inicializando la vista para obtener referencias por año.")
+    def get(self, request, collection_id):
+        logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
+        try:
+            # Llama a la función referenciasPorAno, que ahora devuelve una lista directamente
+            data_from_db = referenciasPorAnio(collection_id)
+            return Response(data_from_db, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para la colección '{collection_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 
 class ReferenciaDetailView(generics.RetrieveAPIView):
     # Ya no necesitas queryset si vas a sobrescribir get_object completamente para simulación
@@ -61,51 +133,6 @@ class ReferenciaDetailView(generics.RetrieveAPIView):
             # return super().get_object()
             raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada en la simulación.")
 
-class ReferenciasPorAnioListView(APIView):
-    def get(self, request, collection_id, format=None):
-        if collection_id == "063": # Asumiendo que 063 es un ID de año válido
-            data = [
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_063_pt00001.jpg",
-                    "U_GSP_REFERENCE": "PT00001",
-                    "U_GSP_Desc": "Vestido Casual Primavera",
-                },
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_063_pt00002.jpg",
-                    "U_GSP_REFERENCE": "PT00002",
-                    "U_GSP_Desc": "Pantalón de Lino Verano",
-                },
-                # Añade más referencias para 063 si necesitas
-            ]
-        elif collection_id == "085": # Otro ID de año
-            data = [
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_085_pt01660.jpg",
-                    "U_GSP_REFERENCE": "PT01660",
-                    "U_GSP_Desc": "Chaqueta Invierno Elegante",
-                },
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_085_pt01661.jpg",
-                    "U_GSP_Desc": "Bufanda de Lana Tejida",
-                },
-            ]
-        elif collection_id == "071": # Otro ID de año
-            data = [
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_071_pt02000.jpg",
-                    "U_GSP_REFERENCE": "PT02000",
-                    "U_GSP_Desc": "Camisa de Seda Fresca",
-                },
-                {
-                    "U_GSP_Picture": "http://localhost:8000/media/referencias/referencia_ejemplo_071_pt02001.jpg",
-                    "U_GSP_Desc": "Falda Midi Estampada",
-                },
-            ]
-        else:
-            data = []
-
-        return Response(data, status=status.HTTP_200_OK)
-
 
 
 
@@ -127,67 +154,9 @@ class TestDataAPIView(APIView):
 
 
 
-class AnioColeccionAPIView(APIView):
-    def get(self, request, coleccion): # 'coleccion' será el slug de Next.js (ej. "winter-sun")
-        print(f"Django [AnioColeccionAPIView]: Slug recibido: '{coleccion}'")
-
-        # CRÍTICO: Las claves del diccionario ahora deben coincidir con los slugs exactos de Next.js
-        # (minúsculas y guiones, sin necesidad de normalización en esta API si ya vienen así)
-        coleccion_data = {
-            'winter-sun': [
-                {'id': '063', 'img': '/img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
-                {'id': '085', 'img': '/img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
-                {'id': '105', 'img': '/img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
-            ],
-            'resort-rtw': [
-                {'id': '065', 'img': '/img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
-                {'id': '084', 'img': '/img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
-                {'id': '106', 'img': '/img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
-            ],
-            'spring-summer': [
-                {'id': '067', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
-                {'id': '088', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
-                {'id': '110', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
-            ],
-            'summer-vacation': [
-                {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
-            ],
-            'pre-fall': [
-                {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
-            ],
-            'fall-winter': [
-                {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
-            ],
-        }
-
-        # Busca la colección directamente con el slug recibido
-        cards = coleccion_data.get(coleccion, [])
-
-        if cards:
-            print(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' encontrada. Enviando {len(cards)} tarjetas.")
-            return Response({
-                'nombre_coleccion': coleccion, # Puedes devolver el slug o un nombre legible
-                'anios': cards
-            }, status=status.HTTP_200_OK)
-        else:
-            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
-            return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
-        
 
 
-class ReferenciasAPIView(APIView):
-    def get(self, request, collection_id):
-        logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
-        try:
-            # Llama a la función referenciasPorAno, que ahora devuelve una lista directamente
-            data_from_db = referenciasPorAno(request, collection_id)
-            return Response(data_from_db, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"Django [ReferenciasAPIView]: ERROR al obtener referencias para la colección '{collection_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
   
 
@@ -243,7 +212,7 @@ class PTSearchAPIView(APIView):
 
 
 
-#   ------- D J A N G O   T E M P L A T E S  -------
+#   ------- D J A N G O   V I E W S / T E M P L A T E S  -------
 
 @login_required
 def index(request):    
@@ -300,33 +269,21 @@ def anio_coleccion(request, coleccion):
     return render(request, "colecciones/anio_coleccion.html", context)
 
 
+
+
+
 def referencias(request, collection_id):   
     # id=request.GET.get('collection_id', collection_id)   
     # print("ID de colección:", id)
     print("JEFERSON: ",collection_id)
 
-    data = referenciasPorAno(request, collection_id)
+    data = referenciasPorAnio(request, collection_id)
 
     context = {        
         "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100]      
     }
 
     return render(request, "colecciones/referencias.html", context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -447,7 +404,6 @@ def RegisterReference(request):
         'miTipo': tipo,
         'miVariacion': variacion,
     })
-
 
 
 class ProductoListCreateAPIView(generics.ListCreateAPIView):

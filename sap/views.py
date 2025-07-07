@@ -9,7 +9,7 @@ from .HANA.queries import (
 )
 from .HANA.queries import (
     querySelectDataBase,
-    queryReferenciasPorAno,
+    queryReferenciasPorAnio,
     queryTelasPorReferencia,
     queryInsumosPorReferencia,
     querySearchPTCode,    
@@ -66,52 +66,21 @@ from rest_framework.views import APIView
 from rest_framework import status
 logger = logging.getLogger(__name__)
 
-
 operatingSystem = platform.system()
 console = Console()
-@api_view(['GET'])
+
+
 
 #---------------------------------------------------------------------------------------------------
-def models(request):                #consulta GET
-    console.log(f"iniciando consulta a sap")
-    # database = request.GET.get('database')
-    database = 'SBOJOZF'
-    # collection = request.GET.get('collection')
-    collection = '105'
-
-    cursor = conn.cursor()
-    cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryReferenciasPorAno(collection))
-    # listData = []
-    rows = cursor.fetchall()
-
-    if len(rows) > 0:
-        column_names = [column[0] for column in cursor.description]
-        data = []
-
-        for row in rows:
-            item = dict(zip(column_names, row))
-            picture = item.get("U_GSP_Picture")
-            if picture is not None:
-                picture = picture.replace("\\", "/")
-                item["U_GSP_Picture"] = "https://johannaortiz.net/media/ImagesJOServer/" + picture
-            data.append(item)
-
-    console.log(rows)   
-    cursor.close()
-    return Response(data)
-
-
-
-def referenciasPorAno(request, collection_id):
+def referenciasPorAnio(collection_id):
     logger.info(f"iniciando consulta a sap para coleccion_id {collection_id}")
     database = 'SBOJOZF'
-    collection = str(collection_id) # Usamos 'collection' como antes
+    collection = str(collection_id)
     print(f"Collection: {collection}")
 
     cursor = conn.cursor()
     cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryReferenciasPorAno(collection)) # Usamos 'collection' aquí
+    cursor.execute(queryReferenciasPorAnio(collection)) # Usamos 'collection' aquí
     rows = cursor.fetchall()
 
     data = []
@@ -247,4 +216,33 @@ def searchPTCode(pt_code):
     cursor.close()
     return search_result # Devolverá un diccionario o None
 
+
+def models(request):                #consulta GET
+    console.log(f"iniciando consulta a sap")
+    # database = request.GET.get('database')
+    database = 'SBOJOZF'
+    # collection = request.GET.get('collection')
+    collection = '105'
+
+    cursor = conn.cursor()
+    cursor.execute(querySelectDataBase(database))
+    cursor.execute(queryReferenciasPorAnio(collection))
+    # listData = []
+    rows = cursor.fetchall()
+
+    if len(rows) > 0:
+        column_names = [column[0] for column in cursor.description]
+        data = []
+
+        for row in rows:
+            item = dict(zip(column_names, row))
+            picture = item.get("U_GSP_Picture")
+            if picture is not None:
+                picture = picture.replace("\\", "/")
+                item["U_GSP_Picture"] = "https://johannaortiz.net/media/ImagesJOServer/" + picture
+            data.append(item)
+
+    console.log(rows)   
+    cursor.close()
+    return Response(data)
 

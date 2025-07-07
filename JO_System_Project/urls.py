@@ -8,10 +8,8 @@ from django.conf.urls.static import static
 # Importa TODAS tus clases de APIView directamente aquí
 from costeo_app.views import (
     AnioColeccionAPIView,
-    TestDataAPIView,
-    ReferenciasAPIView,
-    PTSearchAPIView,
-    ReferenciaDetailView,
+    TestDataAPIView,   
+    PTSearchAPIView,    
     ModeloDetalleAPIView,
     # Asegúrate de importar ProductoListCreateAPIView y lista_coleccion si son APIViews
     ProductoListCreateAPIView, # Si es una APIView que quieres en la ruta principal
@@ -47,16 +45,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
-    # APIs de Colecciones y Referencias
-    path('api/colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),
-    path('api/referencias/<str:codigo_referencia>/', ReferenciasAPIView.as_view(), name='api_referencias'),
-    # path('api/referencias/<str:collection_id>/', ReferenciasAPIView.as_view(), name='api_referencias'),
-    # path('api/referencias/<str:collection_id>/', ReferenciaDetailView.as_view(), name='api_referencias'),
-    path('api/modelo-detalle/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
-
     # APIs de búsqueda y productos
-    path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'), # Renombrado para consistencia
-    # Si ProductoListCreateAPIView y lista_coleccion son APIs, defínelas aquí:
+    path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'),
     path('api/productos/', ProductoListCreateAPIView.as_view(), name='api_producto_list_create'),
     path('api/colecciones-list/', lista_coleccion, name='api_coleccion_list'), # Renombrado para evitar conflicto con /colecciones/<str:coleccion>/anios/
 

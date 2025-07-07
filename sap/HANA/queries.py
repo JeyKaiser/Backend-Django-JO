@@ -1,4 +1,3 @@
-
 import time
 import logging
 from rich.console import Console
@@ -9,7 +8,12 @@ saleQuotationDbs = ("OQUT", "QUT1")  #Tablas de bases de datos de oferta de vent
 logger = logging.getLogger(__name__)
 
 
-def queryReferenciasPorAno(collection):
+def querySelectDataBase(database):
+    query = 'SET SCHEMA "' + database + '";'
+    return query
+
+
+def queryReferenciasPorAnio(collection):
     query = f"""
         SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"  
         FROM "@GSP_TCMODEL" T0
@@ -63,9 +67,6 @@ def queryInsumosPorReferencia(ptCode, collection):
     return query
 
 
-def querySelectDataBase(database):
-    query = 'SET SCHEMA "' + database + '";'
-    return query
 
 # NUEVA FUNCIÓN DE CONSULTA PARA BUSCAR PT CODE
 def querySearchPTCode(ptCode):  
