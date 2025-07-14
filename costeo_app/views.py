@@ -96,15 +96,10 @@ class ReferenciasAnioAPIView(APIView):
 
 
 class ReferenciaDetailView(generics.RetrieveAPIView):
-    # Ya no necesitas queryset si vas a sobrescribir get_object completamente para simulación
-    # queryset = Referencia.objects.all()
     serializer_class = ReferenciaSerializer
-    lookup_field = 'codigo_referencia' # Esto DEBE coincidir con el nombre del parámetro en la URL
+    lookup_field = 'codigo_referencia'    # Esto DEBE coincidir con el nombre del parámetro en la URL
 
     def get_object(self):
-        # La forma correcta y robusta de obtener el valor del lookup_field
-        # self.kwargs es el diccionario de argumentos capturados por la URL
-        # self.lookup_field es el nombre de la clave que esperamos ('codigo_referencia')
         try:
             codigo_referencia = self.kwargs[self.lookup_field] # Esta es la línea 31
         except KeyError:
@@ -134,6 +129,18 @@ class ReferenciaDetailView(generics.RetrieveAPIView):
             raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada en la simulación.")
 
 
+def detalleReferencia(request, collection_id):   
+    # id=request.GET.get('collection_id', collection_id)   
+    # print("ID de colección:", id)
+    print("JEFERSON: ",collection_id)
+
+    data = referenciasPorAnio(request, collection_id)
+
+    context = {        
+        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100] por ejemplo           
+    }
+    return render(request, context)
+    # return render(request, "colecciones/referencias.html", context)
 
 
 
@@ -270,20 +277,6 @@ def anio_coleccion(request, coleccion):
 
 
 
-
-
-def referencias(request, collection_id):   
-    # id=request.GET.get('collection_id', collection_id)   
-    # print("ID de colección:", id)
-    print("JEFERSON: ",collection_id)
-
-    data = referenciasPorAnio(request, collection_id)
-
-    context = {        
-        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100]      
-    }
-
-    return render(request, "colecciones/referencias.html", context)
 
 
 
