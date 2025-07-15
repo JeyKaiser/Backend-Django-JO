@@ -4,13 +4,13 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 # Importa solo los ViewSets si los registras aquí
-from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView #ReferenciasPorAnioListView , lista_coleccion, ProductoListCreateAPIView
-from .views import AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, detalleReferencia
+#from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView #ReferenciasPorAnioListView , lista_coleccion, ProductoListCreateAPIView
+from .views import AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FaseDetalleAPIView
 
-router = DefaultRouter()
-router.register(r'tecnicos', TecnicoViewSet)
-router.register(r'telas', TelaViewSet)
-router.register(r'creativos', CreativoViewSet)
+# router = DefaultRouter()
+# router.register(r'tecnicos', TecnicoViewSet)
+# router.register(r'telas', TelaViewSet)
+# router.register(r'creativos', CreativoViewSet)
 
 
 urlpatterns = [
@@ -24,16 +24,17 @@ urlpatterns = [
     #años por coleccion, referencias por año, detalle de referencia
     path('colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),
     path('referencias-por-anio/<str:collection_id>/', ReferenciasAnioAPIView.as_view(), name='referencias-por-anio-list'),
-    path('detalle-referencia/<str:collection_id>', views.detalleReferencia, name='referencias'), # Esta es la vista basada en template
+    path('detalle-referencia/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
+    #path('fases/<str:fase_slug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
+    path('fases/<str:fasesSlug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'), # <--- ¡Asegúrate de que sea fasesSlug aquí!
+    
 
-    path('modelo-detalle/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
-    path('referencias1/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),
-
+    #path('referencias1/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),
 
     #--------paths para las vistas de Django que devuelven templates---------
     path('anio_coleccion/<str:coleccion>/', views.anio_coleccion, name='anio_coleccion'),
 
     # Incluye las URLs del router para tus ViewSets
-    path('', include(router.urls)), # Esto incluirá /tecnicos, /telas, /creativos directamente bajo /costeo/
+    #path('', include(router.urls)), # Esto incluirá /tecnicos, /telas, /creativos directamente bajo /costeo/
 
 ]

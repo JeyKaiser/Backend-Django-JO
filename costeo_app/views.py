@@ -1,4 +1,4 @@
-from .models import Producto, Collection, Tela, Status, Referencia
+from .models import Producto, Collection, Tela, Status
 from .models import Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
 from .forms import  CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -11,7 +11,7 @@ from django.db import transaction
 from rest_framework import generics, viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer, ReferenciaSerializer
+#from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer, ReferenciaSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from sap.views import referenciasPorAnio, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
@@ -95,52 +95,87 @@ class ReferenciasAnioAPIView(APIView):
 
 
 
-class ReferenciaDetailView(generics.RetrieveAPIView):
-    serializer_class = ReferenciaSerializer
-    lookup_field = 'codigo_referencia'    # Esto DEBE coincidir con el nombre del parámetro en la URL
 
-    def get_object(self):
+
+
+class FaseDetalleAPIView(APIView):
+    def get(self, request, fasesSlug, referencia_id):
+        logger.info(f"Django [FaseDetalleAPIView]: Solicitud GET para Fase: {fasesSlug}, Referencia: {referencia_id}")
+
+        data_for_phase = {} # Inicializa los datos que devolverás
+
         try:
-            codigo_referencia = self.kwargs[self.lookup_field] # Esta es la línea 31
-        except KeyError:
-            # Esto NO debería ocurrir si la URL está bien configurada
-            raise Http404(f"La URL no proporcionó el parámetro esperado '{self.lookup_field}'.")
+            if fasesSlug == 'jo':
+                # Lógica para la fase JO
+                # Ejemplo: data_for_phase = get_data_for_jo_phase(referencia_id)
+                data_for_phase = {"mensaje": f"Datos para la fase JO de la referencia {referencia_id}"}
 
-        # --- SIMULACIÓN DE DATOS REVISADA ---
-        if codigo_referencia == "PT01660":
-            referencia = Referencia(
-                codigo_referencia="PT01660",
-                nombre="Chaqueta Casual Urbana",
-                imagen_url="http://localhost:8000/media/referencias/chaqueta_ejemplo.jpg"
-            )
-            return referencia
-        elif codigo_referencia == "PT00001":
-            referencia = Referencia(
-                codigo_referencia="PT00001",
-                nombre="Vestido Noche Elegante",
-                imagen_url="http://localhost:8000/media/referencias/vestido_ejemplo.jpg"
-            )
-            return referencia
-        else:
-            # Si no es un ID simulado, intenta buscar en la base de datos real
-            # (Si no tienes datos reales en DB, esto lanzará otro Http404)
-            # Descomenta la siguiente línea SI planeas tener datos reales en tu DB para Referencia.
-            # return super().get_object()
-            raise Http404(f"Referencia con código '{codigo_referencia}' no encontrada en la simulación.")
+            elif fasesSlug == 'md-creacion-ficha':
+                # Lógica para la fase MD Creación Ficha
+                data_for_phase = {"mensaje": f"Datos para la fase MD Creación Ficha de la referencia {referencia_id}"}                                
+                telas_data = telasPorReferencia(request, referencia_id)
+                insumos_data = insumosPorReferencia(request, referencia_id)
 
+                data_for_phase = {
+                    "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id}",
+                    "telas": telas_data,
+                    "insumos": insumos_data,
+                }
 
-def detalleReferencia(request, collection_id):   
-    # id=request.GET.get('collection_id', collection_id)   
-    # print("ID de colección:", id)
-    print("JEFERSON: ",collection_id)
+            elif fasesSlug == 'md-creativo':
+                # Lógica para la fase MD Creación Ficha
+                data_for_phase = {"mensaje": f"Datos para la fase MD Creativo de la referencia {referencia_id}"}
 
-    data = referenciasPorAnio(request, collection_id)
+            elif fasesSlug == 'md-corte':
+                # Lógica para la fase MD Corte
+                data_for_phase = {"mensaje": f"Datos para la fase MD Corte de la referencia {referencia_id}"}
 
-    context = {        
-        "modelos": data[:],     #CANTIDAD DE CARDS QUE QUE GENERAN [0:100] por ejemplo           
-    }
-    return render(request, context)
-    # return render(request, "colecciones/referencias.html", context)
+            elif fasesSlug == 'md-confeccion':
+                # Lógica para la fase MD Confección
+                data_for_phase = {"mensaje": f"Datos para la fase MD Confección de la referencia {referencia_id}"}
+
+            elif fasesSlug == 'md-fitting':
+                # Lógica para la fase MD Fitting
+                data_for_phase = {"mensaje": f"Datos para la fase MD Fitting de la referencia {referencia_id}"}
+
+            elif fasesSlug == 'md-tecnico':     
+                # Lógica para la fase MD Técnico
+                data_for_phase = {"mensaje": f"Datos para la fase MD Técnico de la referencia {referencia_id}"}
+
+            elif fasesSlug == 'md-trazador':
+                # Lógica para la fase MD Trazador
+                data_for_phase = {"mensaje": f"Datos para la fase MD Trazador de la referencia {referencia_id}"} 
+
+            elif fasesSlug == 'costeo':
+                data_for_phase = {"mensaje": f"Datos de COSTEO para la referencia {referencia_id}"}
+
+            elif fasesSlug == 'pt-tecnico':
+                # Lógica para la fase PT Técnico
+                data_for_phase = {"mensaje": f"Datos para la fase PT Técnico de la referencia {referencia_id}"}  
+
+            elif fasesSlug == 'pt-fitting':
+                # Lógica para la fase PT Fitting
+                data_for_phase = {"mensaje": f"Datos para la fase PT Fitting de la referencia {referencia_id}"}
+
+            elif fasesSlug == 'pt-cortador':
+                # Lógica para la fase PT Cortador
+                data_for_phase = {"mensaje": f"Datos para la fase PT Cortador de la referencia {referencia_id}"} 
+
+            elif fasesSlug == 'pt-trazador':
+                # Lógica para la fase PT Trazador
+                data_for_phase = {"mensaje": f"Datos para la fase PT Trazador de la referencia {referencia_id}"} 
+
+            else:
+                logger.warning(f"Fase '{fasesSlug}' no reconocida para la referencia {referencia_id}.")
+                return Response({'detail': f'Fase "{fasesSlug}" no válida.'}, status=status.HTTP_404_NOT_FOUND)
+
+            logger.info(f"Datos generados para {fasesSlug} de {referencia_id}: {data_for_phase}")
+            return Response(data_for_phase, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Django [FaseDetalleAPIView]: ERROR al obtener datos para fase '{fasesSlug}' de referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener datos de la fase: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 
@@ -168,29 +203,39 @@ class TestDataAPIView(APIView):
   
 
 # --- NUEVA APIView COMBINADA ---
-
 class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
         try:
-            # Llama a la función combinada que obtiene telas e insumos
+            # Llama a la función combinada que obtiene telas e insumos Y las fases
             combined_data = getModeloDetalle(request, referencia_id)
+
+            # Puedes hacer una validación adicional aquí si combined_data es incompleto
+            # if not combined_data.get('fases_disponibles'):
+            #     logger.warning(f"Referencia {referencia_id} devuelta sin fases_disponibles.")
+            #     return Response({'detail': 'Datos de referencia incompletos: faltan fases.'}, status=status.HTTP_404_NOT_FOUND)
+
             return Response(combined_data, status=status.HTTP_200_OK)
+        except ValueError as ve: # Captura el error específico si la referencia no se encuentra
+            logger.error(f"Django [ModeloDetalleAPIView]: Referencia no encontrada '{referencia_id}': {ve}")
+            return Response({'detail': str(ve)}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
             return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
 
 
 #NUEVA APIView para obtener el detalle del modelo
-class ModeloDetalleAPIView(APIView):
-    def get(self, request, referencia_id):
-        logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-        try:
-            combined_data = getModeloDetalle(request, referencia_id)
-            return Response(combined_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# class ModeloDetalleAPIView(APIView):
+#     def get(self, request, referencia_id):
+#         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+#         print(f"Django: [ModeloDetalleAPIView] Recibida solicitud para referencia_id: {referencia_id}") # Log en la terminal de Django
+#         try:
+#             combined_data = getModeloDetalle(request, referencia_id)
+#             return Response(combined_data, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
+#             return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # NUEVA APIView para la búsqueda de PT Code
 class PTSearchAPIView(APIView):
@@ -399,25 +444,25 @@ def RegisterReference(request):
     })
 
 
-class ProductoListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
+# class ProductoListCreateAPIView(generics.ListCreateAPIView):
+#     queryset = Producto.objects.all()
+#     serializer_class = ProductoSerializer
 
-class CollectionCreateView(generics.CreateAPIView):
-    queryset = Collection.objects.all()
-    serializer_class = CollectionSerializer
+# class CollectionCreateView(generics.CreateAPIView):
+#     queryset = Collection.objects.all()
+#     serializer_class = CollectionSerializer
 
-class TecnicoViewSet(viewsets.ModelViewSet):
-    queryset = Tecnico.objects.all()
-    serializer_class = TecnicoSerializer
+# class TecnicoViewSet(viewsets.ModelViewSet):
+#     queryset = Tecnico.objects.all()
+#     serializer_class = TecnicoSerializer
 
-class TelaViewSet(viewsets.ModelViewSet):
-    queryset = Tela.objects.all()
-    serializer_class = TelaSerializer
+# class TelaViewSet(viewsets.ModelViewSet):
+#     queryset = Tela.objects.all()
+#     serializer_class = TelaSerializer
 
-class CreativoViewSet(viewsets.ModelViewSet):
-    queryset = Creativo.objects.all()
-    serializer_class = CreativoSerializer
+# class CreativoViewSet(viewsets.ModelViewSet):
+#     queryset = Creativo.objects.all()
+#     serializer_class = CreativoSerializer
 
 
 

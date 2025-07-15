@@ -26,6 +26,7 @@ def queryReferenciasPorAnio(collection):
 
 
 def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetros
+    print(f"Referencia: {ptCode}, Colección: {collection}")
     query = f"""
         SELECT
         T1."U_GSP_REFERENCE",
@@ -47,13 +48,14 @@ def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetro
 
 
 def queryInsumosPorReferencia(ptCode, collection):
+    print(f"Referencia: {ptCode}, Colección: {collection}")
     query = f"""
         SELECT
         T1."U_GSP_REFERENCE",
         T2."U_GSP_SchLinName",
         T2."U_GSP_ItemCode",
         T2."U_GSP_ItemName",
-        T3."BWidth1" -- T3.* si quieres todas las columnas de OITM, pero solo BWidth1 fue especificado
+        T3."BWidth1"
         FROM SBOJOZF."@GSP_TCMODEL" T1
         INNER JOIN SBOJOZF."@GSP_TCMODELMAT" T2
             ON T1."Code" = T2."U_GSP_ModelCode"

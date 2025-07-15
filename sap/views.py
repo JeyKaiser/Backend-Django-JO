@@ -2,11 +2,13 @@ from time import time
 from .HANA.conf import conn
 from .HANA.queries import (
     queryGetAllCustomer, queryGetCompositionItemSAP,
-    queryGetCompositionItemSIIGO, queryGetSumTotalInvoice, queryGetSumTotalProforma
+    queryGetCompositionItemSIIGO,
+    queryGetSumTotalInvoice, 
+    queryGetSumTotalProforma,    
+    queryGetInfoReferenceSAPCodebarsItemMaster, 
+    queryGetInfoReferenceSAPCodebarsSaleOrder
 )
-from .HANA.queries import (
-    queryGetInfoReferenceSAPCodebarsItemMaster, queryGetInfoReferenceSAPCodebarsSaleOrder
-)
+
 from .HANA.queries import (
     querySelectDataBase,
     queryReferenciasPorAnio,
@@ -58,16 +60,33 @@ from rest_framework.response import Response
 from django.shortcuts import render
 from django.http import JsonResponse
 import logging 
-import time
-import os
 from rich.console import Console
 import platform
 from rest_framework.views import APIView
 from rest_framework import status
+
+
 logger = logging.getLogger(__name__)
 
 operatingSystem = platform.system()
 console = Console()
+
+STANDARD_FASES_DISPONIBLES = [
+    {"slug": "jo", "nombre": "JO"},
+    {"slug": "md-creacion-ficha", "nombre": "MD CREACION FICHA"},
+    {"slug": "md-creativo", "nombre": "MD CREATIVO"},
+    {"slug": "md-corte", "nombre": "MD CORTE"},
+    {"slug": "md-confeccion", "nombre": "MD CONFECCION"},
+    {"slug": "md-fitting", "nombre": "MD FITTING"},
+    {"slug": "md-tecnico", "nombre": "MD TECNICO"},
+    {"slug": "md-trazador", "nombre": "MD TRAZADOR"},
+    {"slug": "costeo", "nombre": "COSTEO"},
+    {"slug": "pt-tecnico", "nombre": "PT TECNICO"},
+    {"slug": "pt-cortador", "nombre": "PT CORTADOR"},
+    {"slug": "pt-fitting", "nombre": "PT FITTING"},
+    {"slug": "pt-trazador", "nombre": "PT TRAZADOR"},
+]
+
 
 
 
@@ -100,9 +119,12 @@ def referenciasPorAnio(collection_id):
     return data
 
 
+
 def telasPorReferencia(request, referencia_id):
     logger.info(f"Buscando telas en la Base de datos para referencia: {referencia_id}")
     collection_id = request.GET.get('collectionId')
+    print(f"Collection ID usado: {collection_id}")
+    
     if not collection_id:
         logger.error("Django [telasPorReferencia]: collectionId no proporcionado en los query parameters.")
         return []
@@ -129,18 +151,6 @@ def telasPorReferencia(request, referencia_id):
     logger.info(f"Datos procesados a devolver a Next.js (telas): {data}")
     cursor.close()
     return data
-
-
-class TelasAPIView(APIView):
-    def get(self, request, referencia_id):
-        logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-        try:
-            # Pasa el objeto request completo a telasPorReferencia para que pueda acceder a los query params
-            data_from_db = telasPorReferencia(request, referencia_id)
-            return Response(data_from_db, status=status.HTTP_200_OK)
-        except Exception as e:
-            logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def insumosPorReferencia(request, referencia_id):
@@ -174,22 +184,40 @@ def insumosPorReferencia(request, referencia_id):
     return data
 
 
-# --- NUEVA FUNCIÓN COMBINADA ---
+
 def getModeloDetalle(request, referencia_id):
     logger.info(f"Obteniendo detalle completo del modelo para referencia: {referencia_id}")
+    print(f"Referencia ID: {referencia_id} - Colección ID: {request.GET.get('collectionId')}")
     
-    # Reutiliza las funciones existentes para obtener los datos
-    telas_data = telasPorReferencia(request, referencia_id)
-    insumos_data = insumosPorReferencia(request, referencia_id)
-
-    # Combina los resultados en un solo diccionario
-    combined_data = {
-        'telas': telas_data,
-        'insumos': insumos_data
+    combined_data = {    
+        'nombre': f"Referencia {referencia_id}",   
+        'fases_disponibles': STANDARD_FASES_DISPONIBLES 
     }
     
     logger.info(f"Datos combinados del modelo para {referencia_id}: {combined_data}")
     return combined_data
+
+
+
+
+
+
+class TelasAPIView(APIView):
+    def get(self, request, referencia_id):
+        logger.info(f"Django [TelasAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        try:
+            # Pasa el objeto request completo a telasPorReferencia para que pueda acceder a los query params
+            data_from_db = telasPorReferencia(request, referencia_id)
+            return Response(data_from_db, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [TelasAPIView]: ERROR al obtener TELAS para la referencia '{referencia_id}': {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
 
 
 # NUEVA FUNCIÓN para buscar PT Code

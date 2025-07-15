@@ -12,7 +12,7 @@ from costeo_app.views import (
     PTSearchAPIView,    
     ModeloDetalleAPIView,
     # Asegúrate de importar ProductoListCreateAPIView y lista_coleccion si son APIViews
-    ProductoListCreateAPIView, # Si es una APIView que quieres en la ruta principal
+    #ProductoListCreateAPIView, # Si es una APIView que quieres en la ruta principal
     lista_coleccion, # Si es una función/vista de API que quieres en la ruta principal
 )
 
@@ -47,7 +47,7 @@ urlpatterns = [
 
     # APIs de búsqueda y productos
     path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'),
-    path('api/productos/', ProductoListCreateAPIView.as_view(), name='api_producto_list_create'),
+    #path('api/productos/', ProductoListCreateAPIView.as_view(), name='api_producto_list_create'),
     path('api/colecciones-list/', lista_coleccion, name='api_coleccion_list'), # Renombrado para evitar conflicto con /colecciones/<str:coleccion>/anios/
 
     # API de Prueba (la que ya funciona)
