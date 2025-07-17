@@ -120,24 +120,84 @@ def referenciasPorAnio(collection_id):
 
 
 
-def telasPorReferencia(request, referencia_id):
-    logger.info(f"Buscando telas en la Base de datos para referencia: {referencia_id}")
-    collection_id = request.GET.get('collectionId')
-    print(f"Collection ID usado: {collection_id}")
+# def telasPorReferencia(request, referencia_id):
+#     logger.info(f"Buscando telas en la Base de datos para referencia: {referencia_id}")
+#     collection_id = request.GET.get('collectionId')
+#     print(f"Collection ID usado: {collection_id}")
     
-    if not collection_id:
-        logger.error("Django [telasPorReferencia]: collectionId no proporcionado en los query parameters.")
-        return []
+#     if not collection_id:
+#         logger.error("Django [telasPorReferencia]: collectionId no proporcionado en los query parameters.")
+#         return []
+
+#     database = 'SBOJOZF'
+#     collection = str(collection_id)
+#     ptCode = str(referencia_id)
+
+#     logger.info(f"Referencia (ptCode): {ptCode}, Colección: {collection}")
+
+#     cursor = conn.cursor()
+#     cursor.execute(querySelectDataBase(database))
+#     cursor.execute(queryTelasPorReferencia(ptCode, collection))
+#     rows = cursor.fetchall()
+#     data = []
+
+#     if len(rows) > 0:
+#         column_names = [column[0] for column in cursor.description]
+#         for row in rows:
+#             item = dict(zip(column_names, row))
+#             data.append(item)
+
+#     logger.debug(f"Datos raw obtenidos de la DB (telas - antes de procesar): {rows}")
+#     logger.info(f"Datos procesados a devolver a Next.js (telas): {data}")
+#     cursor.close()
+#     return data
+# def insumosPorReferencia(request, referencia_id):
+#     logger.info(f"Buscando insumos en la Base de datos para referencia: {referencia_id}")
+#     collection_id = request.GET.get('collectionId')
+#     if not collection_id:
+#         logger.error("Django [insumosPorReferencia]: collectionId no proporcionado en los query parameters.")
+#         return []
+
+#     database = 'SBOJOZF'
+#     collection = str(collection_id)
+#     ptCode = str(referencia_id)
+
+#     logger.info(f"Referencia (ptCode): {ptCode}, Colección: {collection}")
+
+#     cursor = conn.cursor()
+#     cursor.execute(querySelectDataBase(database))
+#     cursor.execute(queryInsumosPorReferencia(ptCode, collection))
+#     rows = cursor.fetchall()
+#     data = []
+
+#     if len(rows) > 0:
+#         column_names = [column[0] for column in cursor.description]
+#         for row in rows:
+#             item = dict(zip(column_names, row))
+#             data.append(item)
+
+#     logger.debug(f"Datos raw obtenidos de la DB (insumos - antes de procesar): {rows}")
+#     logger.info(f"Datos procesados a devolver a Next.js (insumos): {data}")
+#     cursor.close()
+#     return data
+
+def telasPorReferencia(request, referencia_id, collection_id):
+    logger.info(f"Buscando telas en la Base de datos para referencia: {referencia_id}, Colección: {collection_id}")
+    # Ya no necesitamos request.GET.get('collectionId')
+    # print(f"Collection ID usado: {collection_id}") # Para depuración
+
+    # La validación de collection_id ya no es necesaria aquí si es un parámetro de ruta garantizado
+    # if not collection_id:
+    #     logger.error("Django [telasPorReferencia]: collectionId no proporcionado o derivado.")
+    #     return []
 
     database = 'SBOJOZF'
-    collection = str(collection_id)
+    collection = str(collection_id) # Usa el collection_id que se recibió directamente
     ptCode = str(referencia_id)
 
-    logger.info(f"Referencia (ptCode): {ptCode}, Colección: {collection}")
-
-    cursor = conn.cursor()
-    cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryTelasPorReferencia(ptCode, collection))
+    cursor = conn.cursor() # Asume que 'conn' es tu conexión a la DB
+    cursor.execute(querySelectDataBase(database)) # Asume que esta función existe
+    cursor.execute(queryTelasPorReferencia(ptCode, collection)) # Asume que esta función existe
     rows = cursor.fetchall()
     data = []
 
@@ -152,23 +212,17 @@ def telasPorReferencia(request, referencia_id):
     cursor.close()
     return data
 
-
-def insumosPorReferencia(request, referencia_id):
-    logger.info(f"Buscando insumos en la Base de datos para referencia: {referencia_id}")
-    collection_id = request.GET.get('collectionId')
-    if not collection_id:
-        logger.error("Django [insumosPorReferencia]: collectionId no proporcionado en los query parameters.")
-        return []
-
+# *** CAMBIO CLAVE: collection_id ahora es un parámetro directo ***
+def insumosPorReferencia(request, referencia_id, collection_id):
+    logger.info(f"Buscando insumos en la Base de datos para referencia: {referencia_id}, Colección: {collection_id}")
+    
     database = 'SBOJOZF'
-    collection = str(collection_id)
+    collection = str(collection_id) # Usa el collection_id que se recibió directamente
     ptCode = str(referencia_id)
 
-    logger.info(f"Referencia (ptCode): {ptCode}, Colección: {collection}")
-
-    cursor = conn.cursor()
-    cursor.execute(querySelectDataBase(database))
-    cursor.execute(queryInsumosPorReferencia(ptCode, collection))
+    cursor = conn.cursor() # Asume que 'conn' es tu conexión a la DB
+    cursor.execute(querySelectDataBase(database)) # Asume que esta función existe
+    cursor.execute(queryInsumosPorReferencia(ptCode, collection)) # Asume que esta función existe
     rows = cursor.fetchall()
     data = []
 

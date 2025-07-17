@@ -11,13 +11,12 @@ from django.db import transaction
 from rest_framework import generics, viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-#from .serializers import ProductoSerializer, CollectionSerializer, TecnicoSerializer,TelaSerializer, CreativoSerializer, ReferenciaSerializer
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
-from sap.views import referenciasPorAnio, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
 from rest_framework.views import APIView
 from django.http import Http404
 
+from sap.views import referenciasPorAnio, telasPorReferencia, insumosPorReferencia, getModeloDetalle, searchPTCode
 import logging
 
 
@@ -99,10 +98,10 @@ class ReferenciasAnioAPIView(APIView):
 
 
 class FaseDetalleAPIView(APIView):
-    def get(self, request, fasesSlug, referencia_id):
-        logger.info(f"Django [FaseDetalleAPIView]: Solicitud GET para Fase: {fasesSlug}, Referencia: {referencia_id}")
+    def get(self, request, collection_id, referencia_id, fasesSlug):
+        logger.info(f"Django [FaseDetalleAPIView]: Solicitud GET para Fase: {fasesSlug}, Referencia: {referencia_id}, Colección: {collection_id}")
 
-        data_for_phase = {} # Inicializa los datos que devolverás
+        data_for_phase = {}
 
         try:
             if fasesSlug == 'jo':
@@ -111,13 +110,14 @@ class FaseDetalleAPIView(APIView):
                 data_for_phase = {"mensaje": f"Datos para la fase JO de la referencia {referencia_id}"}
 
             elif fasesSlug == 'md-creacion-ficha':
-                # Lógica para la fase MD Creación Ficha
-                data_for_phase = {"mensaje": f"Datos para la fase MD Creación Ficha de la referencia {referencia_id}"}                                
-                telas_data = telasPorReferencia(request, referencia_id)
-                insumos_data = insumosPorReferencia(request, referencia_id)
+                logger.info(f"Cargando datos para la fase 'MD Creacion Ficha' de la referencia {referencia_id} (Colección: {collection_id})")
+                
+                # *** LLAMAR A LAS FUNCIONES PASANDO collection_id directamente ***
+                telas_data = telasPorReferencia(request, referencia_id, collection_id)     # <--- Pasa collection_id
+                insumos_data = insumosPorReferencia(request, referencia_id, collection_id) # <--- Pasa collection_id
 
                 data_for_phase = {
-                    "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id}",
+                    "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
                     "telas": telas_data,
                     "insumos": insumos_data,
                 }
@@ -169,11 +169,11 @@ class FaseDetalleAPIView(APIView):
                 logger.warning(f"Fase '{fasesSlug}' no reconocida para la referencia {referencia_id}.")
                 return Response({'detail': f'Fase "{fasesSlug}" no válida.'}, status=status.HTTP_404_NOT_FOUND)
 
-            logger.info(f"Datos generados para {fasesSlug} de {referencia_id}: {data_for_phase}")
+            logger.info(f"Datos generados para {fasesSlug} de {referencia_id} (Colección: {collection_id}): {data_for_phase}")
             return Response(data_for_phase, status=status.HTTP_200_OK)
 
         except Exception as e:
-            logger.error(f"Django [FaseDetalleAPIView]: ERROR al obtener datos para fase '{fasesSlug}' de referencia '{referencia_id}': {e}", exc_info=True)
+            logger.error(f"Django [FaseDetalleAPIView]: ERROR al obtener datos para fase '{fasesSlug}' de referencia '{referencia_id}' (Colección: {collection_id}): {e}", exc_info=True)
             return Response({'detail': f'Error al obtener datos de la fase: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -205,7 +205,7 @@ class TestDataAPIView(APIView):
 # --- NUEVA APIView COMBINADA ---
 class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
-        logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
+        logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}, - Colección ID: {request.GET.get('collectionId')}")
         try:
             # Llama a la función combinada que obtiene telas e insumos Y las fases
             combined_data = getModeloDetalle(request, referencia_id)

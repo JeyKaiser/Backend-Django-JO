@@ -26,7 +26,7 @@ urlpatterns = [
     path('referencias-por-anio/<str:collection_id>/', ReferenciasAnioAPIView.as_view(), name='referencias-por-anio-list'),
     path('detalle-referencia/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
     #path('fases/<str:fase_slug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
-    path('fases/<str:fasesSlug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'), # <--- ¡Asegúrate de que sea fasesSlug aquí!
+    path('fases/<str:collection_id>/<str:referencia_id>/<str:fasesSlug>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
     
 
     #path('referencias1/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),
