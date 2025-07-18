@@ -97,7 +97,7 @@ class ReferenciasAnioAPIView(APIView):
 
 
 
-class FaseDetalleAPIView(APIView):
+class FasesDeReferenciaAPIView(APIView):
     def get(self, request, collection_id, referencia_id, fasesSlug):
         logger.info(f"Django [FaseDetalleAPIView]: Solicitud GET para Fase: {fasesSlug}, Referencia: {referencia_id}, Colección: {collection_id}")
 
@@ -225,19 +225,26 @@ class ModeloDetalleAPIView(APIView):
        
 
 
-#NUEVA APIView para obtener el detalle del modelo
-# class ModeloDetalleAPIView(APIView):
-#     def get(self, request, referencia_id):
-#         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}")
-#         print(f"Django: [ModeloDetalleAPIView] Recibida solicitud para referencia_id: {referencia_id}") # Log en la terminal de Django
-#         try:
-#             combined_data = getModeloDetalle(request, referencia_id)
-#             return Response(combined_data, status=status.HTTP_200_OK)
-#         except Exception as e:
-#             logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
-#             return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# apps/costeo_app/views.py (Fragmento relevante)
 
-# NUEVA APIView para la búsqueda de PT Code
+# ...
+class FaseDetalleAPIView(APIView):
+    def get(self, request, collection_id, referencia_id, fasesSlug):
+        # ...
+        if fasesSlug == 'md-creacion-ficha':
+            telas_data = telasPorReferencia(request, referencia_id, collection_id)
+            insumos_data = insumosPorReferencia(request, referencia_id, collection_id)
+
+            data_for_phase = {
+                "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
+                "telas": telas_data,     # <--- Asegúrate que esto es un array de objetos
+                "insumos": insumos_data, # <--- Asegúrate que esto es un array de objetos
+            }
+        # ...
+        return Response(data_for_phase, status=status.HTTP_200_OK)
+
+
+
 class PTSearchAPIView(APIView):
     def get(self, request):
         pt_code = request.GET.get('ptCode', '').strip() # Obtiene el ptCode de los query parameters

@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 
 # Importa solo los ViewSets si los registras aquí
 #from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView #ReferenciasPorAnioListView , lista_coleccion, ProductoListCreateAPIView
-from .views import AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FaseDetalleAPIView
+from .views import AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FasesDeReferenciaAPIView, FaseDetalleAPIView
 
 # router = DefaultRouter()
 # router.register(r'tecnicos', TecnicoViewSet)
@@ -25,8 +25,8 @@ urlpatterns = [
     path('colecciones/<str:coleccion>/anios/', AnioColeccionAPIView.as_view(), name='api_anio_coleccion'),
     path('referencias-por-anio/<str:collection_id>/', ReferenciasAnioAPIView.as_view(), name='referencias-por-anio-list'),
     path('detalle-referencia/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
-    #path('fases/<str:fase_slug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
-    path('fases/<str:collection_id>/<str:referencia_id>/<str:fasesSlug>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
+    path('fases/<str:collection_id>/<str:referencia_id>/<str:fasesSlug>/', FasesDeReferenciaAPIView.as_view(), name='api_fase_detalle'),
+    path('fases/<str:fase_slug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
     
 
     #path('referencias1/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),
