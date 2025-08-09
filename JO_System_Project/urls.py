@@ -1,7 +1,7 @@
 # JO_System_Project/urls.py
 from django.contrib import admin
 from django.urls import path, include
-from costeo_app import views # No es estrictamente necesario importar 'views' aquí si solo usas clases APIView
+from costeo_app import views 
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -11,8 +11,6 @@ from costeo_app.views import (
     TestDataAPIView,   
     PTSearchAPIView,    
     ModeloDetalleAPIView,
-    # Asegúrate de importar ProductoListCreateAPIView y lista_coleccion si son APIViews
-    #ProductoListCreateAPIView, # Si es una APIView que quieres en la ruta principal
     lista_coleccion, # Si es una función/vista de API que quieres en la ruta principal
 )
 
@@ -23,12 +21,6 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-#Si usas DefaultRouter para ViewSets, defínelo aquí o en un archivo de urls de API separado
-#from rest_framework.routers import DefaultRouter
-#router = DefaultRouter()
-#router.register(r'tecnicos', TecnicoViewSet) # Asegúrate de importar TecnicoViewSet, etc.
-#router.register(r'telas', TelaViewSet)
-#router.register(r'creativos', CreativoViewSet)
 
 
 
