@@ -14,7 +14,7 @@ from .views import AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPI
 
 
 urlpatterns = [
-    # Rutas de vistas tradicionales (si aún las usas, de lo contrario, elimínalas)
+    # Rutas de vistas tradicionales
     path('index/', views.index, name='index'),
     path('coleccion/', views.collection_list, name='collection'),
     path('create/', views.create_reference, name='create_reference'),
