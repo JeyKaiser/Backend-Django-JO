@@ -15,6 +15,7 @@ from .HANA.queries import (
     queryTelasPorReferencia,
     queryInsumosPorReferencia,
     querySearchPTCode,    
+    queryGetCollections,
 
     queryGetInfoReferenceSAPitemCode,
     # queryGetInfoStatusPickingBilledByCardNameAndCollection,
@@ -327,4 +328,29 @@ def models(request):                #consulta GET
     console.log(rows)   
     cursor.close()
     return Response(data)
+
+
+class CollectionsAPIView(APIView):
+    def get(self, request):
+        logger.info("Django [CollectionsAPIView]: Solicitud GET recibida para obtener colecciones")
+        try:
+            database = 'SBOJOZF'
+            cursor = conn.cursor()
+            cursor.execute(querySelectDataBase(database))
+            cursor.execute(queryGetCollections())
+            rows = cursor.fetchall()
+            
+            data = []
+            if len(rows) > 0:
+                column_names = [column[0] for column in cursor.description]
+                for row in rows:
+                    item = dict(zip(column_names, row))
+                    data.append(item)
+            
+            logger.info(f"Django [CollectionsAPIView]: {len(data)} colecciones obtenidas")
+            cursor.close()
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Django [CollectionsAPIView]: ERROR al obtener colecciones: {e}", exc_info=True)
+            return Response({'detail': f'Error al obtener colecciones: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

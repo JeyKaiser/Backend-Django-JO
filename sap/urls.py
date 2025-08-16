@@ -10,5 +10,6 @@ from django.conf.urls.static import static
 #coments
 urlpatterns = [
     path('models/', views.models, name='models'),
+    path('collections/', views.CollectionsAPIView.as_view(), name='collections'),
 ]
 

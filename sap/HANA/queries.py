@@ -47,6 +47,22 @@ def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetro
     return query
 
 
+def queryGetCollections():
+    query = """
+        SELECT "U_GSP_SEASON", "Name"
+        FROM SBOJOZF."@GSP_TCCOLLECTION" 
+        WHERE
+            "Name" LIKE '%SPRING SUMMER%' OR  
+            "Name" LIKE '%WINTER SUN%' OR
+            "Name" LIKE '%RESORT%' OR
+            "Name" LIKE '%SUMMER VACATION%' OR
+            "Name" LIKE '%PREFALL%' OR
+            "Name" LIKE '%FALL WINTER%'
+        ORDER BY "U_GSP_SEASON" DESC;
+    """
+    return query
+
+
 def queryInsumosPorReferencia(ptCode, collection):
     print(f"Referencia: {ptCode}, Colección: {collection}")
     query = f"""
