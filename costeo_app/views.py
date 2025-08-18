@@ -23,12 +23,196 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ColeccionesAPIView(APIView):
+    def get(self, request):
+        print("Django [ColeccionesAPIView]: Solicitud GET recibida para obtener todas las colecciones")
+        
+        # Collections data with their years and metadata
+        colecciones = [
+            # Winter Sun collections
+            {
+                'id': '063',
+                'label': 'Winter Sun 2024',
+                'img': '/img/1.WINTER_SUN/Winter Sun 2024.png',
+                'bg': '#feea4d',
+                'status': 'active',
+                'season': 'Winter Sun',
+                'year': '2024',
+                'lastUpdated': '2024-01-15'
+            },
+            {
+                'id': '085',
+                'label': 'Winter Sun 2025',
+                'img': '/img/1.WINTER_SUN/Winter Sun 2025.png',
+                'bg': '#feea4d',
+                'status': 'active',
+                'season': 'Winter Sun',
+                'year': '2025',
+                'lastUpdated': '2024-06-20'
+            },
+            {
+                'id': '105',
+                'label': 'Winter Sun 2026',
+                'img': '/img/1.WINTER_SUN/Winter Sun 2026.png',
+                'bg': '#feea4d',
+                'status': 'planning',
+                'season': 'Winter Sun',
+                'year': '2026',
+                'lastUpdated': '2024-08-10'
+            },
+            
+            # Resort RTW collections
+            {
+                'id': '065',
+                'label': 'Resort RTW 2024',
+                'img': '/img/2.RESORT_RTW/Resort RTW 2024.png',
+                'bg': '#70a7ff',
+                'status': 'active',
+                'season': 'Resort RTW',
+                'year': '2024',
+                'lastUpdated': '2024-02-10'
+            },
+            {
+                'id': '084',
+                'label': 'Resort RTW 2025',
+                'img': '/img/2.RESORT_RTW/Resort RTW 2025.png',
+                'bg': '#70a7ff',
+                'status': 'active',
+                'season': 'Resort RTW',
+                'year': '2025',
+                'lastUpdated': '2024-07-15'
+            },
+            {
+                'id': '106',
+                'label': 'Resort RTW 2026',
+                'img': '/img/2.RESORT_RTW/Resort RTW 2026.png',
+                'bg': '#70a7ff',
+                'status': 'planning',
+                'season': 'Resort RTW',
+                'year': '2026',
+                'lastUpdated': '2024-08-12'
+            },
+            
+            # Spring Summer collections
+            {
+                'id': '067',
+                'label': 'Spring Summer 2024',
+                'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png',
+                'bg': '#81c963',
+                'status': 'active',
+                'season': 'Spring Summer',
+                'year': '2024',
+                'lastUpdated': '2024-03-05'
+            },
+            {
+                'id': '088',
+                'label': 'Spring Summer 2025',
+                'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png',
+                'bg': '#81c963',
+                'status': 'active',
+                'season': 'Spring Summer',
+                'year': '2025',
+                'lastUpdated': '2024-08-01'
+            },
+            {
+                'id': '110',
+                'label': 'Spring Summer 2026',
+                'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png',
+                'bg': '#81c963',
+                'status': 'planning',
+                'season': 'Spring Summer',
+                'year': '2026',
+                'lastUpdated': '2024-08-15'
+            },
+            
+            # Summer Vacation collections
+            {
+                'id': '070',
+                'label': 'Summer Vacation 2024',
+                'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png',
+                'bg': '#ff935f',
+                'status': 'active',
+                'season': 'Summer Vacation',
+                'year': '2024',
+                'lastUpdated': '2024-04-20'
+            },
+            {
+                'id': '094',
+                'label': 'Summer Vacation 2025',
+                'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png',
+                'bg': '#ff935f',
+                'status': 'active',
+                'season': 'Summer Vacation',
+                'year': '2025',
+                'lastUpdated': '2024-08-05'
+            },
+            
+            # Pre Fall collections
+            {
+                'id': '071',
+                'label': 'Pre Fall RTW 2024',
+                'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png',
+                'bg': '#c6b9b1',
+                'status': 'active',
+                'season': 'Pre Fall RTW',
+                'year': '2024',
+                'lastUpdated': '2024-05-10'
+            },
+            {
+                'id': '096',
+                'label': 'Pre Fall RTW 2025',
+                'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png',
+                'bg': '#c6b9b1',
+                'status': 'active',
+                'season': 'Pre Fall RTW',
+                'year': '2025',
+                'lastUpdated': '2024-08-08'
+            },
+            
+            # Fall Winter collections
+            {
+                'id': '075',
+                'label': 'Fall Winter 2024',
+                'img': '/img/6.FALL_WINTER/Fall Winter 2024.png',
+                'bg': '#b03c5c',
+                'status': 'active',
+                'season': 'Fall Winter',
+                'year': '2024',
+                'lastUpdated': '2024-06-01'
+            },
+            {
+                'id': '102',
+                'label': 'Fall Winter 2025',
+                'img': '/img/6.FALL_WINTER/Fall Winter 2025.png',
+                'bg': '#b03c5c',
+                'status': 'active',
+                'season': 'Fall Winter',
+                'year': '2025',
+                'lastUpdated': '2024-08-18'
+            }
+        ]
+        
+        print(f"Django [ColeccionesAPIView]: Enviando {len(colecciones)} colecciones")
+        return Response(colecciones, status=status.HTTP_200_OK)
+
+
 class AnioColeccionAPIView(APIView):
-    def get(self, request, coleccion): # 'coleccion' será el slug de Next.js (ej. "winter-sun")
-        print(f"Django [AnioColeccionAPIView]: Slug recibido: '{coleccion}'")
-        nombre_legible = {
+    def get(self, request, coleccion): # 'coleccion' can be either slug or numeric ID
+        print(f"Django [AnioColeccionAPIView]: Coleccion ID/slug recibido: '{coleccion}'")
+        
+        # Mapping from numeric IDs to slugs and vice versa
+        id_to_slug = {
+            '063': 'winter-sun', '085': 'winter-sun', '105': 'winter-sun',
+            '065': 'resort-rtw', '084': 'resort-rtw', '106': 'resort-rtw',
+            '067': 'spring-summer', '088': 'spring-summer', '110': 'spring-summer',
+            '070': 'summer-vacation', '094': 'summer-vacation',
+            '071': 'pre-fall', '096': 'pre-fall',
+            '075': 'fall-winter', '102': 'fall-winter',
+        }
+        
+        slug_to_name = {
             'winter-sun': 'Winter Sun',
-            'resort-rtw': 'Resort RTW',
+            'resort-rtw': 'Resort RTW', 
             'spring-summer': 'Spring Summer',
             'summer-vacation': 'Summer Vacation',
             'pre-fall': 'Pre Fall RTW',
@@ -64,18 +248,31 @@ class AnioColeccionAPIView(APIView):
                 {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
             ],
         }
-        # Busca la colección directamente con el slug recibido
-        cards = coleccion_data.get(coleccion, [])
+        
+        # Determine if input is numeric ID or slug, then get the appropriate slug
+        if coleccion.isdigit() or coleccion in id_to_slug:
+            # Input is a numeric ID, convert to slug
+            slug = id_to_slug.get(coleccion)
+            if not slug:
+                print(f"Django [AnioColeccionAPIView]: ERROR: Numeric ID '{coleccion}' no encontrado.")
+                return Response({'detail': f'Collection ID "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            # Input is already a slug
+            slug = coleccion
+            
+        # Get data using the slug
+        cards = coleccion_data.get(slug, [])
+        collection_name = slug_to_name.get(slug, slug)
 
         if cards:
-            print(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' encontrada. Enviando {len(cards)} tarjetas.")
+            print(f"Django [AnioColeccionAPIView]: Colección '{slug}' encontrada. Enviando {len(cards)} tarjetas.")
             return Response({
-                'nombre_coleccion': nombre_legible.get(coleccion, coleccion),
+                'nombre_coleccion': collection_name,
                 'anios': cards
             }, status=status.HTTP_200_OK)
         else:
             print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
-            return Response({'detail': f'Colección "{coleccion}" no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': f'Collection "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
 

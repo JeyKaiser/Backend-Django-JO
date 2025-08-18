@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 
 # Importa TODAS tus clases de APIView directamente aquí
 from costeo_app.views import (
+    ColeccionesAPIView,
     AnioColeccionAPIView,
     TestDataAPIView,   
     PTSearchAPIView,    
@@ -40,6 +41,7 @@ urlpatterns = [
     # APIs de búsqueda y productos
     path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'),
     #path('api/productos/', ProductoListCreateAPIView.as_view(), name='api_producto_list_create'),
+    path('api/colecciones/', ColeccionesAPIView.as_view(), name='api_colecciones'),
     path('api/colecciones-list/', lista_coleccion, name='api_coleccion_list'), # Renombrado para evitar conflicto con /colecciones/<str:coleccion>/anios/
 
     # API de Prueba (la que ya funciona)

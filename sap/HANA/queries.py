@@ -49,7 +49,7 @@ def queryTelasPorReferencia(ptCode, collection): # Ahora acepta ambos parámetro
 
 def queryGetCollections():
     query = """
-        SELECT "U_GSP_SEASON", "Name"
+        SELECT "Code", "U_GSP_SEASON", "Name"
         FROM SBOJOZF."@GSP_TCCOLLECTION" 
         WHERE
             "Name" LIKE '%SPRING SUMMER%' OR  

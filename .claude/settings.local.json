@@ -4,7 +4,8 @@
       "Bash(mkdir:*)",
       "Bash(python -m pip list:*)",
       "Bash(find:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

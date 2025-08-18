@@ -332,24 +332,36 @@ def models(request):                #consulta GET
 
 class CollectionsAPIView(APIView):
     def get(self, request):
-        logger.info("Django [CollectionsAPIView]: Solicitud GET recibida para obtener colecciones")
+        logger.info("Django [CollectionsAPIView]: Solicitud GET recibida para obtener colecciones únicas")
         try:
             database = 'SBOJOZF'
             cursor = conn.cursor()
             cursor.execute(querySelectDataBase(database))
+            
+            # Get unique collections only (not references)
             cursor.execute(queryGetCollections())
-            rows = cursor.fetchall()
+            collection_rows = cursor.fetchall()
             
-            data = []
-            if len(rows) > 0:
+            collections_list = []
+            
+            if len(collection_rows) > 0:
                 column_names = [column[0] for column in cursor.description]
-                for row in rows:
-                    item = dict(zip(column_names, row))
-                    data.append(item)
-            
-            logger.info(f"Django [CollectionsAPIView]: {len(data)} colecciones obtenidas")
+                
+                for collection_row in collection_rows:
+                    collection_item = dict(zip(column_names, collection_row))
+                    
+                    # Create collection object with required fields
+                    collection = {
+                        'U_GSP_SEASON': collection_item.get('U_GSP_SEASON'),
+                        'Name': collection_item.get('Name')
+                    }
+                    collections_list.append(collection)
+            else:
+                logger.warning("Django [CollectionsAPIView]: No collections found")
+                
+            logger.info(f"Django [CollectionsAPIView]: {len(collections_list)} colecciones únicas obtenidas")
             cursor.close()
-            return Response(data, status=status.HTTP_200_OK)
+            return Response(collections_list, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Django [CollectionsAPIView]: ERROR al obtener colecciones: {e}", exc_info=True)
             return Response({'detail': f'Error al obtener colecciones: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
