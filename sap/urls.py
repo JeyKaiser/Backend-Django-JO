@@ -11,5 +11,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('models/', views.models, name='models'),
     path('collections/', views.CollectionsAPIView.as_view(), name='collections'),
+    path('', views.ConsumosAPIView.as_view(), name='consumos'),  # Endpoint directo para /api/consumos/
 ]
 

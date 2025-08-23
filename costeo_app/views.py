@@ -277,8 +277,8 @@ class AnioColeccionAPIView(APIView):
 
 
 class ReferenciasAnioAPIView(APIView):
-    print("Django: [ReferenciasAPIView] Inicializando la vista para obtener referencias por año.")
     def get(self, request, collection_id):
+        logger.info("Django: [ReferenciasAPIView] Inicializando la vista para obtener referencias por año.")
         logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
         try:
             # Llama a la función referenciasPorAno, que ahora devuelve una lista directamente

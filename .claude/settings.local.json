@@ -5,9 +5,18 @@
       "Bash(python -m pip list:*)",
       "Bash(find:*)",
       "Bash(python:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pip install:*)",
+      "Bash(pip search:*)"
     ],
     "deny": [],
     "ask": []
+  },
+  "mcpServers": {
+    "google-drive": {
+      "command": "node",
+      "args": ["dist/google-drive-mcp-server.js"],
+      "cwd": "c:/Users/jchacon/Documents/JEFERSON STUDY/Plataforma Control de Diseño/Backend"
+    }
   }
 }

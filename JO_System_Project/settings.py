@@ -46,15 +46,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'JO_System_Project.urls'
@@ -77,6 +76,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 
+# SAP HANA Configuration - Usaremos conexión directa con hdbcli
+HANA_CONFIG = {
+    'address': env('HANA_HOST'),
+    'port': env('HANA_PORT'),
+    'user': env('HANA_USER'),
+    'password': env('HANA_PASSWORD'),
+    'database': env('HANA_DATABASE', default='DISENO'),
+    'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
+    'encrypt': env.bool('HANA_ENCRYPT', default=True),
+    'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
+}
+
+# Mantener configuración MySQL para casos de compatibilidad
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -90,8 +102,9 @@ DATABASES = {
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
-        'CONN_MAX_AGE': 300,  # Number of seconds database connections should persist
-    }, }
+        'CONN_MAX_AGE': 300,
+    }
+}
 
 
 # Password validation
@@ -151,7 +164,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # Permite acceso a APIs por defecto. Se puede restringir por vista.
         'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
+        #'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
@@ -192,8 +205,9 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # frontend local
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
-]
-CORS_ALLOW_CREDENTIALS = True
+])
+CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=True)
+CORS_ALLOW_ALL_ORIGINS = DEBUG
