@@ -241,3 +241,5 @@ cython_debug/
 # 3D Images
 *.3dm
 *.max
+
+credentials.json

@@ -1,3 +1,16 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "hana-mcp-server": {
+      "command": "ts-node",
+      "args": ["hana-mcp-server.ts"],
+      "env": {
+        "HANA_HOST": "10.238.117.7",
+        "HANA_PORT": "30015",
+        "HANA_USER": "DISENO",
+        "HANA_PASSWORD": "Diseno2028#",
+        "HANA_DATABASE": "DISENO",
+        "HANA_SCHEMA": "GARMENT_PRODUCTION_CONTROL"
+      }
+    }
+  }
 }

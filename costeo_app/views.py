@@ -310,8 +310,8 @@ class FasesDeReferenciaAPIView(APIView):
                 logger.info(f"Cargando datos para la fase 'MD Creacion Ficha' de la referencia {referencia_id} (Colección: {collection_id})")
                 
                 # *** LLAMAR A LAS FUNCIONES PASANDO collection_id directamente ***
-                telas_data = telasPorReferencia(request, referencia_id, collection_id)     # <--- Pasa collection_id
-                insumos_data = insumosPorReferencia(request, referencia_id, collection_id) # <--- Pasa collection_id
+                telas_data = telasPorReferencia(referencia_id, collection_id)     # <--- Pasa collection_id
+                insumos_data = insumosPorReferencia(referencia_id, collection_id) # <--- Pasa collection_id
 
                 data_for_phase = {
                     "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
@@ -429,8 +429,8 @@ class FaseDetalleAPIView(APIView):
     def get(self, request, collection_id, referencia_id, fasesSlug):
         # ...
         if fasesSlug == 'md-creacion-ficha':
-            telas_data = telasPorReferencia(request, referencia_id, collection_id)
-            insumos_data = insumosPorReferencia(request, referencia_id, collection_id)
+            telas_data = telasPorReferencia(referencia_id, collection_id)
+            insumos_data = insumosPorReferencia(referencia_id, collection_id)
 
             data_for_phase = {
                 "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",

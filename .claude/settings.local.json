@@ -7,16 +7,17 @@
       "Bash(python:*)",
       "Bash(curl:*)",
       "Bash(pip install:*)",
-      "Bash(pip search:*)"
+      "Bash(pip search:*)",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx:*)",
+      "Bash(echo $APPDATA)",
+      "Read(/C:\\Users\\jchacon\\AppData\\Roaming\\Claude/**)",
+      "Read(/C:\\Users\\jchacon\\AppData\\Roaming\\Claude/**)"
     ],
     "deny": [],
     "ask": []
   },
-  "mcpServers": {
-    "google-drive": {
-      "command": "node",
-      "args": ["dist/google-drive-mcp-server.js"],
-      "cwd": "c:/Users/jchacon/Documents/JEFERSON STUDY/Plataforma Control de Diseño/Backend"
-    }
-  }
+  "mcpServers": {}
 }

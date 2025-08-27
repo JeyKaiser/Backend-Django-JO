@@ -15,15 +15,32 @@ def querySelectDataBase():
     # Por lo tanto, se sigue construyendo dinámicamente en la vista.
     return 'SET SCHEMA "{}";'
 
+# def queryReferenciasPorAnio():
+#     query = """
+#         SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"  
+#         FROM \"@GSP_TCMODEL\" T0
+#         WHERE U_GSP_COLLECTION = ?
+#         AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT')
+#         ORDER BY T0.U_GSP_REFERENCE ASC;
+#     """
+#     return query
+
 def queryReferenciasPorAnio():
     query = """
-        SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"  
-        FROM \"@GSP_TCMODEL\" T0
-        WHERE U_GSP_COLLECTION = ?
-        AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT')
-        ORDER BY T0.U_GSP_REFERENCE ASC;
+        SELECT  
+        t1."U_GSP_REFERENCE", 
+        t1."U_GSP_Picture",
+        t1."U_GSP_Desc", 
+        t2."Name"
+        FROM "@GSP_TCMODEL" T1
+        INNER JOIN "@GSP_TCSCHEMA" t2
+            ON t1."U_GSP_Schema" = t2."Code"
+        WHERE t1.U_GSP_COLLECTION = ?
+        AND LEFT(t1.U_GSP_REFERENCE, 2) IN ('PT')
+        ORDER BY t1.U_GSP_REFERENCE ASC;
     """
     return query
+
 
 def queryTelasPorReferencia():
     query = """
@@ -97,8 +114,8 @@ def queryGetCollectionName():
     return query
 
 def queryConsumosPorReferencia():
-    query = '''
-        SELECT
+    query = ''' 
+        SELECT 
         T3."Name" AS "COLECCION",
         T1."U_GSP_Desc" AS "NOMBRE_REF",
         T2."U_GSP_SchLinName" AS "USO_EN_PRENDA",
@@ -107,7 +124,8 @@ def queryConsumosPorReferencia():
         T2."U_GSP_QuantMsr" AS "CONSUMO",
         T1."U_GSP_GroupSizeCode" AS "GRUPO_TALLAS",
         T4."Name" AS "LINEA",
-        T2."U_GSP_SchName" AS "tipo"
+        T2."U_GSP_SchName" AS "TIPO" ,
+        T5."Name" AS "ESTADO"
         FROM "@GSP_TCMODEL" T1
         INNER JOIN "@GSP_TCMODELMAT" T2
             ON T1."Name" = T2."U_GSP_ModelCode"
@@ -115,8 +133,9 @@ def queryConsumosPorReferencia():
             ON T1."U_GSP_COLLECTION" = T3."U_GSP_SEASON"
         INNER JOIN "@GSP_TCMATERIAL" T4
             ON T1."U_GSP_MATERIAL" = T4."Code"
-        WHERE T1."U_GSP_REFERENCE" = ?
-        AND T2."U_GSP_SchName" = 'TELAS'
+        INNER JOIN "@GSP_TCSCHEMA" T5
+            ON T1."U_GSP_Schema" = T5."Code"
+        WHERE T1."U_GSP_REFERENCE" = ?        
         ORDER BY T2."U_GSP_SchName" DESC;
     '''
     return query
