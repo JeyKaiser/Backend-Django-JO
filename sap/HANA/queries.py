@@ -1,4 +1,3 @@
-
 import logging
 from rich.console import Console
 
@@ -10,23 +9,23 @@ logger = logging.getLogger(__name__)
 # --- Consultas Refactorizadas para Prevenir Inyección SQL ---
 # Las funciones ya no aceptan argumentos. Los parámetros se pasarán de forma segura en `cursor.execute()`.
 
+def query_get_parametros():
+    """
+    Consulta para obtener todos los registros de la vista de parámetros.
+    """
+    query = '''
+        SELECT * FROM "GARMENT_PRODUCTION_CONTROL"."PARAMETROS_VIEW" ORDER BY "CODIGO";
+    '''
+    return query
+
 def querySelectDataBase():
     # NOTA: El nombre de la base de datos se considera una configuración segura y no un parámetro de usuario.
     # Por lo tanto, se sigue construyendo dinámicamente en la vista.
     return 'SET SCHEMA "{}";'
 
-# def queryReferenciasPorAnio():
-#     query = """
-#         SELECT  "U_GSP_REFERENCE", "U_GSP_Picture","U_GSP_Desc"  
-#         FROM \"@GSP_TCMODEL\" T0
-#         WHERE U_GSP_COLLECTION = ?
-#         AND LEFT(T0.U_GSP_REFERENCE, 2) IN ('PT')
-#         ORDER BY T0.U_GSP_REFERENCE ASC;
-#     """
-#     return query
 
 def queryReferenciasPorAnio():
-    query = """
+    query = '''
         SELECT  
         t1."U_GSP_REFERENCE", 
         t1."U_GSP_Picture",
@@ -38,12 +37,12 @@ def queryReferenciasPorAnio():
         WHERE t1.U_GSP_COLLECTION = ?
         AND LEFT(t1.U_GSP_REFERENCE, 2) IN ('PT')
         ORDER BY t1.U_GSP_REFERENCE ASC;
-    """
+    '''
     return query
 
 
 def queryTelasPorReferencia():
-    query = """
+    query = '''
         SELECT
         T1."U_GSP_REFERENCE",
         T2."U_GSP_SchLinName",
@@ -58,11 +57,11 @@ def queryTelasPorReferencia():
         WHERE T1."U_GSP_REFERENCE" = ?
             AND T1."U_GSP_COLLECTION" = ?
             AND LEFT (T2."U_GSP_ItemCode", 3) IN ('TEN','TE0')
-        ORDER BY "U_GSP_SchLinName" DESC;"""
+        ORDER BY "U_GSP_SchLinName" DESC;'''
     return query
 
 def queryGetCollections():
-    query = """
+    query = '''
         SELECT "Code", "U_GSP_SEASON", "Name"
         FROM SBOJOZF."@GSP_TCCOLLECTION" 
         WHERE
@@ -73,11 +72,11 @@ def queryGetCollections():
             "Name" LIKE '%PREFALL%' OR
             "Name" LIKE '%FALL WINTER%'
         ORDER BY "U_GSP_SEASON" DESC;
-    """
+    '''
     return query
 
 def queryInsumosPorReferencia():
-    query = """
+    query = '''
         SELECT
         T1."U_GSP_REFERENCE",
         T2."U_GSP_SchLinName",
@@ -92,17 +91,17 @@ def queryInsumosPorReferencia():
         WHERE T1."U_GSP_REFERENCE" = ?
             AND T1."U_GSP_COLLECTION" = ?
             AND LEFT (T2."U_GSP_ItemCode", 3) IN ('INN','IN0')
-        ORDER BY "U_GSP_SchLinName" DESC;"""
+        ORDER BY "U_GSP_SchLinName" DESC;'''
     return query
 
 def querySearchPTCode():  
-    query = """
+    query = '''
         SELECT TOP 1
         "U_GSP_REFERENCE",
         "U_GSP_COLLECTION"
         FROM SBOJOZF."@GSP_TCMODEL"
         WHERE UPPER("U_GSP_REFERENCE") = ?
-        ORDER BY "U_GSP_COLLECTION" DESC;"""
+        ORDER BY "U_GSP_COLLECTION" DESC;'''
     return query
 
 def queryGetCollectionName():
@@ -363,7 +362,7 @@ def queryGetListInvoicesOfSaleQuotations():
             INNER JOIN ODLN T6 ON T6."DocEntry" = T2."TrgetEntry"
             INNER JOIN DLN1 T7 on T7."DocEntry" = T6."DocEntry"
             INNER JOIN OINV T8 ON T8."DocEntry" = T7."TrgetEntry"
-        WHERE T0."DocNum" =  ?;
+        WHERE T0."DocNum" =  ?; 
     '''
     return query
 

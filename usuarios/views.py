@@ -1,7 +1,7 @@
 from .forms import CustomUserCreationForm, SigninForm
-from .models import CustomUser, TUsuarios
+from .models import CustomUser
 from .hana_service import UsuariosHanaService
-from rest_framework import generics, viewsets, status
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
