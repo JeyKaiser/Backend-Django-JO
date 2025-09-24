@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import GenericTableView, ParametrosAPIView, CollectionsAPIView
+from .views import GenericTableView, ParametrosAPIView, CollectionsAPIView, ParametrosViewAPIView, PrendasAPIView, ImageUploadView, ImageServeView, ImageListView, ConsumoTextilAPIView
 
 # Las URLs de la app 'sap' se incluirán bajo el prefijo /api/sap/
 # definido en el urls.py principal del proyecto.
@@ -8,6 +8,7 @@ from .views import GenericTableView, ParametrosAPIView, CollectionsAPIView
 urlpatterns = [
     # Endpoint para el recurso de Parámetros (GET y POST)
     path('parametros/', ParametrosAPIView.as_view(), name='parametros-list-create'),
+    path('parametros-view/', ParametrosViewAPIView.as_view(), name='parametros-view-list'),
 
     # Endpoints para las tablas maestras (lookup tables)
     path('base_textil/', GenericTableView.as_view(), {'table_name': 'BASE_TEXTIL'}, name='base-textil-list'),
@@ -23,4 +24,13 @@ urlpatterns = [
     # --- Rutas Heredadas (si es necesario mantenerlas) ---
     # Se mantiene solo lo que aún sea relevante y no cause conflictos.
     path('collections/', CollectionsAPIView.as_view(), name='sap-collections-list'),
+    path('prendas/', PrendasAPIView.as_view(), name='prendas-list'),
+
+    # --- Rutas para Servidor de Imágenes ---
+    path('images/upload/', ImageUploadView.as_view(), name='image-upload'),
+    path('images/<int:image_id>/', ImageServeView.as_view(), name='image-serve'),
+    path('images/', ImageListView.as_view(), name='image-list'),
+
+    # --- Rutas para Consumo Textil ---
+    path('consumo-textil/', ConsumoTextilAPIView.as_view(), name='consumo-textil-list'),
 ]

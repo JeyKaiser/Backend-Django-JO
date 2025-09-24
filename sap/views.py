@@ -6,6 +6,8 @@ from rest_framework import status
 from .HANA.conf import get_hana_connection
 from .HANA import queries as hana_queries # Mantener para la lógica existente
 from .services import parametros as parametros_service # Importar el nuevo servicio
+from .models import Image
+from django.http import Http404
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +109,216 @@ class CollectionsAPIView(APIView):
         if error:
             return Response({"detail": f"Error al obtener colecciones: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+        return Response(data, status=status.HTTP_200_OK)
+
+class ParametrosViewAPIView(APIView):
+    def get(self, request):
+        logger.info("[ParametrosViewAPIView] GET para obtener parametros view")
+        query = hana_queries.query_get_parametros_view()
+        data, error = execute_hana_query(query, schema='GARMENT_PRODUCTION_CONTROL')
+
+        if error:
+            return Response({"detail": f"Error al obtener parametros view: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response(data, status=status.HTTP_200_OK)
+
+class PrendasAPIView(APIView):
+    def get(self, request):
+        logger.info("[PrendasAPIView] GET para obtener prendas")
+        query = 'SELECT * FROM "DIM_PRENDA"'
+        logger.info(f"Executing query: {query} in schema CONSUMO_TEXTIL")
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener prendas: {error}")
+            return Response({"detail": f"Error al obtener prendas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        logger.info(f"Data obtained: {data}")
+        return Response(data, status=status.HTTP_200_OK)
+
+
+# --- Vistas para Servidor de Imágenes ---
+
+class ImageUploadView(APIView):
+    """
+    Vista para subir imágenes.
+    """
+    def post(self, request):
+        logger.info("[ImageUploadView] Solicitud POST para subir imagen")
+        title = request.data.get('title', '')
+        image_file = request.FILES.get('image')
+
+        if not image_file:
+            return Response({"error": "No se proporcionó ninguna imagen"}, status=status.HTTP_400_BAD_REQUEST)
+
+        image = Image.objects.create(title=title, image=image_file)
+        return Response({
+            "id": image.id,
+            "title": image.title,
+            "image_url": image.image.url,
+            "uploaded_at": image.uploaded_at
+        }, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        """
+        Vista para obtener imágenes filtradas por título.
+        """
+        logger.info("[ImageUploadView] Solicitud GET para obtener imágenes filtradas")
+        title_filter = request.query_params.get('title', '')
+
+        if title_filter:
+            images = Image.objects.filter(title__icontains=title_filter).order_by('-uploaded_at')
+        else:
+            images = Image.objects.all().order_by('-uploaded_at')
+
+        data = [{
+            "id": img.id,
+            "title": img.title,
+            "image_url": img.image.url,
+            "uploaded_at": img.uploaded_at
+        } for img in images]
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class ImageServeView(APIView):
+    """
+    Vista para obtener una imagen por ID.
+    """
+    def get(self, request, image_id):
+        logger.info(f"[ImageServeView] Solicitud GET para imagen ID: {image_id}")
+        try:
+            image = Image.objects.get(id=image_id)
+            return Response({
+                "id": image.id,
+                "title": image.title,
+                "image_url": image.image.url,
+                "uploaded_at": image.uploaded_at
+            }, status=status.HTTP_200_OK)
+        except Image.DoesNotExist:
+            raise Http404("Imagen no encontrada")
+
+
+class ImageListView(APIView):
+    """
+    Vista para listar todas las imágenes.
+    """
+    def get(self, request):
+        logger.info("[ImageListView] Solicitud GET para listar imágenes")
+        images = Image.objects.all().order_by('-uploaded_at')
+        data = [{
+            "id": img.id,
+            "title": img.title,
+            "image_url": img.image.url,
+            "uploaded_at": img.uploaded_at
+        } for img in images]
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class ConsumoTextilAPIView(APIView):
+    """
+    Vista para obtener datos de consumo textil filtrados desde V_FACT_CONSUMO_LEGIBLE.
+    """
+    def get(self, request):
+        logger.info("[ConsumoTextilAPIView] Solicitud GET para obtener consumo textil")
+
+        # Obtener parámetros de filtro
+        tipo_prenda = request.query_params.get('tipo_prenda')
+        cantidad_telas = request.query_params.get('cantidad_telas')
+        uso_tela = request.query_params.get('uso_tela')
+        base_textil = request.query_params.get('base_textil')
+        caracteristica_color = request.query_params.get('caracteristica_color')
+        ancho_util = request.query_params.get('ancho_util')
+
+        # Si no hay tipo_prenda, devolver las cantidades de telas individuales por prenda
+        if not tipo_prenda:
+            query = '''
+                SELECT
+                    "tipo_prenda",
+                    "cantidad_telas" as "conteo_telas_unicas"
+                FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
+                GROUP BY "tipo_prenda", "cantidad_telas"
+                ORDER BY "tipo_prenda", "cantidad_telas"
+            '''
+
+            logger.info(f"Executing count query: {query}")
+
+            data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+            if error:
+                logger.error(f"Error al obtener conteo de telas: {error}")
+                return Response({"detail": f"Error al obtener conteo de telas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            logger.info(f"Conteo de telas obtenido: {len(data)} registros")
+            return Response(data, status=status.HTTP_200_OK)
+
+        # Si hay tipo_prenda pero no cantidad_telas, devolver solo los conteos para ese tipo específico
+        if tipo_prenda and not cantidad_telas:
+            query = '''
+                SELECT DISTINCT
+                    "cantidad_telas" as "conteo_telas_unicas"
+                FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
+                WHERE "tipo_prenda" = ?
+                ORDER BY "cantidad_telas"
+            '''
+
+            logger.info(f"Executing filtered count query for tipo_prenda: {tipo_prenda}")
+
+            data, error = execute_hana_query(query, params=[tipo_prenda], schema='CONSUMO_TEXTIL')
+
+            if error:
+                logger.error(f"Error al obtener conteo de telas filtrado: {error}")
+                return Response({"detail": f"Error al obtener conteo de telas filtrado: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            logger.info(f"Conteo de telas filtrado obtenido: {len(data)} registros para {tipo_prenda}")
+            return Response(data, status=status.HTTP_200_OK)
+
+        # Si hay tipo_prenda, devolver datos filtrados con consulta específica
+        query = '''
+            SELECT
+                "uso_tela" AS "uso_en_prenda",
+                "base_textil" AS "base_textil",
+                "caracteristica_color" AS "color",
+                "ancho_util_metros" AS "ancho_tela",
+                "propiedades_tela" AS "propiedades",
+                "consumo_mtr" AS "consumo"
+            FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
+            WHERE "tipo_prenda" = ?
+        '''
+
+        params = [tipo_prenda]
+
+        # Agregar filtros adicionales condicionalmente
+        if cantidad_telas:
+            query += ' AND "cantidad_telas" = ?'
+            params.append(int(cantidad_telas))
+
+        if uso_tela:
+            query += ' AND "uso_tela" = ?'
+            params.append(uso_tela)
+
+        if base_textil:
+            query += ' AND "base_textil" = ?'
+            params.append(base_textil)
+
+        if caracteristica_color:
+            query += ' AND "caracteristica_color" = ?'
+            params.append(caracteristica_color)
+
+        if ancho_util:
+            query += ' AND "ancho_util_metros" = ?'
+            params.append(float(ancho_util))
+
+        query += ' ORDER BY "uso_tela"'
+
+        logger.info(f"Executing query: {query} with params: {params}")
+
+        data, error = execute_hana_query(query, params=params, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener consumo textil: {error}")
+            return Response({"detail": f"Error al obtener consumo textil: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        logger.info(f"Datos obtenidos: {len(data)} registros")
         return Response(data, status=status.HTTP_200_OK)
 
 # ... (Otras vistas y lógica heredada se mantienen aquí para no romper la funcionalidad existente)

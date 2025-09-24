@@ -18,6 +18,15 @@ def query_get_parametros():
     '''
     return query
 
+def query_get_parametros_view():
+    """
+    Consulta para obtener todos los registros de la vista de parámetros.
+    """
+    query = '''
+        SELECT * FROM "GARMENT_PRODUCTION_CONTROL"."PARAMETROS_VIEW" ORDER BY "CODIGO";
+    '''
+    return query
+
 def querySelectDataBase():
     # NOTA: El nombre de la base de datos se considera una configuración segura y no un parámetro de usuario.
     # Por lo tanto, se sigue construyendo dinámicamente en la vista.
