@@ -216,10 +216,11 @@ class ImageListView(APIView):
 
 class ConsumoTextilAPIView(APIView):
     """
-    Vista para obtener datos de consumo textil filtrados desde V_FACT_CONSUMO_LEGIBLE.
+    Vista para obtener datos de consumo textil filtrados desde VIEW_FACT_CONSUMO.
     """
     def get(self, request):
         logger.info("[ConsumoTextilAPIView] Solicitud GET para obtener consumo textil")
+        logger.info(f"[ConsumoTextilAPIView] Query params: {dict(request.query_params)}")
 
         # Obtener parámetros de filtro
         tipo_prenda = request.query_params.get('tipo_prenda')
@@ -229,86 +230,79 @@ class ConsumoTextilAPIView(APIView):
         caracteristica_color = request.query_params.get('caracteristica_color')
         ancho_util = request.query_params.get('ancho_util')
 
-        # Si no hay tipo_prenda, devolver las cantidades de telas individuales por prenda
+        logger.info(f"[ConsumoTextilAPIView] tipo_prenda: {tipo_prenda}")
+        logger.info(f"[ConsumoTextilAPIView] cantidad_telas: {cantidad_telas}")
+
+        # ✅ CAMBIO: Si no hay tipo_prenda, devolver tipos de prenda disponibles
         if not tipo_prenda:
-            query = '''
-                SELECT
-                    "tipo_prenda",
-                    "cantidad_telas" as "conteo_telas_unicas"
-                FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
-                GROUP BY "tipo_prenda", "cantidad_telas"
-                ORDER BY "tipo_prenda", "cantidad_telas"
-            '''
-
-            logger.info(f"Executing count query: {query}")
-
+            query = 'SELECT "tipo_prenda_nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"'
+            
+            logger.info(f"Executing prenda query: {query}")
             data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
             if error:
-                logger.error(f"Error al obtener conteo de telas: {error}")
-                return Response({"detail": f"Error al obtener conteo de telas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            logger.info(f"Conteo de telas obtenido: {len(data)} registros")
+                logger.error(f"Error al obtener prendas: {error}")
+                return Response({"detail": f"Error al obtener prendas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            logger.info(f"Prendas obtenidas: {len(data)} registros")
             return Response(data, status=status.HTTP_200_OK)
 
-        # Si hay tipo_prenda pero no cantidad_telas, devolver solo los conteos para ese tipo específico
+        # ✅ CAMBIO: Si hay tipo_prenda pero NO cantidad_telas, devolver cantidades y variantes distintas
         if tipo_prenda and not cantidad_telas:
             query = '''
-                SELECT DISTINCT
-                    "cantidad_telas" as "conteo_telas_unicas"
-                FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
+                SELECT DISTINCT "cantidad_telas", "numero_variante", "descripcion_variante"
+                FROM "CONSUMO_TEXTIL"."VIEW_FACT_CONSUMO"
                 WHERE "tipo_prenda" = ?
-                ORDER BY "cantidad_telas"
+                ORDER BY "cantidad_telas" ASC
             '''
 
-            logger.info(f"Executing filtered count query for tipo_prenda: {tipo_prenda}")
+            logger.info(f"Executing cantidades y variantes query for tipo_prenda: {tipo_prenda}")
 
             data, error = execute_hana_query(query, params=[tipo_prenda], schema='CONSUMO_TEXTIL')
 
             if error:
-                logger.error(f"Error al obtener conteo de telas filtrado: {error}")
-                return Response({"detail": f"Error al obtener conteo de telas filtrado: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                logger.error(f"Error al obtener cantidades y variantes: {error}")
+                return Response({"detail": f"Error al obtener cantidades y variantes: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            logger.info(f"Conteo de telas filtrado obtenido: {len(data)} registros para {tipo_prenda}")
+            logger.info(f"Cantidades y variantes obtenidas: {len(data)} registros para {tipo_prenda}")
             return Response(data, status=status.HTTP_200_OK)
 
-        # Si hay tipo_prenda, devolver datos filtrados con consulta específica
-        query = '''
-            SELECT
-                "uso_tela" AS "uso_en_prenda",
-                "base_textil" AS "base_textil",
-                "caracteristica_color" AS "color",
-                "ancho_util_metros" AS "ancho_tela",
-                "propiedades_tela" AS "propiedades",
-                "consumo_mtr" AS "consumo"
-            FROM "CONSUMO_TEXTIL"."V_FACT_CONSUMO_LEGIBLE"
-            WHERE "tipo_prenda" = ?
-        '''
+        # ✅ CAMBIO: Si hay tipo_prenda Y cantidad_telas, devolver datos específicos filtrados
+        if tipo_prenda and cantidad_telas:
+            query = '''
+                SELECT "uso_tela", "base_textil", "caracteristica_color", "consumo_mtr", "ancho_util_metros", "tipo_terminacion"
+                FROM "CONSUMO_TEXTIL"."VIEW_FACT_CONSUMO"
+                WHERE "tipo_prenda" = ?
+                AND "cantidad_telas" = ?
+            '''
+            params = [tipo_prenda, cantidad_telas]
 
-        params = [tipo_prenda]
+            # Agregar filtros adicionales condicionalmente
+            if uso_tela:
+                query += f' AND "uso_tela" = \'{uso_tela}\''
 
-        # Agregar filtros adicionales condicionalmente
-        if cantidad_telas:
-            query += ' AND "cantidad_telas" = ?'
-            params.append(int(cantidad_telas))
+            if base_textil:
+                query += f' AND "base_textil" = \'{base_textil}\''
 
-        if uso_tela:
-            query += ' AND "uso_tela" = ?'
-            params.append(uso_tela)
+            if caracteristica_color:
+                query += f' AND "caracteristica_color" = \'{caracteristica_color}\''
 
-        if base_textil:
-            query += ' AND "base_textil" = ?'
-            params.append(base_textil)
+            if ancho_util:
+                query += f' AND "ancho_util_metros" = {ancho_util}'
 
-        if caracteristica_color:
-            query += ' AND "caracteristica_color" = ?'
-            params.append(caracteristica_color)
+            # ✅ CAMBIO: Ordenar por consumo_id como en la consulta original
+            query += ' ORDER BY "consumo_id"'
 
-        if ancho_util:
-            query += ' AND "ancho_util_metros" = ?'
-            params.append(float(ancho_util))
+            logger.info(f"Executing consulta específica for tipo_prenda: {tipo_prenda}, cantidad_telas: {cantidad_telas}")
 
-        query += ' ORDER BY "uso_tela"'
+            data, error = execute_hana_query(query, params=params, schema='CONSUMO_TEXTIL')
+
+            if error:
+                logger.error(f"Error al obtener datos específicos: {error}")
+                return Response({"detail": f"Error al obtener datos específicos: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            logger.info(f"Datos específicos obtenidos: {len(data)} registros para {tipo_prenda} con {cantidad_telas} telas")
+            return Response(data, status=status.HTTP_200_OK)
 
         logger.info(f"Executing query: {query} with params: {params}")
 
