@@ -225,6 +225,7 @@ class ConsumoTextilAPIView(APIView):
         # Obtener parámetros de filtro
         tipo_prenda = request.query_params.get('tipo_prenda')
         cantidad_telas = request.query_params.get('cantidad_telas')
+        numero_variante = request.query_params.get('numero_variante')
         uso_tela = request.query_params.get('uso_tela')
         base_textil = request.query_params.get('base_textil')
         caracteristica_color = request.query_params.get('caracteristica_color')
@@ -232,6 +233,7 @@ class ConsumoTextilAPIView(APIView):
 
         logger.info(f"[ConsumoTextilAPIView] tipo_prenda: {tipo_prenda}")
         logger.info(f"[ConsumoTextilAPIView] cantidad_telas: {cantidad_telas}")
+        logger.info(f"[ConsumoTextilAPIView] numero_variante: {numero_variante}")
 
         # ✅ CAMBIO: Si no hay tipo_prenda, devolver tipos de prenda disponibles
         if not tipo_prenda:
@@ -267,7 +269,45 @@ class ConsumoTextilAPIView(APIView):
             logger.info(f"Cantidades y variantes obtenidas: {len(data)} registros para {tipo_prenda}")
             return Response(data, status=status.HTTP_200_OK)
 
-        # ✅ CAMBIO: Si hay tipo_prenda Y cantidad_telas, devolver datos específicos filtrados
+        # ✅ CAMBIO: Si hay tipo_prenda Y cantidad_telas Y numero_variante, devolver datos específicos filtrados
+        if tipo_prenda and cantidad_telas and numero_variante:
+            query = '''
+                SELECT "uso_tela", "base_textil", "caracteristica_color", "consumo_mtr", "ancho_util_metros", "tipo_terminacion"
+                FROM "CONSUMO_TEXTIL"."VIEW_FACT_CONSUMO"
+                WHERE "tipo_prenda" = ?
+                AND "cantidad_telas" = ?
+                AND "numero_variante" = ?
+            '''
+            params = [tipo_prenda, cantidad_telas, numero_variante]
+
+            # Agregar filtros adicionales condicionalmente
+            if uso_tela:
+                query += f' AND "uso_tela" = \'{uso_tela}\''
+
+            if base_textil:
+                query += f' AND "base_textil" = \'{base_textil}\''
+
+            if caracteristica_color:
+                query += f' AND "caracteristica_color" = \'{caracteristica_color}\''
+
+            if ancho_util:
+                query += f' AND "ancho_util_metros" = {ancho_util}'
+
+            # ✅ CAMBIO: Ordenar por consumo_id como en la consulta original
+            query += ' ORDER BY "consumo_id"'
+
+            logger.info(f"Executing consulta específica for tipo_prenda: {tipo_prenda}, cantidad_telas: {cantidad_telas}, numero_variante: {numero_variante}")
+
+            data, error = execute_hana_query(query, params=params, schema='CONSUMO_TEXTIL')
+
+            if error:
+                logger.error(f"Error al obtener datos específicos: {error}")
+                return Response({"detail": f"Error al obtener datos específicos: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            logger.info(f"Datos específicos obtenidos: {len(data)} registros para {tipo_prenda} con {cantidad_telas} telas y variante {numero_variante}")
+            return Response(data, status=status.HTTP_200_OK)
+
+        # ✅ CAMBIO: Si hay tipo_prenda Y cantidad_telas pero NO numero_variante, devolver datos específicos filtrados (compatibilidad hacia atrás)
         if tipo_prenda and cantidad_telas:
             query = '''
                 SELECT "uso_tela", "base_textil", "caracteristica_color", "consumo_mtr", "ancho_util_metros", "tipo_terminacion"
@@ -293,7 +333,7 @@ class ConsumoTextilAPIView(APIView):
             # ✅ CAMBIO: Ordenar por consumo_id como en la consulta original
             query += ' ORDER BY "consumo_id"'
 
-            logger.info(f"Executing consulta específica for tipo_prenda: {tipo_prenda}, cantidad_telas: {cantidad_telas}")
+            logger.info(f"Executing consulta específica for tipo_prenda: {tipo_prenda}, cantidad_telas: {cantidad_telas} (sin variante)")
 
             data, error = execute_hana_query(query, params=params, schema='CONSUMO_TEXTIL')
 
