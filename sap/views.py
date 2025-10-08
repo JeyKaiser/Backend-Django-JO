@@ -80,11 +80,11 @@ def execute_hana_query(query, params=None, schema='SBOJOZF'):
         conn = get_hana_connection(schema)
         if not conn:
             return None, "Error de conexión a la base de datos."
-        
+
         cursor = conn.cursor()
         cursor.execute(query, params or ())
         rows = cursor.fetchall()
-        
+
         if not rows:
             return [], None
 
@@ -94,6 +94,35 @@ def execute_hana_query(query, params=None, schema='SBOJOZF'):
     except Exception as e:
         logger.error(f"Error ejecutando la consulta en HANA: {e}", exc_info=True)
         return None, str(e)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def execute_hana_insert(query, params=None, schema='SBOJOZF'):
+    """Función auxiliar para ejecutar consultas INSERT de forma segura."""
+    conn = None
+    cursor = None
+    try:
+        conn = get_hana_connection(schema)
+        if not conn:
+            return False, "Error de conexión a la base de datos."
+
+        cursor = conn.cursor()
+        cursor.execute(query, params or ())
+
+        # Para INSERT, verificamos si se afectaron filas
+        if cursor.rowcount > 0:
+            conn.commit()
+            return True, None
+        else:
+            return False, "No se pudo insertar el registro"
+
+    except Exception as e:
+        logger.error(f"Error ejecutando el INSERT en HANA: {e}", exc_info=True)
+        return False, str(e)
     finally:
         if cursor:
             cursor.close()
@@ -125,15 +154,132 @@ class ParametrosViewAPIView(APIView):
 class PrendasAPIView(APIView):
     def get(self, request):
         logger.info("[PrendasAPIView] GET para obtener prendas")
-        query = 'SELECT * FROM "DIM_PRENDA"'
+        query = 'SELECT "prenda_id", "tipo_prenda_nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"'
         logger.info(f"Executing query: {query} in schema CONSUMO_TEXTIL")
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
             logger.error(f"Error al obtener prendas: {error}")
             return Response({"detail": f"Error al obtener prendas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
         logger.info(f"Data obtained: {data}")
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class CantidadTelasAPIView(APIView):
+    def get(self, request):
+        logger.info("[CantidadTelasAPIView] GET para obtener cantidades de telas")
+        query = 'SELECT "cantidad_telas_id", "cantidad_telas_numero" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener cantidades de telas: {error}")
+            return Response({"detail": f"Error al obtener cantidades de telas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class UsoTelaAPIView(APIView):
+    def get(self, request):
+        logger.info("[UsoTelaAPIView] GET para obtener usos de tela")
+        query = 'SELECT "uso_tela_id", "uso_tela_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_USO_TELA"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener usos de tela: {error}")
+            return Response({"detail": f"Error al obtener usos de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class BaseTextilAPIView(APIView):
+    def get(self, request):
+        logger.info("[BaseTextilAPIView] GET para obtener bases textiles")
+        query = 'SELECT "base_textil_id", "base_textil_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener bases textiles: {error}")
+            return Response({"detail": f"Error al obtener bases textiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class CaracteristicaColorAPIView(APIView):
+    def get(self, request):
+        logger.info("[CaracteristicaColorAPIView] GET para obtener características de color")
+        query = 'SELECT "caracteristica_color_id", "caracteristica_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener características de color: {error}")
+            return Response({"detail": f"Error al obtener características de color: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class AnchoUtilAPIView(APIView):
+    def get(self, request):
+        logger.info("[AnchoUtilAPIView] GET para obtener anchos útiles")
+        query = 'SELECT "ancho_util_id", "ancho_util_metros" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener anchos útiles: {error}")
+            return Response({"detail": f"Error al obtener anchos útiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class PropiedadesTelaAPIView(APIView):
+    def get(self, request):
+        logger.info("[PropiedadesTelaAPIView] GET para obtener propiedades de tela")
+        query = 'SELECT "propiedades_tela_id", CONCAT(\'Propiedad \', "propiedades_tela_id") as "nombre" FROM "CONSUMO_TEXTIL"."DIM_PROPIEDADES_TELA"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener propiedades de tela: {error}")
+            return Response({"detail": f"Error al obtener propiedades de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class VarianteAPIView(APIView):
+    def get(self, request):
+        logger.info("[VarianteAPIView] GET para obtener variantes")
+        query = 'SELECT "variante_id", CONCAT(\'Variante \', "numero_variante") as "nombre" FROM "CONSUMO_TEXTIL"."DIM_VARIANTE"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener variantes: {error}")
+            return Response({"detail": f"Error al obtener variantes: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class DescripcionAPIView(APIView):
+    def get(self, request):
+        logger.info("[DescripcionAPIView] GET para obtener descripciones")
+        query = 'SELECT "descripcion_id", "detalle_descripcion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener descripciones: {error}")
+            return Response({"detail": f"Error al obtener descripciones: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class TerminacionAPIView(APIView):
+    def get(self, request):
+        logger.info("[TerminacionAPIView] GET para obtener terminaciones")
+        query = 'SELECT "terminacion_id", CONCAT("categoria_terminacion", \' - \', "tipo_terminacion") as "nombre" FROM "CONSUMO_TEXTIL"."DIM_TERMINACION"'
+        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+        if error:
+            logger.error(f"Error al obtener terminaciones: {error}")
+            return Response({"detail": f"Error al obtener terminaciones: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -221,6 +367,7 @@ class ConsumoTextilAPIView(APIView):
     def get(self, request):
         logger.info("[ConsumoTextilAPIView] Solicitud GET para obtener consumo textil")
         logger.info(f"[ConsumoTextilAPIView] Query params: {dict(request.query_params)}")
+        logger.info(f"[ConsumoTextilAPIView] Query params type: {type(request.query_params)}")
 
         # Obtener parámetros de filtro
         tipo_prenda = request.query_params.get('tipo_prenda')
@@ -231,9 +378,24 @@ class ConsumoTextilAPIView(APIView):
         caracteristica_color = request.query_params.get('caracteristica_color')
         ancho_util = request.query_params.get('ancho_util')
 
-        logger.info(f"[ConsumoTextilAPIView] tipo_prenda: {tipo_prenda}")
-        logger.info(f"[ConsumoTextilAPIView] cantidad_telas: {cantidad_telas}")
-        logger.info(f"[ConsumoTextilAPIView] numero_variante: {numero_variante}")
+        logger.info(f"[ConsumoTextilAPIView] tipo_prenda: '{tipo_prenda}' (type: {type(tipo_prenda)})")
+        logger.info(f"[ConsumoTextilAPIView] cantidad_telas: '{cantidad_telas}' (type: {type(cantidad_telas)})")
+        logger.info(f"[ConsumoTextilAPIView] numero_variante: '{numero_variante}' (type: {type(numero_variante)})")
+
+        # Verificar si tipo_prenda es None o vacío
+        if not tipo_prenda:
+            logger.warning("[ConsumoTextilAPIView] tipo_prenda es None o vacío - devolviendo tipos de prenda disponibles")
+            query = 'SELECT "tipo_prenda_nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"'
+
+            logger.info(f"Executing prenda query: {query}")
+            data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+            if error:
+                logger.error(f"Error al obtener prendas: {error}")
+                return Response({"detail": f"Error al obtener prendas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            logger.info(f"Prendas obtenidas: {len(data)} registros")
+            return Response(data, status=status.HTTP_200_OK)
 
         # ✅ CAMBIO: Si no hay tipo_prenda, devolver tipos de prenda disponibles
         if not tipo_prenda:
@@ -252,10 +414,10 @@ class ConsumoTextilAPIView(APIView):
         # ✅ CAMBIO: Si hay tipo_prenda pero NO cantidad_telas, devolver cantidades y variantes distintas
         if tipo_prenda and not cantidad_telas:
             query = '''
-                SELECT DISTINCT "cantidad_telas", "numero_variante", "descripcion_variante"
+                SELECT DISTINCT "cantidad_telas", "numero_variante", "descripcion_variante","tipo_terminacion"
                 FROM "CONSUMO_TEXTIL"."VIEW_FACT_CONSUMO"
                 WHERE "tipo_prenda" = ?
-                ORDER BY "cantidad_telas" ASC
+                ORDER BY "cantidad_telas", "numero_variante" ASC;
             '''
 
             logger.info(f"Executing cantidades y variantes query for tipo_prenda: {tipo_prenda}")
@@ -354,5 +516,82 @@ class ConsumoTextilAPIView(APIView):
 
         logger.info(f"Datos obtenidos: {len(data)} registros")
         return Response(data, status=status.HTTP_200_OK)
+
+
+class FactConsumoAPIView(APIView):
+    """
+    Vista para crear nuevos registros en FACT_CONSUMO.
+    """
+    def post(self, request):
+        logger.info("[FactConsumoAPIView] Solicitud POST para crear nuevo registro en FACT_CONSUMO")
+        data = request.data
+
+        # Validar campos requeridos
+        required_fields = [
+            'prenda_id', 'cantidad_telas_id', 'uso_tela_id', 'base_textil_id',
+            'caracteristica_color_id', 'ancho_util_id', 'propiedades_tela_id', 'consumo_mtr'
+        ]
+
+        for field in required_fields:
+            if not data.get(field):
+                return Response(
+                    {"error": f"El campo {field} es requerido"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Validar que consumo_mtr sea un número positivo
+        try:
+            consumo_mtr = float(data.get('consumo_mtr', 0))
+            if consumo_mtr <= 0:
+                return Response(
+                    {"error": "El consumo_mtr debe ser un número positivo"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except (ValueError, TypeError):
+            return Response(
+                {"error": "El consumo_mtr debe ser un número válido"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Construir la consulta INSERT
+        query = '''
+            INSERT INTO "CONSUMO_TEXTIL"."FACT_CONSUMO"
+            ("prenda_id", "cantidad_telas_id", "uso_tela_id", "base_textil_id",
+             "caracteristica_color_id", "ancho_util_id", "propiedades_tela_id",
+             "consumo_mtr", "variante_id", "descripcion_id", "terminacion_id")
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        '''
+
+        params = [
+            data.get('prenda_id'),
+            data.get('cantidad_telas_id'),
+            data.get('uso_tela_id'),
+            data.get('base_textil_id'),
+            data.get('caracteristica_color_id'),
+            data.get('ancho_util_id'),
+            data.get('propiedades_tela_id'),
+            consumo_mtr,
+            data.get('variante_id') if data.get('variante_id') else None,
+            data.get('descripcion_id') if data.get('descripcion_id') else None,
+            data.get('terminacion_id') if data.get('terminacion_id') else None,
+        ]
+
+        logger.info(f"Executing INSERT query with params: {params}")
+
+        # Para INSERT, necesitamos una función especial que no espere un result set
+        success, error = execute_hana_insert(query, params=params, schema='CONSUMO_TEXTIL')
+
+        if not success:
+            logger.error(f"Error al insertar registro en FACT_CONSUMO: {error}")
+            return Response(
+                {"error": f"Error al crear el referente: {error}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        logger.info("Registro creado exitosamente en FACT_CONSUMO")
+        return Response(
+            {"success": "Referente creado exitosamente"},
+            status=status.HTTP_201_CREATED
+        )
 
 # ... (Otras vistas y lógica heredada se mantienen aquí para no romper la funcionalidad existente)
