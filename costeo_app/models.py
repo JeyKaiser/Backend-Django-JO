@@ -110,3 +110,114 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
 
+# =====================================================================================
+# MODELOS PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
+# =====================================================================================
+
+class DimPrenda(models.Model):
+    prenda_id = models.BigAutoField(primary_key=True)
+    tipo_prenda_nombre = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_PRENDA"'
+
+class DimCantidadTelas(models.Model):
+    cantidad_telas_id = models.BigAutoField(primary_key=True)
+    cantidad_telas_numero = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
+
+class DimUsoTela(models.Model):
+    uso_tela_id = models.BigAutoField(primary_key=True)
+    uso_tela_nombre = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_USO_TELA"'
+
+class DimBaseTextil(models.Model):
+    base_textil_id = models.BigAutoField(primary_key=True)
+    base_textil_nombre = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
+
+class DimCaracteristicaColor(models.Model):
+    caracteristica_color_id = models.BigAutoField(primary_key=True)
+    caracteristica_nombre = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
+
+class DimAnchoUtil(models.Model):
+    ancho_util_id = models.BigAutoField(primary_key=True)
+    ancho_util_metros = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
+
+class DimPropiedadesTela(models.Model):
+    propiedades_tela_id = models.BigAutoField(primary_key=True)
+    al_hilo_flag = models.BooleanField(default=False)
+    al_sesgo_flag = models.BooleanField(default=False)
+    noventa_grados_flag = models.BooleanField(default=False)
+    peine_flag = models.BooleanField(default=False)
+    brilloviz_flag = models.BooleanField(default=False)
+    grabado_flag = models.BooleanField(default=False)
+    sentido_moldes_flag = models.CharField(max_length=50)
+    canal_tela_flag = models.BooleanField(default=False)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_PROPIEDADES_TELA"'
+
+class DimVariante(models.Model):
+    variante_id = models.BigAutoField(primary_key=True)
+    numero_variante = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_VARIANTE"'
+
+class DimDescripcion(models.Model):
+    descripcion_id = models.BigAutoField(primary_key=True)
+    detalle_descripcion = models.CharField(max_length=500)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
+
+class DimTerminacion(models.Model):
+    terminacion_id = models.BigAutoField(primary_key=True)
+    categoria_terminacion = models.CharField(max_length=50)
+    tipo_terminacion = models.CharField(max_length=50)
+    fecha_creacion = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."DIM_TERMINACION"'
+
+class FactConsumo(models.Model):
+    consumo_id = models.BigAutoField(primary_key=True)
+    prenda = models.ForeignKey(DimPrenda, on_delete=models.DO_NOTHING)
+    cantidad_telas = models.ForeignKey(DimCantidadTelas, on_delete=models.DO_NOTHING)
+    uso_tela = models.ForeignKey(DimUsoTela, on_delete=models.DO_NOTHING)
+    base_textil = models.ForeignKey(DimBaseTextil, on_delete=models.DO_NOTHING)
+    caracteristica_color = models.ForeignKey(DimCaracteristicaColor, on_delete=models.DO_NOTHING)
+    ancho_util = models.ForeignKey(DimAnchoUtil, on_delete=models.DO_NOTHING)
+    propiedades_tela = models.ForeignKey(DimPropiedadesTela, on_delete=models.DO_NOTHING)
+    consumo_mtr = models.DecimalField(max_digits=10, decimal_places=4)
+    variante = models.ForeignKey(DimVariante, on_delete=models.DO_NOTHING, blank=True, null=True)
+    descripcion = models.ForeignKey(DimDescripcion, on_delete=models.DO_NOTHING, blank=True, null=True)
+    terminacion = models.ForeignKey(DimTerminacion, on_delete=models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = '"CONSUMO_TEXTIL"."FACT_CONSUMO"'
+

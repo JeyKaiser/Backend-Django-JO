@@ -5,7 +5,8 @@ from django.urls import path, include
 
 # Importa solo los ViewSets si los registras aquí
 #from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView #ReferenciasPorAnioListView , lista_coleccion, ProductoListCreateAPIView
-from .views import ColeccionesAPIView, AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FasesDeReferenciaAPIView, FaseDetalleAPIView, ReferenciaDetalleAPIView, ReferenciaSearchAPIView, ReferenciaAPIView, FasesAPIView, TrazabilidadAPIView, TrazabilidadCurrentAPIView
+from .views import (ColeccionesAPIView, AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FasesDeReferenciaAPIView, FaseDetalleAPIView, ReferenciaDetalleAPIView, ReferenciaSearchAPIView, ReferenciaAPIView, FasesAPIView, TrazabilidadAPIView, TrazabilidadCurrentAPIView,
+                    DimPrendaList, DimCantidadTelasList, DimUsoTelaList, DimBaseTextilList, DimCaracteristicaColorList, DimAnchoUtilList, DimPropiedadesTelaList, DimVarianteList, DimDescripcionList, DimTerminacionList, FactConsumoCreate)
 
 # router = DefaultRouter()
 # router.register(r'tecnicos', TecnicoViewSet)
@@ -46,4 +47,18 @@ urlpatterns = [
     # Incluye las URLs del router para tus ViewSets
     #path('', include(router.urls)), # Esto incluirá /tecnicos, /telas, /creativos directamente bajo /costeo/
 
+    # =====================================================================================
+    # URLs PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
+    # =====================================================================================
+    path('dim/prendas/', DimPrendaList.as_view(), name='dim-prenda-list'),
+    path('dim/cantidad-telas/', DimCantidadTelasList.as_view(), name='dim-cantidad-telas-list'),
+    path('dim/usos-tela/', DimUsoTelaList.as_view(), name='dim-uso-tela-list'),
+    path('dim/bases-textil/', DimBaseTextilList.as_view(), name='dim-base-textil-list'),
+    path('dim/caracteristicas-color/', DimCaracteristicaColorList.as_view(), name='dim-caracteristica-color-list'),
+    path('dim/anchos-util/', DimAnchoUtilList.as_view(), name='dim-ancho-util-list'),
+    path('dim/propiedades-tela/', DimPropiedadesTelaList.as_view(), name='dim-propiedades-tela-list'),
+    path('dim/variantes/', DimVarianteList.as_view(), name='dim-variante-list'),
+    path('dim/descripciones/', DimDescripcionList.as_view(), name='dim-descripcion-list'),
+    path('dim/terminaciones/', DimTerminacionList.as_view(), name='dim-terminacion-list'),
+    path('fact/consumo/', FactConsumoCreate.as_view(), name='fact-consumo-create'),
 ]

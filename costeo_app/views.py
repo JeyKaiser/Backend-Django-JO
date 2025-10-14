@@ -1,5 +1,12 @@
 from .models import Producto, Collection, Tela, Status
-from .models import Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea
+from .models import (Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea,
+                     DimPrenda, DimCantidadTelas, DimUsoTela, DimBaseTextil,
+                     DimCaracteristicaColor, DimAnchoUtil, DimPropiedadesTela,
+                     DimVariante, DimDescripcion, DimTerminacion, FactConsumo)
+from .serializers import (ProductoSerializer, CollectionSerializer, TecnicoSerializer, TelaSerializer, CreativoSerializer,
+                          DimPrendaSerializer, DimCantidadTelasSerializer, DimUsoTelaSerializer, DimBaseTextilSerializer,
+                          DimCaracteristicaColorSerializer, DimAnchoUtilSerializer, DimPropiedadesTelaSerializer,
+                          DimVarianteSerializer, DimDescripcionSerializer, DimTerminacionSerializer, FactConsumoSerializer)
 from .forms import  CollectionForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.shortcuts import render, redirect
@@ -742,3 +749,56 @@ class ProtectedDataView(APIView):
 
     def get(self, request):
         return Response({"message": "¡Estos son datos protegidos, " + request.user.username + "!"})
+
+
+# =====================================================================================
+# VISTAS DE API PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
+# =====================================================================================
+
+class DimPrendaList(generics.ListAPIView):
+    queryset = DimPrenda.objects.all()
+    serializer_class = DimPrendaSerializer
+
+class DimCantidadTelasList(generics.ListAPIView):
+    queryset = DimCantidadTelas.objects.all()
+    serializer_class = DimCantidadTelasSerializer
+
+class DimUsoTelaList(generics.ListAPIView):
+    queryset = DimUsoTela.objects.all()
+    serializer_class = DimUsoTelaSerializer
+
+class DimBaseTextilList(generics.ListAPIView):
+    queryset = DimBaseTextil.objects.all()
+    serializer_class = DimBaseTextilSerializer
+
+class DimCaracteristicaColorList(generics.ListAPIView):
+    queryset = DimCaracteristicaColor.objects.all()
+    serializer_class = DimCaracteristicaColorSerializer
+
+class DimAnchoUtilList(generics.ListAPIView):
+    queryset = DimAnchoUtil.objects.all()
+    serializer_class = DimAnchoUtilSerializer
+
+class DimPropiedadesTelaList(generics.ListAPIView):
+    queryset = DimPropiedadesTela.objects.all()
+    serializer_class = DimPropiedadesTelaSerializer
+
+class DimVarianteList(generics.ListAPIView):
+    queryset = DimVariante.objects.all()
+    serializer_class = DimVarianteSerializer
+
+class DimDescripcionList(generics.ListAPIView):
+    queryset = DimDescripcion.objects.all()
+    serializer_class = DimDescripcionSerializer
+
+class DimTerminacionList(generics.ListAPIView):
+    queryset = DimTerminacion.objects.all()
+    serializer_class = DimTerminacionSerializer
+
+class FactConsumoCreate(APIView):
+    def post(self, request, format=None):
+        serializer = FactConsumoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
