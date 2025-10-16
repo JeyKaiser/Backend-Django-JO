@@ -76,12 +76,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 
-# SAP HANA Configuration - Usaremos conexión directa con hdbcli
+# SAP HANA Configuration - Opcional para despliegue en Render
 HANA_CONFIG = {
-    'address': env('HANA_HOST'),
-    'port': env('HANA_PORT'),
-    'user': env('HANA_USER'),
-    'password': env('HANA_PASSWORD'),
+    'address': env('HANA_HOST', default=''),
+    'port': env('HANA_PORT', default='39015'),
+    'user': env('HANA_USER', default=''),
+    'password': env('HANA_PASSWORD', default=''),
     'database': env('HANA_DATABASE', default='DISENO'),
     'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
     'encrypt': env.bool('HANA_ENCRYPT', default=True),
