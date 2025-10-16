@@ -78,20 +78,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('NAME_DB'),
-        'USER': env('USER_DB'),
-        'PASSWORD': env('PASS_DB', default='NO ENCONTRADO'),
-        'HOST': env('HOST_DB'),
-        'PORT': env('PORT_DB'),
-        'ATOMIC_REQUESTS': True,
-        'CONN_HEALTH_CHECKS': True,
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'CONN_MAX_AGE': 300,  # Number of seconds database connections should persist
-    }, }
+    'default': env.db_url('DATABASE_URL', default='sqlite:///db.sqlite3'),
+}
 
 
 # Password validation
