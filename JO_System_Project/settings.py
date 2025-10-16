@@ -46,15 +46,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'JO_System_Project.urls'
@@ -76,6 +75,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
+
+# SAP HANA Configuration - Usaremos conexión directa con hdbcli
+HANA_CONFIG = {
+    'address': env('HANA_HOST'),
+    'port': env('HANA_PORT'),
+    'user': env('HANA_USER'),
+    'password': env('HANA_PASSWORD'),
+    'database': env('HANA_DATABASE', default='DISENO'),
+    'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
+    'encrypt': env.bool('HANA_ENCRYPT', default=True),
+    'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
+}
 
 DATABASES = {
     'default': env.db_url('DATABASE_URL', default='sqlite:///db.sqlite3'),
@@ -139,7 +150,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         # Permite acceso a APIs por defecto. Se puede restringir por vista.
         'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
+        #'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
@@ -180,8 +191,19 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # frontend local
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
-]
-CORS_ALLOW_CREDENTIALS = True
+    "http://0.0.0.0:3000",
+])
+CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=True)
+
+# Permitir todos los orígenes en desarrollo, restringir en producción
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=DEBUG)
+
+# Configuración adicional de CORS para desarrollo
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [
+        "http://192.168.1.100:3000",
+        "http://192.168.0.100:3000",
+    ]

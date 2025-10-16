@@ -1,6 +1,9 @@
 # # serializers.py
 from rest_framework import serializers
-from .models import Producto, Collection, Tecnico, Tela, Creativo, Foto
+from .models import (Producto, Collection, Tecnico, Tela, Creativo, Foto,
+                     DimPrenda, DimCantidadTelas, DimUsoTela, DimBaseTextil,
+                     DimCaracteristicaColor, DimAnchoUtil, DimPropiedadesTela,
+                     DimVariante, DimDescripcion, DimTerminacion, FactConsumo)
 
 # class ReferenciaSerializer(serializers.ModelSerializer):
 #     # Añade un campo para las fases disponibles usando la propiedad del modelo
@@ -53,3 +56,61 @@ class CreativoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+# =====================================================================================
+# SERIALIZERS PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
+# =====================================================================================
+
+class DimPrendaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimPrenda
+        fields = '__all__'
+
+class DimCantidadTelasSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimCantidadTelas
+        fields = '__all__'
+
+class DimUsoTelaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimUsoTela
+        fields = '__all__'
+
+class DimBaseTextilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimBaseTextil
+        fields = '__all__'
+
+class DimCaracteristicaColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimCaracteristicaColor
+        fields = '__all__'
+
+class DimAnchoUtilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimAnchoUtil
+        fields = '__all__'
+
+class DimPropiedadesTelaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimPropiedadesTela
+        fields = '__all__'
+
+class DimVarianteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimVariante
+        fields = '__all__'
+
+class DimDescripcionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimDescripcion
+        fields = '__all__'
+
+class DimTerminacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DimTerminacion
+        fields = '__all__'
+
+class FactConsumoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FactConsumo
+        fields = '__all__'

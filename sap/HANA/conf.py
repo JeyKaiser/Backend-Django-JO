@@ -1,116 +1,37 @@
+
 from hdbcli import dbapi
+import logging
+from django.conf import settings
 
-from JO_System_Project.settings import HANA_DB_ADDRESS, HANA_DB_PASS, HANA_DB_PORT, HANA_DB_USER 
+logger = logging.getLogger(__name__)
 
-#losdatosdeconexionalabasededatosdehanna
+def get_hana_connection(schema_name='SBOJOZF'):
+    """
+    Establece una nueva conexión a la base de datos SAP HANA.
+    Esta función debe ser llamada para cada petición que requiera una conexión a la BD.
+    Asegura que cada petición tenga su propia conexión aislada.
 
-hana_dbs = (
-    'SBOJOZF',
-    'SBOJOCOL',
-    'SBOJOZFLLC',
-    'SBOJOEUSLU',
-    # 'PRUEBASJOZF',
-    'SBOPRUEBASJOZFLLC', 
-)
+    Args:
+        schema_name (str, optional): El nombre del esquema a usar. Defaults to 'SBOJOZF'.
 
-conn = dbapi.connect(   
-    currentschema = 'SBOJOZF',
-    address = HANA_DB_ADDRESS, 
-    port = HANA_DB_PORT,
-    user = HANA_DB_USER, 
-    password = HANA_DB_PASS,
-)
-
-databases = []
-
-try:
-    SBOJOZF = dbapi.connect(   
-        currentschema = 'SBOJOZF',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-
-    databases.append((SBOJOZF))
-except:
-    print("No hay conexión con base de datos SBOJOZF")
-
-
-try:
-    SBOJOCOL = dbapi.connect(   
-        currentschema = 'SBOJOCOL',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-    databases.append((SBOJOCOL))
-except:
-    print("No hay conexión con base de datos SBOJOCOL")
-
-
-try:
-    SBOJOZFLLC = dbapi.connect(   
-        currentschema = 'SBOJOZFLLC',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-    databases.append((SBOJOZFLLC))
-except:
-    print("No hay conexión con base de datos SBOJOCOL")
-
-
-try:
-    SBOJOEUSLU = dbapi.connect(   
-        currentschema = 'SBOJOEUSLU',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-    databases.append((SBOJOEUSLU))
-except:
-    print("No hay conexión con base de datos SBOJOCOL")
-
-
-try:
-    SBOPRUEBASJOZFLLC = dbapi.connect(   
-        currentschema = 'SBOPRUEBASJOZFLLC',# 'SBOJOZFLLC',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-    databases.append((SBOPRUEBASJOZFLLC))
-except:
-    print("No hay conexión con base de datos SBOJOCOL")
-
-
-
-
-
-try:
-    SBOPINK = dbapi.connect(   
-        currentschema = 'SBOPINK',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-    databases.append((SBOPINK))
-except:
-    print("No hay conexión con base de datos SBOPINK")
-
-try:
-    PRUEBASJOZF = dbapi.connect(   
-        currentschema = 'PRUEBASJOZF',
-        address = HANA_DB_ADDRESS, 
-        port = HANA_DB_PORT,
-        user = HANA_DB_USER, 
-        password = HANA_DB_PASS,
-    )
-except:
-    print("No hay conexión con base de datos PRUEBASJOZF")
+    Returns:
+        dbapi.Connection: Un objeto de conexión de hdbcli, o None si la conexión falla.
+    """
+    try:
+        # Accede a la configuración de HANA desde el settings de Django
+        hana_config = settings.HANA_CONFIG
+        
+        conn = dbapi.connect(
+            address=hana_config['address'],
+            port=hana_config['port'],
+            user=hana_config['user'],
+            password=hana_config['password'],
+            currentschema=schema_name,
+            encrypt=hana_config.get('encrypt', True), # Usar .get para valores opcionales
+            sslValidateCertificate=hana_config.get('sslValidateCertificate', False)
+        )
+        logger.info(f"Nueva conexión a HANA establecida para el esquema: {schema_name}")
+        return conn
+    except Exception as e:
+        logger.critical(f"FALLO CRÍTICO AL CONECTAR CON SAP HANA para el esquema {schema_name}: {e}", exc_info=True)
+        return None
