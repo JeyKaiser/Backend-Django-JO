@@ -8,8 +8,10 @@ services:
       - key: DATABASE_URL
         value: postgresql://postgres:lqKsBVdZS7886ZkY@db.izeywyhqevnuqtxcmrsp.supabase.co:5432/postgres
       - key: SECRET_KEY
-        value: tu_clave_secreta_aqui
+        value: PIJamz1CQFR0mdkqUYNwW8I51aPrAp_mDMQG9lBdeLunXxJPS8X2ZMN_IiEAynULko8
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
         value: backend-jo.onrender.com,localhost,127.0.0.1
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://frontend-9lq0zgb8k-jeykaisers-projects.vercel.app,http://localhost:3000,http://127.0.0.1:3000
