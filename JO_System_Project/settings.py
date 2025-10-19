@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'costeo_app',
     'corsheaders',
     'rest_framework',
-    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'sap',
 ]
 
@@ -152,6 +152,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
         #'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 # Configuración de Django REST Framework Simple JWT
