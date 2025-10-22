@@ -1,0 +1,9 @@
+Django>=4.2
+gunicorn
+psycopg2-binary
+dj-database-url
+python-dotenv
+django-environ
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
