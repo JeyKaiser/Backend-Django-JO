@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
-    'sap',
 ]
 
 MIDDLEWARE = [
