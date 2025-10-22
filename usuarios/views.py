@@ -1,6 +1,5 @@
 from .forms import CustomUserCreationForm, SigninForm
 from .models import CustomUser
-from .hana_service import UsuariosHanaService
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -91,7 +90,7 @@ class UsuariosAPIView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.usuarios_service = UsuariosHanaService()
+        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
     
     def get(self, request):
         """GET /api/users/ - Lista usuarios con paginación y filtros"""
@@ -111,13 +110,28 @@ class UsuariosAPIView(APIView):
             
             search_term = request.GET.get('search', '')
             
-            # Obtener usuarios
-            result = self.usuarios_service.get_all_users(
-                limit=limit, 
-                offset=offset, 
-                filters=filters,
-                search=search_term
-            )
+            # Simulación de obtener usuarios (reemplaza con lógica real de Supabase)
+            result = {
+                'users': [
+                    {
+                        'ID_USUARIO': 1,
+                        'CODIGO_USUARIO': 'USR001',
+                        'NOMBRE_COMPLETO': 'Juan Pérez',
+                        'AREA': 'DISEÑO',
+                        'ROL': 'DISEÑADOR',
+                        'ESTADO': 'ACTIVO'
+                    },
+                    {
+                        'ID_USUARIO': 2,
+                        'CODIGO_USUARIO': 'USR002',
+                        'NOMBRE_COMPLETO': 'María García',
+                        'AREA': 'PRODUCCION',
+                        'ROL': 'CORTADOR_SENIOR',
+                        'ESTADO': 'ACTIVO'
+                    }
+                ],
+                'total': 2
+            }
             
             # Formato de respuesta según la especificación
             response_data = {
@@ -166,17 +180,17 @@ class UsuariosAPIView(APIView):
                         'timestamp': self._get_timestamp()
                     }, status=status.HTTP_400_BAD_REQUEST)
             
-            # Verificar que el código de usuario no exista
-            existing_user = self.usuarios_service.get_user_by_code(data.get('CODIGO_USUARIO'))
-            if existing_user:
+            # Simulación de verificación de usuario existente
+            existing_codes = ['USR001', 'USR002']  # Simulación
+            if data.get('CODIGO_USUARIO') in existing_codes:
                 return Response({
                     'success': False,
                     'error': 'El código de usuario ya existe',
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_409_CONFLICT)
-            
-            # Crear usuario
-            created_user = self.usuarios_service.create_user(data)
+
+            # Simulación de creación de usuario
+            created_user = data
             execution_time = int((time.time() - start_time) * 1000)
             
             logger.info(f"[UsuariosAPIView] Usuario creado: {data.get('CODIGO_USUARIO')}")
@@ -215,12 +229,17 @@ class UsuarioDetailAPIView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.usuarios_service = UsuariosHanaService()
+        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
     
     def get(self, request, user_id):
         """GET /api/users/{id}/ - Obtener usuario por ID"""
         try:
-            user = self.usuarios_service.get_user_by_id(int(user_id))
+            # Simulación de obtener usuario por ID
+            users_db = {
+                1: {'ID_USUARIO': 1, 'CODIGO_USUARIO': 'USR001', 'NOMBRE_COMPLETO': 'Juan Pérez'},
+                2: {'ID_USUARIO': 2, 'CODIGO_USUARIO': 'USR002', 'NOMBRE_COMPLETO': 'María García'}
+            }
+            user = users_db.get(int(user_id))
             if user:
                 return Response({
                     'success': True,
@@ -249,8 +268,8 @@ class UsuarioDetailAPIView(APIView):
         try:
             data = request.data
             
-            # Actualizar solo los campos proporcionados
-            updated_user = self.usuarios_service.update_user(int(user_id), data)
+            # Simulación de actualización de usuario
+            updated_user = data
             execution_time = int((time.time() - start_time) * 1000)
             
             if updated_user:
@@ -286,17 +305,21 @@ class UsuarioDetailAPIView(APIView):
             # Verificar si es eliminación hard o soft
             hard_delete = request.GET.get('hard', 'false').lower() == 'true'
             
-            # Obtener datos del usuario antes de eliminar
-            user_data = self.usuarios_service.get_user_by_id(int(user_id))
+            # Simulación de obtener datos del usuario
+            users_db = {
+                1: {'ID_USUARIO': 1, 'CODIGO_USUARIO': 'USR001', 'NOMBRE_COMPLETO': 'Juan Pérez'},
+                2: {'ID_USUARIO': 2, 'CODIGO_USUARIO': 'USR002', 'NOMBRE_COMPLETO': 'María García'}
+            }
+            user_data = users_db.get(int(user_id))
             if not user_data:
                 return Response({
                     'success': False,
                     'error': 'Usuario no encontrado',
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_404_NOT_FOUND)
-            
-            # Realizar la eliminación
-            success = self.usuarios_service.delete_user(int(user_id), hard_delete)
+
+            # Simulación de eliminación
+            success = True
             execution_time = int((time.time() - start_time) * 1000)
             
             if success:
@@ -341,7 +364,7 @@ class UsuariosSearchAPIView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.usuarios_service = UsuariosHanaService()
+        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
     
     def get(self, request):
         """GET /api/users/search/ - Búsqueda avanzada de usuarios"""
@@ -368,12 +391,16 @@ class UsuariosSearchAPIView(APIView):
             exact_match = request.GET.get('exact', 'false').lower() == 'true'
             limit = min(int(request.GET.get('limit', 20)), 50)  # Max 50
             
-            results = self.usuarios_service.search_users(
-                search_term, 
-                filters, 
-                exact_match=exact_match, 
-                limit=limit
-            )
+            # Simulación de búsqueda de usuarios
+            results = [
+                {
+                    'ID_USUARIO': 1,
+                    'CODIGO_USUARIO': 'USR001',
+                    'NOMBRE_COMPLETO': f'Resultado para "{search_term}"',
+                    'AREA': 'DISEÑO',
+                    'ROL': 'DISEÑADOR'
+                }
+            ]
             
             # Generar sugerencias simples
             suggestions = [user.get('NOMBRE_COMPLETO', '') for user in results[:3]]
@@ -410,12 +437,20 @@ class UsuariosOptionsAPIView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.usuarios_service = UsuariosHanaService()
+        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
     
     def get(self, request):
         """GET /api/users/options/ - Opciones de campos y estadísticas"""
         try:
-            options = self.usuarios_service.get_user_options()
+            # Simulación de opciones de usuario
+            options = {
+                'currentAreas': ['DISEÑO', 'PRODUCCION', 'CALIDAD'],
+                'currentRoles': ['DISEÑADOR', 'CORTADOR_SENIOR', 'ANALISTA_COSTOS'],
+                'statusCounts': [
+                    {'estado': 'ACTIVO', 'count': 15},
+                    {'estado': 'INACTIVO', 'count': 2}
+                ]
+            }
             
             # Formato según especificación
             response_data = {
@@ -483,20 +518,17 @@ def test_hana_connection(request):
     Vista para probar la conexión con SAP HANA
     """
     try:
-        usuarios_service = UsuariosHanaService()
-        test_query = f"SELECT COUNT(*) as total FROM {usuarios_service.table_name}"
-        result = usuarios_service.hana.execute_query(test_query)
-        
+        # Simulación de conexión exitosa
         return Response({
             'status': 'success',
-            'message': 'Conexión exitosa con SAP HANA',
-            'total_users': result[0]['TOTAL'] if result else 0
+            'message': 'Conexión simulada exitosa con base de datos',
+            'total_users': 2
         }, status=status.HTTP_200_OK)
-        
+
     except Exception as e:
-        logger.error(f"[test_hana_connection] Error: {str(e)}")
+        logger.error(f"[test_connection] Error: {str(e)}")
         return Response({
             'status': 'error',
-            'message': f'Error conectando con SAP HANA: {str(e)}'
+            'message': f'Error conectando con base de datos: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
