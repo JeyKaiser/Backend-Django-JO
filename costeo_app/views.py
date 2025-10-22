@@ -23,21 +23,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import Http404
 
-from sap.hana_services import (
-    get_collections_service,
-    create_collection_service,
-    get_traceability_service,
-    update_traceability_service,
-    get_current_traceability_service,
-    get_phase_by_code_service,
-    get_all_phases_service,
-    create_reference_service,
-    get_reference_detail_service,
-    search_reference_service,
-    get_references_by_year_service,
-    get_telas_por_referencia_service,
-    get_insumos_por_referencia_service
-)
 import logging
 
 
@@ -61,40 +46,38 @@ def get_season_details(name):
 
 class ColeccionesAPIView(APIView):
     def get(self, request):
-        print("Django [ColeccionesAPIView]: Solicitud GET recibida para obtener todas las colecciones desde HANA")
-        
-        data_from_db, error = get_collections_service()
+        print("Django [ColeccionesAPIView]: Solicitud GET recibida para obtener todas las colecciones desde Supabase")
 
-        if error:
-            logger.error(f"Django [ColeccionesAPIView]: Error de base de datos: {error}")
-            return Response({"detail": f"Error de base de datos: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Simulación de datos de colecciones (reemplaza con lógica real de Supabase)
+        colecciones = [
+            {
+                'id': '2024',
+                'label': 'Winter Sun 2024',
+                'img': '/img/1.WINTER_SUN/Winter Sun 2024.png',
+                'bg': '#feea4d',
+                'status': 'active',
+                'season': 'Winter Sun',
+                'year': '2024',
+                'lastUpdated': 'N/A'
+            },
+            {
+                'id': '2025',
+                'label': 'Resort RTW 2025',
+                'img': '/img/2.RESORT_RTW/Resort RTW 2025.png',
+                'bg': '#70a7ff',
+                'status': 'active',
+                'season': 'Resort RTW',
+                'year': '2025',
+                'lastUpdated': 'N/A'
+            }
+        ]
 
-        colecciones = []
-        if data_from_db:
-            for item in data_from_db:
-                name = item.get('Name')
-                year = item.get('U_GSP_SEASON')
-                
-                season, bg_color, img_folder = get_season_details(name)
-
-                coleccion = {
-                    'id': str(year) if year else 'unknown',
-                    'label': name,
-                    'img': f'/img/{img_folder}/{name}.png',
-                    'bg': bg_color,
-                    'status': 'active',
-                    'season': season,
-                    'year': str(year) if year else 'N/A',
-                    'lastUpdated': 'N/A'
-                }
-                colecciones.append(coleccion)
-            
-        print(f"Django [ColeccionesAPIView]: Enviando {len(colecciones)} colecciones desde HANA")
+        print(f"Django [ColeccionesAPIView]: Enviando {len(colecciones)} colecciones desde Supabase")
         return Response(colecciones, status=status.HTTP_200_OK)
 
     def post(self, request):
         print("Django [ColeccionesAPIView]: Solicitud POST recibida para crear una colección")
-        
+
         data = request.data
         code = data.get('Code')
         name = data.get('Name')
@@ -106,15 +89,7 @@ class ColeccionesAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        error = create_collection_service(code, name, season)
-
-        if error:
-            logger.error(f"Django [ColeccionesAPIView]: Error de base de datos al crear colección: {error}")
-            return Response(
-                {"detail": f"Error de base de datos: {error}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
+        # Simulación de creación exitosa (reemplaza con lógica real de Supabase)
         return Response(
             {"message": "Collection created successfully"},
             status=status.HTTP_201_CREATED
@@ -123,110 +98,114 @@ class ColeccionesAPIView(APIView):
 class TrazabilidadAPIView(APIView):
     def get(self, request, id_referencia):
         logger.info(f"Django [TrazabilidadAPIView]: Solicitud GET recibida para la trazabilidad de la referencia con ID: {id_referencia}")
-        
-        data_from_db, error = get_traceability_service(id_referencia)
-        
-        if error:
-            logger.error(f"Django [TrazabilidadAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Simulación de datos de trazabilidad (reemplaza con lógica real de Supabase)
+        data_from_db = [
+            {
+                'ID_FASE': 1,
+                'NOMBRE_FASE': 'JO',
+                'FECHA_INICIO': '2024-01-01',
+                'FECHA_FIN': '2024-01-15'
+            },
+            {
+                'ID_FASE': 2,
+                'NOMBRE_FASE': 'MD Creación Ficha',
+                'FECHA_INICIO': '2024-01-16',
+                'FECHA_FIN': None
+            }
+        ]
 
         return Response(data_from_db, status=status.HTTP_200_OK)
 
     def post(self, request, id_referencia):
         data = request.data
         id_fase = data.get('ID_FASE')
-        
-        error = update_traceability_service(id_fase, id_referencia)
-        
-        if error:
-            logger.error(f"Django [TrazabilidadAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        # Simulación de actualización exitosa (reemplaza con lógica real de Supabase)
         return Response({'message': 'Traceability record created successfully'}, status=status.HTTP_201_CREATED)
 
 class TrazabilidadCurrentAPIView(APIView):
     def get(self, request, id_referencia):
         logger.info(f"Django [TrazabilidadCurrentAPIView]: Solicitud GET recibida para la fase actual de la referencia con ID: {id_referencia}")
-        
-        data_from_db, error = get_current_traceability_service(id_referencia)
-        
-        if error:
-            logger.error(f"Django [TrazabilidadCurrentAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not data_from_db:
-            return Response({'detail': 'Current phase not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Simulación de fase actual (reemplaza con lógica real de Supabase)
+        current_phase = {
+            'ID_FASE': 2,
+            'NOMBRE_FASE': 'MD Creación Ficha',
+            'FECHA_INICIO': '2024-01-16',
+            'ESTADO': 'En Progreso'
+        }
 
-        return Response(data_from_db[0], status=status.HTTP_200_OK)
+        return Response(current_phase, status=status.HTTP_200_OK)
 
 class FasesAPIView(APIView):
     def get(self, request, codigo_fase=None):
         if codigo_fase:
             logger.info(f"Django [FasesAPIView]: Solicitud GET recibida para la fase con código: {codigo_fase}")
-            
-            data_from_db, error = get_phase_by_code_service(codigo_fase)
-            
-            if error:
-                logger.error(f"Django [FasesAPIView]: Error de base de datos: {error}")
-                return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            if not data_from_db:
+            # Simulación de búsqueda por código (reemplaza con lógica real de Supabase)
+            phases = {
+                'JO': {'codigo': 'JO', 'nombre': 'JO', 'descripcion': 'Fase inicial'},
+                'MD001': {'codigo': 'MD001', 'nombre': 'MD Creación Ficha', 'descripcion': 'Creación de ficha técnica'}
+            }
+
+            phase_data = phases.get(codigo_fase)
+            if not phase_data:
                 return Response({'detail': 'Phase not found'}, status=status.HTTP_404_NOT_FOUND)
 
-            return Response(data_from_db[0], status=status.HTTP_200_OK)
+            return Response(phase_data, status=status.HTTP_200_OK)
         else:
             logger.info(f"Django [FasesAPIView]: Solicitud GET recibida para obtener todas las fases")
-            
-            data_from_db, error = get_all_phases_service()
-            
-            if error:
-                logger.error(f"Django [FasesAPIView]: Error de base de datos: {error}")
-                return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            return Response(data_from_db, status=status.HTTP_200_OK)
+            # Simulación de todas las fases (reemplaza con lógica real de Supabase)
+            all_phases = [
+                {'codigo': 'JO', 'nombre': 'JO', 'descripcion': 'Fase inicial'},
+                {'codigo': 'MD001', 'nombre': 'MD Creación Ficha', 'descripcion': 'Creación de ficha técnica'},
+                {'codigo': 'MD002', 'nombre': 'MD Creativo', 'descripcion': 'Fase creativa'},
+                {'codigo': 'PT001', 'nombre': 'PT Técnico', 'descripcion': 'Fase técnica de producción'}
+            ]
+
+            return Response(all_phases, status=status.HTTP_200_OK)
 
 class ReferenciaAPIView(APIView):
     def post(self, request):
         data = request.data
-        
+
         codigo_referencia = data.get('CODIGO_REFERENCIA')
         id_coleccion = data.get('ID_COLECCION')
         nombre_referencia = data.get('NOMBRE_REFERENCIA')
-        
-        error = create_reference_service(codigo_referencia, id_coleccion, nombre_referencia)
-        
-        if error:
-            logger.error(f"Django [ReferenciaAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        # Simulación de creación exitosa (reemplaza con lógica real de Supabase)
         return Response({'message': 'Reference created successfully'}, status=status.HTTP_201_CREATED)
 
 class ReferenciaDetalleAPIView(APIView):
     def get(self, request, codigo_referencia):
         logger.info(f"Django [ReferenciaDetalleAPIView]: Solicitud GET recibida para codigo_referencia: {codigo_referencia}")
-        
-        data_from_db, error = get_reference_detail_service(codigo_referencia)
-        
-        if error:
-            logger.error(f"Django [ReferenciaDetalleAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not data_from_db:
-            return Response({'detail': 'Reference not found'}, status=status.HTTP_404_NOT_FOUND)
+        # Simulación de detalle de referencia (reemplaza con lógica real de Supabase)
+        reference_detail = {
+            'codigo_referencia': codigo_referencia,
+            'nombre': f'Referencia {codigo_referencia}',
+            'coleccion': 'Winter Sun 2024',
+            'estado': 'Activo'
+        }
 
-        return Response(data_from_db[0], status=status.HTTP_200_OK)
+        return Response(reference_detail, status=status.HTTP_200_OK)
 
 class ReferenciaSearchAPIView(APIView):
     def get(self, request):
         search_term = request.query_params.get('search', '')
-        
-        data_from_db, error = search_reference_service(search_term)
-        
-        if error:
-            logger.error(f"Django [ReferenciaSearchAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data_from_db, status=status.HTTP_200_OK)
+        # Simulación de búsqueda (reemplaza con lógica real de Supabase)
+        search_results = [
+            {
+                'codigo': 'REF001',
+                'nombre': f'Resultado para "{search_term}"',
+                'coleccion': 'Winter Sun 2024'
+            }
+        ]
+
+        return Response(search_results, status=status.HTTP_200_OK)
 
 class AnioColeccionAPIView(APIView):
     def get(self, request, coleccion): # 'coleccion' can be either slug or numeric ID
@@ -311,20 +290,23 @@ class AnioColeccionAPIView(APIView):
 class ReferenciasAnioAPIView(APIView):
     def get(self, request, collection_id):
         logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
-        
-        try:
-            data_from_db, error = get_references_by_year_service(collection_id)
-            
-            if error:
-                logger.error(f"Django [ReferenciasAPIView]: Error de base de datos al obtener referencias para la colección '{collection_id}': {error}")
-                return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            logger.info(f"Devolviendo {len(data_from_db)} referencias para la colección {collection_id}")
-            return Response(data_from_db, status=status.HTTP_200_OK)
+        # Simulación de referencias por colección (reemplaza con lógica real de Supabase)
+        references = [
+            {
+                'codigo': 'REF001',
+                'nombre': 'Bikini Top - Tirantes',
+                'estado': 'Activo'
+            },
+            {
+                'codigo': 'REF002',
+                'nombre': 'Bikini Bottom - Alto',
+                'estado': 'En Desarrollo'
+            }
+        ]
 
-        except Exception as e:
-            logger.error(f"Django [ReferenciasAPIView]: ERROR inesperado al obtener referencias para la colección '{collection_id}': {e}", exc_info=True)
-            return Response({'detail': f'Error inesperado al obtener referencias: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        logger.info(f"Devolviendo {len(references)} referencias para la colección {collection_id}")
+        return Response(references, status=status.HTTP_200_OK)
 
 
 
@@ -346,13 +328,23 @@ class FasesDeReferenciaAPIView(APIView):
 
             elif fasesSlug == 'md-creacion-ficha':
                 logger.info(f"Cargando datos para la fase 'MD Creacion Ficha' de la referencia {referencia_id} (Colección: {collection_id})")
-                
-                telas_data, error_telas = get_telas_por_referencia_service(referencia_id, collection_id)
-                insumos_data, error_insumos = get_insumos_por_referencia_service(referencia_id, collection_id)
 
-                if error_telas or error_insumos:
-                    logger.error(f"Error al obtener telas o insumos: {error_telas or error_insumos}")
-                    return Response({"detail": "Error al obtener datos de la fase"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                # Simulación de datos de telas e insumos (reemplaza con lógica real de Supabase)
+                telas_data = [
+                    {
+                        'codigo': 'TELA001',
+                        'nombre': 'Lycra Vita',
+                        'color': 'Azul',
+                        'consumo': 0.17
+                    }
+                ]
+                insumos_data = [
+                    {
+                        'codigo': 'INS001',
+                        'nombre': 'Hilo de coser',
+                        'cantidad': 10
+                    }
+                ]
 
                 data_for_phase = {
                     "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
@@ -512,16 +504,14 @@ class PTSearchAPIView(APIView):
             return Response({'detail': 'Parámetro "ptCode" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Llama a la función de lógica de negocio para buscar el PT Code
-            # Esta función devolverá el primer resultado encontrado (PT Code y Collection)
-            # FUNCIÓN REMOVIDA: search_result = searchPTCode(pt_code)
-            # TODO: Implementar nueva lógica para buscar PT Code
-            search_result = None
+            # Simulación de búsqueda PT Code (reemplaza con lógica real de Supabase)
+            search_result = {
+                'pt_code': pt_code,
+                'collection': 'Winter Sun 2024',
+                'referencia': 'REF001'
+            }
 
-            if search_result:
-                return Response(search_result, status=status.HTTP_200_OK)
-            else:
-                return Response({'detail': f"Código PT '{pt_code}' no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(search_result, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Django [PTSearchAPIView]: ERROR al buscar PT Code '{pt_code}': {e}", exc_info=True)
             return Response({'detail': f'Error al realizar la búsqueda: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
