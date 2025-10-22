@@ -1,0 +1,20 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
+    
+        <h1>Crear Nuevo Proyecto</h1>
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{ miFormProject.as_p}}
+            <button> 
+                Save
+            </button>
+        </form> 
+    
+
+{% endblock content %}

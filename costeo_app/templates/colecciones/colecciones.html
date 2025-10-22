@@ -1,0 +1,72 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}  
+    {% load static %}
+    <link rel="stylesheet" href="{% static "styles/coleccionStyle.css" %}">
+{% endblock styles %}
+
+{% block content %}
+    {% csrf_token %}
+    <h1>SPRING SUMMER 2025</h1>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="label pd-5">Referencia</th>
+                    <th>Imagen</th>
+                    <th>MD</th>
+                    <th>PT</th>
+                    <th>Nombre Sistema</th>
+                    <th>Descripción Color</th>
+                    <th>Color</th>
+                    <th>Nombre Referente</th>
+                    <th>Foto Tela</th>
+                    <th>Línea</th>
+                    <th>Creativo</th>
+                    <th>Técnico</th>
+                    <th>Status</th>
+                    <th>Tallaje</th>
+                    <th>Largo</th>
+                    <th>Modista</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for coleccion in miColeccion %}
+                <tr>
+                    <td>{{ coleccion.referencia }}</td>
+                    <td><img src="{{ coleccion.fotoReferencia.url }}" alt="Foto Referencia" width="50"></td>
+                    <td>{{ coleccion.codigoSapMD }}</td>
+                    <td>{{ coleccion.codigoSapPT }}</td>
+                    <td>{{ coleccion.nombreSistema }}</td>
+                    <td>{{ coleccion.descripcionColor }}</td>
+                    <td>{{ coleccion.codigoColor }}</td>
+                    <td>{{ coleccion.nombreReferente }}</td>
+                    <td><img src="{{ coleccion.fotoTela.url }}" alt="Foto Tela" width="50"></td>
+                    <td>{{ coleccion.linea }}</td>
+                    <td>{{ coleccion.creativo }}</td>
+                    <td>{{ coleccion.tecnico }}</td>
+                    <td>{{ coleccion.status }}</td>
+                    <td>{{ coleccion.tallaje }}</td>
+                    <td>{{ coleccion.largo }}</td>
+                    <td>{{ coleccion.modista }}</td>
+                    <td>
+                        <a href="{% url 'index' %}" class="btn-warning">Editar  </a>
+                        <a href="{% url 'index' %}" class="btn-danger"> Eliminar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="18" class="text-center">No se han creado referencias.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <a href="{% url 'create_reference' %}" class="button">Agregar Nueva Referencia</a>
+    </div>
+
+
+{% endblock content %}

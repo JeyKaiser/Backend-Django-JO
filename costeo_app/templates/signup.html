@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- Fuente Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles/baseStyle.css' %}
+</head>
+
+<body> 
+    <div class="main-container">
+        <div class="form-container">
+            <h1>Crear cuenta</h1>
+    
+            <a href="{% url "signin" %}">Ya tienes una cuenta?</a>
+            
+            <form action="{% url 'signup' %}" method="POST">
+                {% csrf_token %}
+                
+                <div class="form-fields">
+                    {{ miSignup.as_p }}
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    Crear cuenta
+                </button>
+            </form>
+        </div>    
+    </div>   
+    
+</body>
+
+</html>

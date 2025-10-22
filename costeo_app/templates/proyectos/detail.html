@@ -1,0 +1,22 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
+    
+        <h1>Detalles del Proyecto</h1>
+        <h2>{{ detailProject }}</h2>
+
+        {%for tasks in detailTask %}
+            <div class= "card">
+                <h2>
+                    {{tasks.titulo}}
+                </h2>
+            </div>
+        {% endfor %}
+    
+
+{% endblock content %}

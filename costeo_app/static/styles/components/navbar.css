@@ -1,0 +1,241 @@
+/* =============================
+   NAVBAR COMPONENT
+   ============================= */
+
+.navbar {
+    background-color: var(--primary-color);
+    padding: 10px 20px 10px 220px; /* padding-left ajustado */
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    /* justify-content: space-between; */
+    position: sticky;
+    top: 0;
+    height: 60px;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.5s ease-out;
+}
+
+
+
+/* =============================
+   NAVBAR NAVIGATION
+   ============================= */
+.navbar ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.navbar li {
+    margin-right: 20px;
+}
+
+.navbar a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    transition: all var(--transition);
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar a:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+.navbar a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--secondary-color);
+    transition: all var(--transition);
+    transform: translateX(-50%);
+}
+
+.navbar a:hover::before {
+    width: 80%;
+}
+
+/* =============================
+   NAVBAR SEARCH FORM
+   ============================= */
+.navbar form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.navbar input[type="search"] {
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    width: 200px;
+    transition: all var(--transition);
+}
+
+.navbar input[type="search"]:focus {
+    outline: none;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    width: 250px;
+}
+
+.navbar input[type="search"]::placeholder {
+    color: #666;
+    font-style: italic;
+}
+
+.navbar button {
+    padding: 8px 15px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    transition: all var(--transition);
+}
+
+.navbar button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-light);
+}
+
+.navbar button:active {
+    transform: translateY(0);
+}
+
+/* =============================
+   NAVBAR LOGO/BRAND (opcional)
+   ============================= */
+.navbar .brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    text-decoration: none;
+    margin-right: 30px;
+}
+
+.navbar .brand:hover {
+    color: #fff;
+}
+
+/* =============================
+   NAVBAR USER MENU (opcional)
+   ============================= */
+.navbar .user-menu {
+    position: relative;
+}
+
+.navbar .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: var(--hover-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.navbar .user-avatar:hover {
+    background-color: #555;
+    transform: scale(1.1);
+}
+
+/* =============================
+   NAVBAR RESPONSIVE
+   ============================= */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+    
+    .navbar ul {
+        gap: 10px;
+    }
+    
+    .navbar li {
+        margin-right: 10px;
+    }
+    
+    .navbar a {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .navbar input[type="search"] {
+        width: 150px;
+    }
+    
+    .navbar input[type="search"]:focus {
+        width: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .navbar ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .navbar form {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .navbar input[type="search"] {
+        width: 200px;
+    }
+    
+    .navbar input[type="search"]:focus {
+        width: 220px;
+    }
+}
+
+/* =============================
+   NAVBAR ANIMATIONS
+   ============================= */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.navbar {
+    animation: slideDown 0.5s ease-out;
+}

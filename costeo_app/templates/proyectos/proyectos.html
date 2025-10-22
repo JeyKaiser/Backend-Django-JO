@@ -1,0 +1,21 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
+    
+        <h1>Mis Proyectos</h1>
+
+            {% for proyectos in miproyecto %}
+                <article class="card">
+                    <a href="{% url 'project_detail' proyectos.id %}">
+                        <h2>{{ proyectos.nombre_proyecto }}</h2>
+                    </a>                
+                </article>
+            {% endfor %}
+    
+
+{% endblock content %}

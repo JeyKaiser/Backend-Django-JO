@@ -1,0 +1,26 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
+    
+        <h1>CREAR NUEVA TAREA</h1>
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{ miFormTask.as_p }}
+
+            <select name="proyectos" id="proyectos">
+                {% for proyecto in proyectos %}
+                    <option value="{{proyecto.id}}">{{proyecto.nombre_proyecto}}</option>
+                {% endfor %}
+            </select>
+            <button> 
+                Save 
+            </button>        
+        </form>
+    
+
+{% endblock content %}

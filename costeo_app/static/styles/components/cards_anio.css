@@ -1,0 +1,72 @@
+/* cards.css */
+.card {    
+    width: 280px;
+    height: 350px;
+    background-color: var(--bg, #fff);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+    background-color: var(--bg, #fff);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    height: auto; 
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-light); 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);  
+}
+
+.card::before {
+    display: none; 
+}
+
+
+.card img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    transition: transform var(--transition);
+    flex-shrink: 0;
+}
+
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+
+.card span {
+    padding: 8px 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.card:hover span {
+    padding-bottom: 10px;
+    font-size: 1.2rem;
+}

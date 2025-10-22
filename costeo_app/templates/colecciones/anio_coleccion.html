@@ -1,0 +1,28 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}" />
+<link rel="stylesheet" href="{% static 'styles/components/cards_anio.css' %}" />
+{% endblock styles %} 
+
+{% block content %}
+
+<header class="colecciones-header">
+  <h2>AÑO DE COLECCIÓN</h2>
+</header>
+
+<div class="coleccion-grid">
+    {% for card in cards %}
+      <a href="{% url 'referencias' card.id %}">
+        <div class="card" style="--bg: {{ card.bg }}">
+          <img src="{% static card.img %}" alt="{{ card.label }}" />
+          <span>{{ card.label }}</span>
+          <span>{{ coleccion }}</span>          
+        </div>
+      </a>
+    {% endfor %}
+
+</div>
+
+{% endblock content %}
+

@@ -1,0 +1,67 @@
+{% extends 'base.html' %} 
+{% load static %}
+ {% block styles %}
+<link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}" />
+<link rel="stylesheet" href="{% static 'styles/components/cards.css' %}" />
+{% endblock styles %} 
+
+{% block content %}
+
+<header class="colecciones-header">
+  <h2>COLECCIONES</h2>
+</header>
+
+<div class="coleccion-grid">
+
+  <a href="{% url 'anio_coleccion' 'winter-sun'%}">
+    <div class="card" style="--bg: #feea4d">
+      <img src="{% static 'img/winter-sun.jpg' %}" alt="Winter Sun" />
+      <span>WINTER SUN</span>
+    </div>
+  </a>
+
+  <a href="{% url 'anio_coleccion' 'resort-rtw'%}">
+    <div class="card" style="--bg: #70a7ff">
+      <img src="{% static 'img/resort-rtw.jpg' %}" alt="Resort RTW" />
+      <span>RESORT RTW</span>
+    </div>
+  </a>
+
+  <a href="{% url 'anio_coleccion' 'spring-summer'%}">
+    <div class="card" style="--bg: #81c963">
+      <img src="{% static 'img/spring-summer.jpg' %}" alt="Spring Summer" />
+      <span>SPRING SUMMER</span>
+    </div>
+  </a>
+
+  <a href="{% url 'anio_coleccion' 'summer-vacation'%}">
+    <div class="card" style="--bg: #ff935f">
+      <img src="{% static 'img/summer-vacation.jpg' %}" alt="Summer Vacation" />
+      <span>SUMMER VACATION</span>
+    </div>
+  </a>
+
+  <a href="{% url 'anio_coleccion' 'pre-fall'%}">
+    <div class="card" style="--bg: #c6b9b1">
+      <img src="{% static 'img/pre-fall.jpg' %}" alt="Pre Fall" />
+      <span>PRE - FALL</span>
+    </div>
+  </a>
+
+  <a href="{% url 'anio_coleccion' 'fall-winter'%}">
+    <div class="card" style="--bg: #b03c5c">
+      <img src="{% static 'img/fall-winter.jpg' %}" alt="Fall Winter" />
+      <span>FALL WINTER</span>
+    </div>
+  </a>
+{% comment %} 
+  <a href="{% url 'anio_coleccion' 'capsules'%}">
+    <div class="card" style="--bg: #939a24">
+      <img src="{% static 'img/capsule.jpg' %}" alt="Capsule" />
+      <span>CAPSULES</span>
+    </div>
+  </a> {% endcomment %}
+  
+</div>
+
+{% endblock content %}

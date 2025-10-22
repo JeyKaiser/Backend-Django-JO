@@ -1,0 +1,129 @@
+/* =============================
+   BASESTYLE.CSS - ARCHIVO PRINCIPAL
+   ============================= */
+
+/* Importar solo componentes globales */
+@import url('components/sidebar.css');
+@import url('components/navbar.css');
+@import url('components/footer.css');
+
+/* =============================
+   VARIABLES CSS GLOBALES
+   ============================= */
+:root {
+    --primary-color: #2D323A;
+    --secondary-color: #FFFFFF;
+    --background-color: #CFC5C2;
+    --text-color: #333;
+    --hover-color: #444;
+    --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 8px 25px rgba(0, 0, 0, 0.2);
+    --border-radius: 5px;
+    --transition: 0.3s ease;
+}
+
+/* =============================
+   RESET Y BASE GLOBAL
+   ============================= */
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    line-height: 1.6;
+}
+
+/* =============================
+   GRID LAYOUT PRINCIPAL
+   ============================= */
+body {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 60px 1fr 60px;
+    grid-template-areas:
+        "navbar navbar"
+        "sidebar main"
+        "footer footer";
+    height: 100vh;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* Áreas de grid */
+.navbar {
+    grid-area: navbar;
+}
+
+.sidebar-container {
+    grid-area: sidebar;
+}
+
+.container {
+    grid-area: main;
+    padding: 20px;
+    color: var(--text-color);
+    overflow-y: auto;
+}
+
+/* Footer se posiciona con grid-area */
+.footer {
+    grid-area: footer;
+}
+
+/* =============================
+   UTILIDADES GLOBALES
+   ============================= */
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+/* =============================
+   RESPONSIVE BASE
+   ============================= */
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 180px 1fr;
+        grid-template-rows: 60px 1fr 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 60px 1fr 60px;
+        grid-template-areas:
+            "navbar"
+            "main"
+            "footer";
+    }
+
+    .sidebar-container {
+        display: none;
+    }
+}

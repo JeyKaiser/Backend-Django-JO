@@ -1,0 +1,30 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block styles %}
+<link rel="stylesheet" href="{% static 'styles/pages/collections.css' %}" />
+<link rel="stylesheet" href="{% static 'styles/components/cards_anio.css' %}" />
+{% endblock styles %} 
+
+{% block content %}
+
+<header class="colecciones-header">
+  <h2>REFERENCIAS</h2>
+</header>
+
+<div class="coleccion-grid">   
+
+  {% for modelo in modelos %}
+    <a href="">
+        <div class="card" style="--bg: #939a24">
+            <img src="{{modelo.U_GSP_Picture}}" alt="Foto prenda" />
+            <span>{{modelo.U_GSP_REFERENCE}}</span>
+            <span>{{modelo.U_GSP_Desc}}</span>
+        </div>
+        {% endfor %}
+    </a>
+  
+</div>
+
+{% endblock content %}
+
+

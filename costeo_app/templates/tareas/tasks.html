@@ -1,0 +1,33 @@
+{% comment %} {% extends 'layouts/base.html' %} {% endcomment %}
+{% extends 'base.html' %}
+
+{% block styles %}    
+{% endblock styles %}
+
+{% block content %}
+<h1>Crear Referencia</h1>
+    
+        <h1>Mis Tareas</h1>
+        <ul>
+            <li><a href= "{% url 'create_task' %}" >      Crear nueva tarea</a></li>
+        </ul>
+    
+        <!--este es un comentario de html que si se ve-->
+        {% for tareas in mitarea %}
+        <div>
+            <article class="card">
+                {# este es un comentario en jinja, no se ve#}
+                <h2>{% if tareas.done == False %} 
+                    🕑 
+                {% else %}
+                    ✅ 
+                {% endif %} {{ tareas.titulo }}
+                </h2>
+
+                <h2>{{ tareas.descripcion }}</h2>
+                <h3>Nombre proyecto: {{ tareas.proyecto_id }}</h3>
+            </article>  
+        </div>
+        {% endfor %}
+    
+{% endblock content %}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+  {% load static %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django Project</title>
+    <link rel="stylesheet" href="{% static 'styles/baseStyle.css' %}" />
+    {% block styles %}{% endblock styles %}
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar-container">
+      <div>
+        <div class="preview-box">
+          <p>Vista Previa</p>
+        </div>
+        <ul class="sidebar-menu">
+          <li><a href="{% url 'index' %}">Inicio</a></li>
+          <li><a href="{% url 'index' %}">Colecciones</a></li>
+          <li><a href="{% url 'index' %}">Productos</a></li>
+          <li><a href="{% url 'index' %}">Categorías</a></li>
+          <li><a href="{% url 'index' %}">Configuración</a></li>
+        </ul>
+      </div>
+      <div class="ad-box">
+        <p>Notificaciones</p>
+      </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Gestión</a></li>
+          <li><a href="#">Reportes</a></li>
+        </ul>
+      </div>
+      <form>
+        <input type="search" placeholder="Buscar..." />
+        <button type="submit">Buscar</button>
+      </form>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="container">
+      {% block content %}
+      {% endblock content %}
+    </main>
+
+    <footer class="footer">
+      <p>© 2024 Diseño JO</p>
+    </footer>
+  </body>
+</html>
