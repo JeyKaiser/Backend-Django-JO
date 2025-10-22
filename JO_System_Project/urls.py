@@ -29,10 +29,6 @@ urlpatterns = [
     path('costeo/', include('costeo_app.urls')),
     path('api/', include('costeo_app.urls')),
 
-    # --- NUEVA RUTA UNIFICADA PARA LA APP SAP ---
-    # Todas las rutas definidas en sap.urls (parametros, base_textil, etc.)
-    # estarán disponibles bajo /api/sap/
-    path('api/sap/', include('sap.urls')),
     
     # --- NUEVAS APPS MIGRADAS DESDE FRONTEND ---
     path('api/users/', include('users.urls')),
