@@ -110,19 +110,27 @@ def execute_hana_insert(query, params=None, schema='SBOJOZF'):
         if not conn:
             return False, "Error de conexión a la base de datos."
 
-        cursor = conn.cursor()
-        cursor.execute(query, params or ())
+        cursor = conn.cursor() 
+        cursor.execute(query, params or ()) 
 
-        # Para INSERT, verificamos si se afectaron filas
-        if cursor.rowcount > 0:
+        # Para INSERT, verificamos si se afectaron filas 
+        if cursor.rowcount > 0: 
+            # Para INSERT, intentamos obtener el ID del nuevo registro.
+            # Esto es específico de HANA.
+            cursor.execute("SELECT CURRENT_IDENTITY_VALUE() FROM DUMMY")
+            last_id_row = cursor.fetchone()
+            last_id = last_id_row[0] if last_id_row else None
+
             conn.commit()
-            return True, None
-        else:
-            return False, "No se pudo insertar el registro"
+            # Devolvemos éxito y el ID del nuevo registro
+            return True, None, last_id
+        else: 
+            conn.rollback()
+            return False, "No se pudo insertar el registro", None
 
     except Exception as e:
         logger.error(f"Error ejecutando el INSERT en HANA: {e}", exc_info=True)
-        return False, str(e)
+        return False, str(e), None
     finally:
         if cursor:
             cursor.close()
@@ -154,7 +162,7 @@ class ParametrosViewAPIView(APIView):
 class PrendasAPIView(APIView):
     def get(self, request):
         logger.info("[PrendasAPIView] GET para obtener prendas")
-        query = 'SELECT "prenda_id", "tipo_prenda_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"'
+        query = 'SELECT "prenda_id" as "id", "tipo_prenda_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"'
         logger.info(f"Executing query: {query} in schema CONSUMO_TEXTIL")
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
@@ -169,7 +177,7 @@ class PrendasAPIView(APIView):
 class CantidadTelasAPIView(APIView):
     def get(self, request):
         logger.info("[CantidadTelasAPIView] GET para obtener cantidades de telas")
-        query = 'SELECT "cantidad_telas_id", "cantidad_telas_numero" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
+        query = 'SELECT "cantidad_telas_id" as "id", "cantidad_telas_numero" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -182,7 +190,7 @@ class CantidadTelasAPIView(APIView):
 class UsoTelaAPIView(APIView):
     def get(self, request):
         logger.info("[UsoTelaAPIView] GET para obtener usos de tela")
-        query = 'SELECT "uso_tela_id", "uso_tela_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_USO_TELA"'
+        query = 'SELECT "uso_tela_id" as "id", "uso_tela_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_USO_TELA"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -195,7 +203,7 @@ class UsoTelaAPIView(APIView):
 class BaseTextilAPIView(APIView):
     def get(self, request):
         logger.info("[BaseTextilAPIView] GET para obtener bases textiles")
-        query = 'SELECT "base_textil_id", "base_textil_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
+        query = 'SELECT "base_textil_id" as "id", "base_textil_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -208,7 +216,7 @@ class BaseTextilAPIView(APIView):
 class CaracteristicaColorAPIView(APIView):
     def get(self, request):
         logger.info("[CaracteristicaColorAPIView] GET para obtener características de color")
-        query = 'SELECT "caracteristica_color_id", "caracteristica_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
+        query = 'SELECT "caracteristica_color_id" as "id", "caracteristica_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -221,7 +229,7 @@ class CaracteristicaColorAPIView(APIView):
 class AnchoUtilAPIView(APIView):
     def get(self, request):
         logger.info("[AnchoUtilAPIView] GET para obtener anchos útiles")
-        query = 'SELECT "ancho_util_id", "ancho_util_metros" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
+        query = 'SELECT "ancho_util_id" as "id", "ancho_util_metros" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -234,7 +242,14 @@ class AnchoUtilAPIView(APIView):
 class PropiedadesTelaAPIView(APIView):
     def get(self, request):
         logger.info("[PropiedadesTelaAPIView] GET para obtener propiedades de tela")
-        query = 'SELECT "propiedades_tela_id", \'Propiedad \' || "propiedades_tela_id" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_PROPIEDADES_TELA"'
+        # Cambiamos la consulta para que apunte a la nueva vista formateada
+        # y creamos un campo "nombre" descriptivo para el frontend.
+        query = '''
+            SELECT 
+                "propiedades_tela_id" AS "id", 
+                'Hilo: ' || "Al Hilo" || ', Sesgo: ' || "Al Sesgo" || ', Sentido: ' || "Sentido Moldes" AS "nombre"
+            FROM "CONSUMO_TEXTIL"."VW_PROPIEDADES_TELA"
+        '''
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -247,7 +262,7 @@ class PropiedadesTelaAPIView(APIView):
 class VarianteAPIView(APIView):
     def get(self, request):
         logger.info("[VarianteAPIView] GET para obtener variantes")
-        query = 'SELECT "variante_id", \'Variante \' || "numero_variante" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_VARIANTE"'
+        query = 'SELECT "variante_id" as "id", "numero_variante" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_VARIANTE"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -260,7 +275,7 @@ class VarianteAPIView(APIView):
 class DescripcionAPIView(APIView):
     def get(self, request):
         logger.info("[DescripcionAPIView] GET para obtener descripciones")
-        query = 'SELECT "descripcion_id", "detalle_descripcion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
+        query = 'SELECT "descripcion_id" as "id", "detalle_descripcion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -273,7 +288,7 @@ class DescripcionAPIView(APIView):
 class TerminacionAPIView(APIView):
     def get(self, request):
         logger.info("[TerminacionAPIView] GET para obtener terminaciones")
-        query = 'SELECT "terminacion_id", "categoria_terminacion" || \' - \' || "tipo_terminacion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_TERMINACION"'
+        query = 'SELECT "terminacion_id" as "id", "categoria_terminacion" || \' - \' || "tipo_terminacion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_TERMINACION"'
         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
         if error:
@@ -389,8 +404,12 @@ class ConsumoTextilAPIView(APIView):
 
         # Caso 1: No se proporciona `tipo_prenda`. Devolver la lista de todas las prendas únicas.
         if not tipo_prenda:
-            logger.info("[ConsumoTextilAPIView] Caso 1: Devolviendo lista de prendas.")
-            query = 'SELECT DISTINCT "tipo_prenda_nombre" FROM "CONSUMO_TEXTIL"."VIEW_FACT_CONSUMO"'
+            # Cambiamos la consulta para que devuelva el mismo formato que la vista de prendas original
+            # para mantener la compatibilidad con el frontend.
+            logger.info("[ConsumoTextilAPIView] Caso 1: Devolviendo lista de prendas únicas desde DIM_PRENDA.")
+            query = '''
+                SELECT "prenda_id", "tipo_prenda_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_PRENDA"
+            '''
             params = []
         
         # Caso 2: Se proporciona `tipo_prenda`, `cantidad_telas` y `numero_variante`. Devolver el detalle del consumo.
@@ -464,18 +483,25 @@ class FactConsumoAPIView(APIView):
         ]
 
         for field in required_fields:
-            if not data.get(field):
+            value = data.get(field)
+            is_invalid = value is None
+            if isinstance(value, str):
+                if value.strip() == '':
+                    is_invalid = True
+
+            if is_invalid:
                 return Response(
-                    {"error": f"El campo {field} es requerido"},
+                    # Usamos un mensaje más amigable y consistente con el frontend
+                    {"error": f"El campo \"{field.replace('_id', '').replace('_mtr', '(metros)')}\" es requerido."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
         # Validar que consumo_mtr sea un número positivo
         try:
             consumo_mtr = float(data.get('consumo_mtr', 0))
-            if consumo_mtr <= 0:
+            if consumo_mtr < 0:
                 return Response(
-                    {"error": "El consumo_mtr debe ser un número positivo"},
+                    {"error": "El consumo_mtr debe ser un número positivo o cero"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
         except (ValueError, TypeError):
@@ -510,7 +536,7 @@ class FactConsumoAPIView(APIView):
         logger.info(f"Executing INSERT query with params: {params}")
 
         # Para INSERT, necesitamos una función especial que no espere un result set
-        success, error = execute_hana_insert(query, params=params, schema='CONSUMO_TEXTIL')
+        success, error, new_id = execute_hana_insert(query, params=params, schema='CONSUMO_TEXTIL')
 
         if not success:
             logger.error(f"Error al insertar registro en FACT_CONSUMO: {error}")
@@ -519,7 +545,6 @@ class FactConsumoAPIView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        logger.info("Registro creado exitosamente en FACT_CONSUMO")
         return Response(
             {"success": "Referente creado exitosamente"},
             status=status.HTTP_201_CREATED
