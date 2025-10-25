@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 import os
 import environ
+from django.conf.urls.static import static
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,7 +48,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -217,8 +218,41 @@ CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=True)
 CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=DEBUG)
 
 # Configuración adicional de CORS para desarrollo
-if DEBUG:
+if DEBUG:    
     CORS_ALLOWED_ORIGINS += [
         "http://192.168.1.100:3000",
         "http://192.168.0.100:3000",
     ]
+
+# =================================================================
+# CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN
+# =================================================================
+
+# Solo activar en producción con HTTPS
+# DESACTIVADO TEMPORALMENTE PARA PRUEBAS EN RED LOCAL SIN HTTPS
+# if not DEBUG:
+#     SECURE_HSTS_SECONDS = 31536000  # 1 año
+#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+#     SECURE_HSTS_PRELOAD = True
+#
+#     SECURE_SSL_REDIRECT = True
+#     SECURE_CONTENT_TYPE_NOSNIFF = True
+#     SECURE_BROWSER_XSS_FILTER = True
+#     SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+#
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SESSION_COOKIE_HTTPONLY = True
+#     CSRF_COOKIE_HTTPONLY = True
+#
+#     # Configuración adicional de seguridad
+#     SECURE_FRAME_DENY = True
+#     X_FRAME_OPTIONS = 'DENY'
+
+# Configuración de seguridad básica (sin HTTPS por ahora)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+X_FRAME_OPTIONS = 'DENY'
