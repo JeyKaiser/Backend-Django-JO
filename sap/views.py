@@ -306,22 +306,52 @@ class ImageUploadView(APIView):
     """
     def post(self, request):
         logger.info("[ImageUploadView] Solicitud POST para subir imagen")
+
+        # DEBUG: Log detallado de la request
+        logger.info(f"[ImageUploadView] Request method: {request.method}")
+        logger.info(f"[ImageUploadView] Request FILES: {list(request.FILES.keys())}")
+        logger.info(f"[ImageUploadView] Request data: {dict(request.data)}")
+
         title = request.data.get('title', '')
         image_file = request.FILES.get('image')
 
+        logger.info(f"[ImageUploadView] Title: '{title}'")
+        logger.info(f"[ImageUploadView] Image file: {image_file}")
+
+        if image_file:
+            logger.info(f"[ImageUploadView] Image file name: {image_file.name}")
+            logger.info(f"[ImageUploadView] Image file size: {image_file.size}")
+            logger.info(f"[ImageUploadView] Image file content_type: {image_file.content_type}")
+
         if not image_file:
+            logger.error("[ImageUploadView] ERROR: No se proporcionó ninguna imagen")
             return Response({"error": "No se proporcionó ninguna imagen"}, status=status.HTTP_400_BAD_REQUEST)
 
-        image = Image.objects.create(title=title, image=image_file)
-        
-        print(f"Image URL: {image.image.url}")
+        try:
+            logger.info("[ImageUploadView] Creando objeto Image...")
+            image = Image.objects.create(title=title, image=image_file)
 
-        return Response({
-            "id": image.id,
-            "title": image.title,
-            "image_url": image.image.url,
-            "uploaded_at": image.uploaded_at
-        }, status=status.HTTP_201_CREATED)
+            logger.info(f"[ImageUploadView] Image creada - ID: {image.id}")
+            logger.info(f"[ImageUploadView] Image URL: {image.image.url}")
+            logger.info(f"[ImageUploadView] Image path: {image.image.path}")
+
+            # Verificar que el archivo existe físicamente
+            import os
+            if os.path.exists(image.image.path):
+                logger.info(f"[ImageUploadView] ✅ Archivo existe físicamente: {image.image.path}")
+            else:
+                logger.error(f"[ImageUploadView] ❌ Archivo NO existe físicamente: {image.image.path}")
+
+            return Response({
+                "id": image.id,
+                "title": image.title,
+                "image_url": image.image.url,
+                "uploaded_at": image.uploaded_at
+            }, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            logger.error(f"[ImageUploadView] ERROR al crear imagen: {str(e)}", exc_info=True)
+            return Response({"error": f"Error al guardar imagen: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request):
         """

@@ -2,7 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 import os
 import environ
-from django.conf.urls.static import static
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
