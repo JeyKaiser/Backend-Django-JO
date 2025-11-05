@@ -228,85 +228,7 @@ class ReferenciaSearchAPIView(APIView):
 
         return Response(data_from_db, status=status.HTTP_200_OK)
 
-class AnioColeccionAPIView(APIView):
-    def get(self, request, coleccion): # 'coleccion' can be either slug or numeric ID
-        print(f"Django [AnioColeccionAPIView]: Coleccion ID/slug recibido: '{coleccion}'")
-        
-        # Mapping from numeric IDs to slugs and vice versa
-        id_to_slug = {
-            '063': 'winter-sun', '085': 'winter-sun', '105': 'winter-sun',
-            '065': 'resort-rtw', '084': 'resort-rtw', '106': 'resort-rtw',
-            '067': 'spring-summer', '088': 'spring-summer', '110': 'spring-summer',
-            '070': 'summer-vacation', '094': 'summer-vacation',
-            '071': 'pre-fall', '096': 'pre-fall',
-            '075': 'fall-winter', '102': 'fall-winter',
-        }
-        
-        slug_to_name = {
-            'winter-sun': 'Winter Sun',
-            'resort-rtw': 'Resort RTW', 
-            'spring-summer': 'Spring Summer',
-            'summer-vacation': 'Summer Vacation',
-            'pre-fall': 'Pre Fall RTW',
-            'fall-winter': 'Fall Winter',
-        }
-
-        coleccion_data = {
-            'winter-sun': [
-                {'id': '063', 'img': '/img/1.WINTER_SUN/Winter Sun 2024.png', 'bg': '#feea4d', 'label': '2024'},
-                {'id': '085', 'img': '/img/1.WINTER_SUN/Winter Sun 2025.png', 'bg': '#feea4d', 'label': '2025'},
-                {'id': '105', 'img': '/img/1.WINTER_SUN/Winter Sun 2026.png', 'bg': '#feea4d', 'label': '2026'},
-            ],
-            'resort-rtw': [
-                {'id': '065', 'img': '/img/2.RESORT_RTW/Resort RTW 2024.png', 'bg': '#70a7ff', 'label': '2024'},
-                {'id': '084', 'img': '/img/2.RESORT_RTW/Resort RTW 2025.png', 'bg': "#70a7ff", 'label': '2025'},
-                {'id': '106', 'img': '/img/2.RESORT_RTW/Resort RTW 2026.png', 'bg': '#70a7ff', 'label': '2026'},
-            ],
-            'spring-summer': [
-                {'id': '067', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2024.png', 'bg': '#81c963', 'label': '2024'},
-                {'id': '088', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2025.png', 'bg': '#81c963', 'label': '2025'},
-                {'id': '110', 'img': '/img/3.SPRING_SUMMER/Spring Summer 2026.png', 'bg': '#81c963', 'label': '2026'},
-            ],
-            'summer-vacation': [
-                {'id': '070', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2024.png', 'bg': '#ff935f', 'label': '2024'},
-                {'id': '094', 'img': '/img/4.SUMMER_VACATION/Summer Vacation 2025.png', 'bg': '#ff935f', 'label': '2025'},
-            ],
-            'pre-fall': [
-                {'id': '071', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2024.png', 'bg': '#c6b9b1', 'label': '2024'},
-                {'id': '096', 'img': '/img/5.PRE_FALL/Pre Fall RTW 2025.png', 'bg': '#c6b9b1', 'label': '2025'},
-            ],
-            'fall-winter': [
-                {'id': '075', 'img': '/img/6.FALL_WINTER/Fall Winter 2024.png', 'bg': '#b03c5c', 'label': '2024'},
-                {'id': '102', 'img': '/img/6.FALL_WINTER/Fall Winter 2025.png', 'bg': '#b03c5c', 'label': '2025'},
-            ],
-        }
-        
-        # Determine if input is numeric ID or slug, then get the appropriate slug
-        if coleccion.isdigit() or coleccion in id_to_slug:
-            # Input is a numeric ID, convert to slug
-            slug = id_to_slug.get(coleccion)
-            if not slug:
-                print(f"Django [AnioColeccionAPIView]: ERROR: Numeric ID '{coleccion}' no encontrado.")
-                return Response({'detail': f'Collection ID "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            # Input is already a slug
-            slug = coleccion
-            
-        # Get data using the slug
-        cards = coleccion_data.get(slug, [])
-        collection_name = slug_to_name.get(slug, slug)
-
-        if cards:
-            print(f"Django [AnioColeccionAPIView]: Colección '{slug}' encontrada. Enviando {len(cards)} tarjetas.")
-            return Response({
-                'nombre_coleccion': collection_name,
-                'anios': cards
-            }, status=status.HTTP_200_OK)
-        else:
-            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
-            return Response({'detail': f'Collection "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-
+    
 
 class ReferenciasAnioAPIView(APIView):
     def get(self, request, collection_id):
@@ -532,19 +454,6 @@ class PTSearchAPIView(APIView):
 
 
 #   ------- D J A N G O   V I E W S / T E M P L A T E S  -------
-
-@login_required
-def index(request):    
-    return render(request, "index.html")      
-    # title = 'Django-Course!!'   
-    # context = {
-    #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
-    #     "nombre": 'Daniel',
-    #     "apellido": 'Gossdfsdfsdfsfsdfez',
-    # }    
-    # return JsonResponse(context, status=200, safe=False) 
-
- 
 def anio_coleccion(request, coleccion):
     print("Django: ", coleccion)
     coleccion_data = {       
@@ -588,26 +497,6 @@ def anio_coleccion(request, coleccion):
     return render(request, "colecciones/anio_coleccion.html", context)
 
 
-
-
-
-
-
-def obtener_sublineas(request, linea_id):
-    sublineas = Sublinea.objects.filter(lineasublinea__linea_id=linea_id)
-    data = [
-        {"id": s.id, "nombre_sublinea": s.nombre_sublinea}
-        for s in sublineas
-    ]
-    return JsonResponse(data, safe=False)
-
-
-def collection_list(request):
-    coleccion = Collection.objects.all()
-    #print(coleccion.values())
-    return render(request, 'colecciones/colecciones.html',{
-        'miColeccion': coleccion,
-    })
 
 
 def create_reference(request):
