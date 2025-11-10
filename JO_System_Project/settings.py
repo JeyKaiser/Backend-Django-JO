@@ -10,8 +10,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # environ init
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / '.env')
-# print(">>> PASS_DB:", env('PASS_DB', default='NO ENCONTRADO'))
-
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
@@ -22,13 +20,40 @@ HANA_DB_PASS = env.str('HANA_DB_PASS')
 HANA_DB_PORT = env.str('HANA_DB_PORT')
 HANA_DB_USER = env.str('HANA_DB_USER')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+# ALLOWED_HOSTS = ['*']   # Permitir todos los hosts temporalmente para desarrollo
 
-# print(env('SECRET_KEY'))
-# print(env('HOST_DB'))
-# print(env('PASS_DB'))
+AUTH_USER_MODEL = 'usuarios.CustomUser'
 
+# SAP HANA Configuration - Usaremos conexión directa con hdbcli
+HANA_CONFIG = {
+    'address': env('HANA_HOST'),
+    'port': env('HANA_PORT'),
+    'user': env('HANA_USER'),
+    'password': env('HANA_PASSWORD'),
+    'database': env('HANA_DATABASE', default='DISENO'),
+    'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
+    'encrypt': env.bool('HANA_ENCRYPT', default=True),
+    'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
+}
+
+# Mantener configuración MySQL para casos de compatibilidad
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': env('NAME_DB'),
+        'USER': env('USER_DB'),
+        'PASSWORD': env('PASS_DB', default='NO ENCONTRADO'),
+        'HOST': env('HOST_DB'),
+        'PORT': env('PORT_DB'),
+        'ATOMIC_REQUESTS': True,
+        'CONN_HEALTH_CHECKS': True,
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        'CONN_MAX_AGE': 300,
+    }
+}
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,35 +101,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 
-# SAP HANA Configuration - Usaremos conexión directa con hdbcli
-HANA_CONFIG = {
-    'address': env('HANA_HOST'),
-    'port': env('HANA_PORT'),
-    'user': env('HANA_USER'),
-    'password': env('HANA_PASSWORD'),
-    'database': env('HANA_DATABASE', default='DISENO'),
-    'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
-    'encrypt': env.bool('HANA_ENCRYPT', default=True),
-    'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
-}
 
-# Mantener configuración MySQL para casos de compatibilidad
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('NAME_DB'),
-        'USER': env('USER_DB'),
-        'PASSWORD': env('PASS_DB', default='NO ENCONTRADO'),
-        'HOST': env('HOST_DB'),
-        'PORT': env('PORT_DB'),
-        'ATOMIC_REQUESTS': True,
-        'CONN_HEALTH_CHECKS': True,
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
-        'CONN_MAX_AGE': 300,
-    }
-}
+
+
 
 
 # Password validation
@@ -153,7 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'usuarios.CustomUser'
+
 
 
 # Configuración de Django REST Framework
@@ -205,48 +204,23 @@ SIMPLE_JWT = {
 }
 
 
-CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://0.0.0.0:3000",
-    "http://198.168.0.40:3000",  
-])
+
+
+# =============================================================================
+# CONFIGURACIÓN DE CORS
+# =============================================================================
+
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=True)
+CORS_ALLOW_ALL_ORIGINS = False  # Siempre False para producción
 
-# Permitir todos los orígenes en desarrollo, restringir en producción
-CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=DEBUG)
-
-# Configuración adicional de CORS para desarrollo
-if DEBUG:    
+# Configuración específica para desarrollo
+if DEBUG:
     CORS_ALLOWED_ORIGINS += [
         "http://192.168.1.100:3000",
         "http://192.168.0.100:3000",
     ]
 
-# =================================================================
-# CONFIGURACIONES DE SEGURIDAD PARA PRODUCCIÓN
-# =================================================================
-
-# Solo activar en producción con HTTPS
-# DESACTIVADO TEMPORALMENTE PARA PRUEBAS EN RED LOCAL SIN HTTPS
-# if not DEBUG:
-#     SECURE_HSTS_SECONDS = 31536000  # 1 año
-#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-#     SECURE_HSTS_PRELOAD = True
-#
-#     SECURE_SSL_REDIRECT = True
-#     SECURE_CONTENT_TYPE_NOSNIFF = True
-#     SECURE_BROWSER_XSS_FILTER = True
-#     SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
-#
-#     SESSION_COOKIE_SECURE = True
-#     CSRF_COOKIE_SECURE = True
-#     SESSION_COOKIE_HTTPONLY = True
-#     CSRF_COOKIE_HTTPONLY = True
-#
-#     # Configuración adicional de seguridad
-#     SECURE_FRAME_DENY = True
-#     X_FRAME_OPTIONS = 'DENY'
 
 # Configuración de seguridad básica (sin HTTPS por ahora)
 SECURE_CONTENT_TYPE_NOSNIFF = True
