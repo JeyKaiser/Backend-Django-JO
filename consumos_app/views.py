@@ -2,7 +2,7 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from sap.views import execute_hana_query
+from sap_app.views import execute_hana_query
 
 logger = logging.getLogger(__name__)
 

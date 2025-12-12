@@ -1,6 +1,7 @@
 from .forms import CustomUserCreationForm, SigninForm
 from .models import CustomUser
 from .hana_service import UsuariosHanaService
+from sap_app.views import execute_hana_query
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import logging
+
 
 logger = logging.getLogger(__name__)
 

@@ -2,6 +2,7 @@ from . import views
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
+# from .views import DatabaseHealthAPIView
 
 
 #coments
@@ -27,5 +28,8 @@ urlpatterns = [
     
     # URL para test de conexión HANA
     path('api/test-hana/', views.test_hana_connection, name='test-hana-connection'),
+
+    # API de salud de la base de datos
+    # path('database/health/', DatabaseHealthAPIView.as_view(), name='database-health'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

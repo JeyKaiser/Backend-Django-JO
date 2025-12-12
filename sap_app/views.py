@@ -159,6 +159,7 @@ class ParametrosViewAPIView(APIView):
         
         return Response(data, status=status.HTTP_200_OK)
 
+
 class PrendasAPIView(APIView):
     def get(self, request):
         logger.info("[PrendasAPIView] GET para obtener prendas")
@@ -174,118 +175,118 @@ class PrendasAPIView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class CantidadTelasAPIView(APIView):
-    def get(self, request):
-        logger.info("[CantidadTelasAPIView] GET para obtener cantidades de telas")
-        query = 'SELECT "cantidad_telas_id" as "id", "cantidad_telas_numero" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+# class CantidadTelasAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[CantidadTelasAPIView] GET para obtener cantidades de telas")
+#         query = 'SELECT "cantidad_telas_id" as "id", "cantidad_telas_numero" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CANTIDAD_TELAS"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
-        if error:
-            logger.error(f"Error al obtener cantidades de telas: {error}")
-            return Response({"detail": f"Error al obtener cantidades de telas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         if error:
+#             logger.error(f"Error al obtener cantidades de telas: {error}")
+#             return Response({"detail": f"Error al obtener cantidades de telas: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class UsoTelaAPIView(APIView):
-    def get(self, request):
-        logger.info("[UsoTelaAPIView] GET para obtener usos de tela")
-        query = 'SELECT "uso_tela_id" as "id", "uso_tela_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_USO_TELA"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
-
-        if error:
-            logger.error(f"Error al obtener usos de tela: {error}")
-            return Response({"detail": f"Error al obtener usos de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(data, status=status.HTTP_200_OK)
+#         return Response(data, status=status.HTTP_200_OK)
 
 
-class BaseTextilAPIView(APIView):
-    def get(self, request):
-        logger.info("[BaseTextilAPIView] GET para obtener bases textiles")
-        query = 'SELECT "base_textil_id" as "id", "base_textil_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+# class UsoTelaAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[UsoTelaAPIView] GET para obtener usos de tela")
+#         query = 'SELECT "uso_tela_id" as "id", "uso_tela_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_USO_TELA"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
-        if error:
-            logger.error(f"Error al obtener bases textiles: {error}")
-            return Response({"detail": f"Error al obtener bases textiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         if error:
+#             logger.error(f"Error al obtener usos de tela: {error}")
+#             return Response({"detail": f"Error al obtener usos de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class CaracteristicaColorAPIView(APIView):
-    def get(self, request):
-        logger.info("[CaracteristicaColorAPIView] GET para obtener características de color")
-        query = 'SELECT "caracteristica_color_id" as "id", "caracteristica_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
-
-        if error:
-            logger.error(f"Error al obtener características de color: {error}")
-            return Response({"detail": f"Error al obtener características de color: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(data, status=status.HTTP_200_OK)
+#         return Response(data, status=status.HTTP_200_OK)
 
 
-class AnchoUtilAPIView(APIView):
-    def get(self, request):
-        logger.info("[AnchoUtilAPIView] GET para obtener anchos útiles")
-        query = 'SELECT "ancho_util_id" as "id", "ancho_util_metros" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+# class BaseTextilAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[BaseTextilAPIView] GET para obtener bases textiles")
+#         query = 'SELECT "base_textil_id" as "id", "base_textil_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_BASE_TEXTIL"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
-        if error:
-            logger.error(f"Error al obtener anchos útiles: {error}")
-            return Response({"detail": f"Error al obtener anchos útiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         if error:
+#             logger.error(f"Error al obtener bases textiles: {error}")
+#             return Response({"detail": f"Error al obtener bases textiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class PropiedadesTelaAPIView(APIView):
-    def get(self, request):
-        logger.info("[PropiedadesTelaAPIView] GET para obtener propiedades de tela")
-        # Cambiamos la consulta para que apunte a la nueva vista formateada
-        # y creamos un campo "nombre" descriptivo para el frontend.
-        query = '''
-            SELECT 
-                "propiedades_tela_id" AS "id", 
-                'Hilo: ' || "Al Hilo" || ', Sesgo: ' || "Al Sesgo" || ', Sentido: ' || "Sentido Moldes" AS "nombre"
-            FROM "CONSUMO_TEXTIL"."VW_PROPIEDADES_TELA"
-        '''
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
-
-        if error:
-            logger.error(f"Error al obtener propiedades de tela: {error}")
-            return Response({"detail": f"Error al obtener propiedades de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(data, status=status.HTTP_200_OK)
+#         return Response(data, status=status.HTTP_200_OK)
 
 
-class VarianteAPIView(APIView):
-    def get(self, request):
-        logger.info("[VarianteAPIView] GET para obtener variantes")
-        query = 'SELECT "variante_id" as "id", "numero_variante" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_VARIANTE"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+# class CaracteristicaColorAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[CaracteristicaColorAPIView] GET para obtener características de color")
+#         query = 'SELECT "caracteristica_color_id" as "id", "caracteristica_nombre" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_CARACTERISTICA_COLOR"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
 
-        if error:
-            logger.error(f"Error al obtener variantes: {error}")
-            return Response({"detail": f"Error al obtener variantes: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         if error:
+#             logger.error(f"Error al obtener características de color: {error}")
+#             return Response({"detail": f"Error al obtener características de color: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return Response(data, status=status.HTTP_200_OK)
-
-
-class DescripcionAPIView(APIView):
-    def get(self, request):
-        logger.info("[DescripcionAPIView] GET para obtener descripciones")
-        query = 'SELECT "descripcion_id" as "id", "detalle_descripcion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
-        data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
-
-        if error:
-            logger.error(f"Error al obtener descripciones: {error}")
-            return Response({"detail": f"Error al obtener descripciones: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(data, status=status.HTTP_200_OK)
+#         return Response(data, status=status.HTTP_200_OK)
 
 
-class TerminacionAPIView(APIView):
+# class AnchoUtilAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[AnchoUtilAPIView] GET para obtener anchos útiles")
+#         query = 'SELECT "ancho_util_id" as "id", "ancho_util_metros" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_ANCHO_UTIL"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+#         if error:
+#             logger.error(f"Error al obtener anchos útiles: {error}")
+#             return Response({"detail": f"Error al obtener anchos útiles: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+# class PropiedadesTelaAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[PropiedadesTelaAPIView] GET para obtener propiedades de tela")
+#         # Cambiamos la consulta para que apunte a la nueva vista formateada
+#         # y creamos un campo "nombre" descriptivo para el frontend.
+#         query = '''
+#             SELECT 
+#                 "propiedades_tela_id" AS "id", 
+#                 'Hilo: ' || "Al Hilo" || ', Sesgo: ' || "Al Sesgo" || ', Sentido: ' || "Sentido Moldes" AS "nombre"
+#             FROM "CONSUMO_TEXTIL"."VW_PROPIEDADES_TELA"
+#         '''
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+#         if error:
+#             logger.error(f"Error al obtener propiedades de tela: {error}")
+#             return Response({"detail": f"Error al obtener propiedades de tela: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+# class VarianteAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[VarianteAPIView] GET para obtener variantes")
+#         query = 'SELECT "variante_id" as "id", "numero_variante" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_VARIANTE"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+#         if error:
+#             logger.error(f"Error al obtener variantes: {error}")
+#             return Response({"detail": f"Error al obtener variantes: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+# class DescripcionAPIView(APIView):
+#     def get(self, request):
+#         logger.info("[DescripcionAPIView] GET para obtener descripciones")
+#         query = 'SELECT "descripcion_id" as "id", "detalle_descripcion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_DESCRIPCION"'
+#         data, error = execute_hana_query(query, schema='CONSUMO_TEXTIL')
+
+#         if error:
+#             logger.error(f"Error al obtener descripciones: {error}")
+#             return Response({"detail": f"Error al obtener descripciones: {error}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+# class TerminacionAPIView(APIView):
     def get(self, request):
         logger.info("[TerminacionAPIView] GET para obtener terminaciones")
         query = 'SELECT "terminacion_id" as "id", "categoria_terminacion" || \' - \' || "tipo_terminacion" as "nombre" FROM "CONSUMO_TEXTIL"."DIM_TERMINACION"'

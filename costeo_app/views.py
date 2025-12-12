@@ -23,7 +23,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import Http404
 
-from sap.hana_services import (
+from sap_app.hana_services import (
     get_collections_service,
     create_collection_service,
     get_traceability_service,
@@ -31,7 +31,6 @@ from sap.hana_services import (
     get_current_traceability_service,
     get_phase_by_code_service,
     get_all_phases_service,
-    create_reference_service,
     get_reference_detail_service,
     search_reference_service,
     get_references_by_year_service,
@@ -185,21 +184,6 @@ class FasesAPIView(APIView):
 
             return Response(data_from_db, status=status.HTTP_200_OK)
 
-class ReferenciaAPIView(APIView):
-    def post(self, request):
-        data = request.data
-        
-        codigo_referencia = data.get('CODIGO_REFERENCIA')
-        id_coleccion = data.get('ID_COLECCION')
-        nombre_referencia = data.get('NOMBRE_REFERENCIA')
-        
-        error = create_reference_service(codigo_referencia, id_coleccion, nombre_referencia)
-        
-        if error:
-            logger.error(f"Django [ReferenciaAPIView]: Error de base de datos: {error}")
-            return Response({'detail': f'Error de base de datos: {error}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response({'message': 'Reference created successfully'}, status=status.HTTP_201_CREATED)
 
 class ReferenciaDetalleAPIView(APIView):
     def get(self, request, codigo_referencia):
@@ -251,90 +235,6 @@ class ReferenciasAnioAPIView(APIView):
 
 
 
-
-
-
-class FasesDeReferenciaAPIView(APIView):
-    def get(self, request, collection_id, referencia_id, fasesSlug):
-        logger.info(f"Django [FaseDetalleAPIView]: Solicitud GET para Fase: {fasesSlug}, Referencia: {referencia_id}, Colección: {collection_id}")
-
-        data_for_phase = {}
-
-        try:
-            if fasesSlug == 'jo':
-                # Lógica para la fase JO
-                # Ejemplo: data_for_phase = get_data_for_jo_phase(referencia_id)
-                data_for_phase = {"mensaje": f"Datos para la fase JO de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-creacion-ficha':
-                logger.info(f"Cargando datos para la fase 'MD Creacion Ficha' de la referencia {referencia_id} (Colección: {collection_id})")
-                
-                telas_data, error_telas = get_telas_por_referencia_service(referencia_id, collection_id)
-                insumos_data, error_insumos = get_insumos_por_referencia_service(referencia_id, collection_id)
-
-                if error_telas or error_insumos:
-                    logger.error(f"Error al obtener telas o insumos: {error_telas or error_insumos}")
-                    return Response({"detail": "Error al obtener datos de la fase"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-                data_for_phase = {
-                    "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
-                    "telas": telas_data,
-                    "insumos": insumos_data,
-                }
-
-            elif fasesSlug == 'md-creativo':
-                # Lógica para la fase MD Creación Ficha
-                data_for_phase = {"mensaje": f"Datos para la fase MD Creativo de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-corte':
-                # Lógica para la fase MD Corte
-                data_for_phase = {"mensaje": f"Datos para la fase MD Corte de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-confeccion':
-                # Lógica para la fase MD Confección
-                data_for_phase = {"mensaje": f"Datos para la fase MD Confección de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-fitting':
-                # Lógica para la fase MD Fitting
-                data_for_phase = {"mensaje": f"Datos para la fase MD Fitting de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-tecnico':     
-                # Lógica para la fase MD Técnico
-                data_for_phase = {"mensaje": f"Datos para la fase MD Técnico de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'md-trazador':
-                # Lógica para la fase MD Trazador
-                data_for_phase = {"mensaje": f"Datos para la fase MD Trazador de la referencia {referencia_id}"} 
-
-            elif fasesSlug == 'costeo':
-                data_for_phase = {"mensaje": f"Datos de COSTEO para la referencia {referencia_id}"}
-
-            elif fasesSlug == 'pt-tecnico':
-                # Lógica para la fase PT Técnico
-                data_for_phase = {"mensaje": f"Datos para la fase PT Técnico de la referencia {referencia_id}"}  
-
-            elif fasesSlug == 'pt-fitting':
-                # Lógica para la fase PT Fitting
-                data_for_phase = {"mensaje": f"Datos para la fase PT Fitting de la referencia {referencia_id}"}
-
-            elif fasesSlug == 'pt-cortador':
-                # Lógica para la fase PT Cortador
-                data_for_phase = {"mensaje": f"Datos para la fase PT Cortador de la referencia {referencia_id}"} 
-
-            elif fasesSlug == 'pt-trazador':
-                # Lógica para la fase PT Trazador
-                data_for_phase = {"mensaje": f"Datos para la fase PT Trazador de la referencia {referencia_id}"} 
-
-            else:
-                logger.warning(f"Fase '{fasesSlug}' no reconocida para la referencia {referencia_id}.")
-                return Response({'detail': f'Fase "{fasesSlug}" no válida.'}, status=status.HTTP_404_NOT_FOUND)
-
-            logger.info(f"Datos generados para {fasesSlug} de {referencia_id} (Colección: {collection_id}): {data_for_phase}")
-            return Response(data_for_phase, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            logger.error(f"Django [FaseDetalleAPIView]: ERROR al obtener datos para fase '{fasesSlug}' de referencia '{referencia_id}' (Colección: {collection_id}): {e}", exc_info=True)
-            return Response({'detail': f'Error al obtener datos de la fase: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
@@ -401,53 +301,6 @@ class ModeloDetalleAPIView(APIView):
        
 
 
-# apps/costeo_app/views.py (Fragmento relevante)
-
-# ...
-class FaseDetalleAPIView(APIView):
-    def get(self, request, collection_id, referencia_id, fasesSlug):
-        # ...
-        if fasesSlug == 'md-creacion-ficha':
-            # FUNCIONES REMOVIDAS:
-            # telas_data = telasPorReferencia(referencia_id, collection_id)
-            # insumos_data = insumosPorReferencia(referencia_id, collection_id)
-            # TODO: Implementar nueva lógica para obtener telas e insumos
-            telas_data = []
-            insumos_data = []
-
-            data_for_phase = {
-                "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
-                "telas": telas_data,     # <--- Asegúrate que esto es un array de objetos
-                "insumos": insumos_data, # <--- Asegúrate que esto es un array de objetos
-            }
-        # ...
-        return Response(data_for_phase, status=status.HTTP_200_OK)
-
-
-
-class PTSearchAPIView(APIView):
-    def get(self, request):
-        pt_code = request.GET.get('ptCode', '').strip() # Obtiene el ptCode de los query parameters
-        logger.info(f"Django [PTSearchAPIView]: Solicitud GET recibida para búsqueda de PT Code: {pt_code}")
-
-        if not pt_code:
-            return Response({'detail': 'Parámetro "ptCode" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # Llama a la función de lógica de negocio para buscar el PT Code
-            # Esta función devolverá el primer resultado encontrado (PT Code y Collection)
-            # FUNCIÓN REMOVIDA: search_result = searchPTCode(pt_code)
-            # TODO: Implementar nueva lógica para buscar PT Code
-            search_result = None
-
-            if search_result:
-                return Response(search_result, status=status.HTTP_200_OK)
-            else:
-                return Response({'detail': f"Código PT '{pt_code}' no encontrado."}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            logger.error(f"Django [PTSearchAPIView]: ERROR al buscar PT Code '{pt_code}': {e}", exc_info=True)
-            return Response({'detail': f'Error al realizar la búsqueda: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 
@@ -499,129 +352,7 @@ def anio_coleccion(request, coleccion):
 
 
 
-def create_reference(request):
-    status = Status.objects.all()
-    creativo = Creativo.objects.all()
-    tecnico = Tecnico.objects.all()
-    tipo = Tipo.objects.all()
-    variacion = Variacion.objects.all()
-    codigo_color = ColorReferencia.objects.all()
-    linea = Linea.objects.all()
-    sublinea = Sublinea.objects.all()
-    lineaSublinea = LineaSublinea.objects.all()
-    color_ref = ColorReferencia.objects.all()
-
-    if request.method == 'POST':
-        form = CollectionForm(request.POST, request.FILES)
-        print(
-            request.POST.get('referencia'),
-            request.POST.get('foto_referencia'),
-            request.POST.get('nombre_sistema'),
-            request.POST.get('codigo_sap_md'),
-            request.POST.get('codigo_sap_pt'),
-            request.POST.get('descripcion_color'),
-            request.POST.get('creativo'),
-            request.POST.get('tecnico'),
-            request.POST.get('status'),
-            request.POST.get('codigo_color'),
-            request.POST.get('linea'),
-            request.POST.get('lineasublinea'),
-        )
-        if form.is_valid():
-            form.save()
-            return redirect('collection')
-    else:
-        form = CollectionForm()
-
-    return render(request, 'colecciones/create.html', {
-        'form': form,
-        'miCreativo': creativo,
-        'miTecnico': tecnico,
-        'miStatus': status,
-        'miTipo': tipo,
-        'miVariacion': variacion,
-        'miColorReferencia': codigo_color,
-        'miLinea': linea,
-        'miSublinea': sublinea,
-        'miDescripcionRef': color_ref,
-        'miLineaSublinea': lineaSublinea,
-    })
-
-
-def RegisterReference(request):
-    status = Status.objects.all()
-    creativo = Creativo.objects.all()
-    tecnico = Tecnico.objects.all()
-    tipo = Tipo.objects.all()
-    variacion = Variacion.objects.all()
-
-    if request.method == "POST":
-        referencia = request.POST.get('referencia')
-        nombre_referente = request.POST.get('nombre_referente')
-        codigo_sap_md = request.POST.get('codigo_sap_md')
-        codigo_sap_pt = request.POST.get('codigo_sap_pt')
-        status_id = request.POST.get('status')
-        creativo_id = request.POST.get('creativo')
-        tecnico_id = request.POST.get('tecnico')
-        tipo_id = request.POST.get('tipo')
-        variacion_id = request.POST.get('variacion')
-        linea_id = request.POST.get('linea')
-
-        print(referencia, nombre_referente, codigo_sap_md, codigo_sap_pt, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
-
-        foto_ref = request.FILES.get('foto')
-        foto_referencia = None
-        if foto_ref:
-            fs = FileSystemStorage()
-            filename = fs.save(foto_ref.name, foto_ref)
-            uploaded_file_url = fs.url(filename)
-            foto_referencia = Foto.objects.create(ruta_foto=uploaded_file_url)
-
-        # Crear la nueva colección en la base de datos
-        nueva_coleccion = Collection.objects.create(
-            referencia=referencia,
-            foto_referencia=foto_referencia,
-            codigo_sap_md=codigo_sap_md,
-            codigo_sap_pt=codigo_sap_pt,
-            nombre_referente=nombre_referente,
-            status_id=status_id,
-            creativo_id=creativo_id,
-            tecnico_id=tecnico_id,
-            linea_id=linea_id,
-        )
-        return redirect('RegisterReference')
-
-    return render(request, 'colecciones/register_ref.html', {
-        'miStatus': status,
-        'miCreativo': creativo,
-        'miTecnico': tecnico,
-        'miTipo': tipo,
-        'miVariacion': variacion,
-    })
-
-
-# class ProductoListCreateAPIView(generics.ListCreateAPIView):
-#     queryset = Producto.objects.all()
-#     serializer_class = ProductoSerializer
-
-# class CollectionCreateView(generics.CreateAPIView):
-#     queryset = Collection.objects.all()
-#     serializer_class = CollectionSerializer
-
-# class TecnicoViewSet(viewsets.ModelViewSet):
-#     queryset = Tecnico.objects.all()
-#     serializer_class = TecnicoSerializer
-
-# class TelaViewSet(viewsets.ModelViewSet):
-#     queryset = Tela.objects.all()
-#     serializer_class = TelaSerializer
-
-# class CreativoViewSet(viewsets.ModelViewSet):
-#     queryset = Creativo.objects.all()
-#     serializer_class = CreativoSerializer
-
-
-
+# API endpoint de prueba para lista_coleccion, devuelve datos simulados JSON
 @api_view(['GET'])
 def lista_coleccion(request):
     nombre = request.GET.get('nombre')
@@ -633,61 +364,4 @@ def lista_coleccion(request):
     return Response(data)
 
 
-class ProtectedDataView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return Response({"message": "¡Estos son datos protegidos, " + request.user.username + "!"})
-
-
-# =====================================================================================
-# VISTAS DE API PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
-# =====================================================================================
-
-class DimPrendaList(generics.ListAPIView):
-    queryset = DimPrenda.objects.all()
-    serializer_class = DimPrendaSerializer
-
-class DimCantidadTelasList(generics.ListAPIView):
-    queryset = DimCantidadTelas.objects.all()
-    serializer_class = DimCantidadTelasSerializer
-
-class DimUsoTelaList(generics.ListAPIView):
-    queryset = DimUsoTela.objects.all()
-    serializer_class = DimUsoTelaSerializer
-
-class DimBaseTextilList(generics.ListAPIView):
-    queryset = DimBaseTextil.objects.all()
-    serializer_class = DimBaseTextilSerializer
-
-class DimCaracteristicaColorList(generics.ListAPIView):
-    queryset = DimCaracteristicaColor.objects.all()
-    serializer_class = DimCaracteristicaColorSerializer
-
-class DimAnchoUtilList(generics.ListAPIView):
-    queryset = DimAnchoUtil.objects.all()
-    serializer_class = DimAnchoUtilSerializer
-
-class DimPropiedadesTelaList(generics.ListAPIView):
-    queryset = DimPropiedadesTela.objects.all()
-    serializer_class = DimPropiedadesTelaSerializer
-
-class DimVarianteList(generics.ListAPIView):
-    queryset = DimVariante.objects.all()
-    serializer_class = DimVarianteSerializer
-
-class DimDescripcionList(generics.ListAPIView):
-    queryset = DimDescripcion.objects.all()
-    serializer_class = DimDescripcionSerializer
-
-class DimTerminacionList(generics.ListAPIView):
-    queryset = DimTerminacion.objects.all()
-    serializer_class = DimTerminacionSerializer
-
-class FactConsumoCreate(APIView):
-    def post(self, request, format=None):
-        serializer = FactConsumoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -1,5 +1,5 @@
-from sap.views import execute_hana_query
-from sap.queries import (
+from sap_app.views import execute_hana_query
+from sap_app.queries import (
     queryGetCollections,
     queryInsertCollection,
     queryGetTraceability,

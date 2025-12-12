@@ -23,7 +23,7 @@ HANA_DB_USER = env.str('HANA_DB_USER')
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 # ALLOWED_HOSTS = ['*']   # Permitir todos los hosts temporalmente para desarrollo
 
-AUTH_USER_MODEL = 'usuarios.CustomUser'
+AUTH_USER_MODEL = 'usuarios_app.CustomUser'
 
 # SAP HANA Configuration - Usaremos conexión directa con hdbcli
 HANA_CONFIG = {
@@ -62,12 +62,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usuarios',
+    'usuarios_app',
     'costeo_app',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
-    'sap',
+    'sap_app',
 ]
 
 MIDDLEWARE = [
@@ -200,7 +200,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
 CORS_ALLOW_CREDENTIALS = env.bool('CORS_ALLOW_CREDENTIALS', default=True)
-CORS_ALLOW_ALL_ORIGINS = False  # Siempre False para producción
+CORS_ALLOW_ALL_ORIGINS = True  # Siempre False para producción
 
 # Configuración específica para desarrollo
 if DEBUG:

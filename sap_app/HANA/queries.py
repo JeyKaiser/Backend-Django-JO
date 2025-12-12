@@ -148,6 +148,11 @@ def queryConsumosPorReferencia():
     '''
     return query
 
+
+
+#------------------------------------------------------------
+#CONSULTAS SAP PARA ORDENES Y OFERTAS DE VENTA
+#------------------------------------------------------------
 def queryLastRowReferences():
     query = '''
         SELECT 
