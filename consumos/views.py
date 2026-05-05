@@ -2,7 +2,12 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from sap.views import execute_hana_query
+
+try:
+    from sap.views import execute_hana_query
+except ImportError:
+    def execute_hana_query(*args, **kwargs):
+        return None, 'La app SAP no esta instalada/configurada en este entorno local.'
 
 logger = logging.getLogger(__name__)
 
