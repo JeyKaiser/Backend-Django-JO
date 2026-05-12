@@ -28,6 +28,7 @@ urlpatterns = [
     path('', include('usuarios.urls')),
     path('costeo/', include('costeo_app.urls')),
     path('api/', include('costeo_app.urls')),
+    path('api/sap/', include('sap.urls')),
 
     
     # --- NUEVAS APPS MIGRADAS DESDE FRONTEND ---

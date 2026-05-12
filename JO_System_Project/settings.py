@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'costeo_app',
+    'sap',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
@@ -86,6 +87,7 @@ HANA_CONFIG = {
     'encrypt': env.bool('HANA_ENCRYPT', default=True),
     'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
 }
+SAP_BACKEND_MODE = env.str('SAP_BACKEND_MODE', default='mock')
 
 DATABASES = {
     'default': env.db_url('DATABASE_URL', default='sqlite:///db.sqlite3'),
