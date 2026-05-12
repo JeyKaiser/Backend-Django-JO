@@ -63,17 +63,16 @@ class ConsumosAPIView(APIView):
         try:
             data = request.data
             logger.info(f"[ConsumosAPIView] POST crear consumo para referencia: {data.get('referencia', 'N/A')}")
-            
-            # Validar campos requeridos
+
             required_fields = ['referencia', 'codigo_tela', 'cantidad_consumo', 'unidad_medida']
             missing_fields = [field for field in required_fields if not data.get(field)]
-            
+
             if missing_fields:
                 return Response({
                     'success': False,
                     'error': f'Campos requeridos faltantes: {", ".join(missing_fields)}'
                 }, status=status.HTTP_400_BAD_REQUEST)
-            
+
             provider = get_provider()
             provider.create_consumo({
                 'referencia': data.get('referencia'),
@@ -81,7 +80,7 @@ class ConsumosAPIView(APIView):
                 'cantidad_consumo': data.get('cantidad_consumo'),
                 'unidad_medida': data.get('unidad_medida')
             })
-            
+
             logger.info(f"[ConsumosAPIView] Consumo creado exitosamente para referencia {data.get('referencia')}")
             return Response({
                 'success': True,
@@ -93,7 +92,7 @@ class ConsumosAPIView(APIView):
                     'unidad_medida': data.get('unidad_medida')
                 }
             }, status=status.HTTP_201_CREATED)
-            
+
         except Exception as e:
             logger.error(f"[ConsumosAPIView] Error POST: {e}", exc_info=True)
             return Response({

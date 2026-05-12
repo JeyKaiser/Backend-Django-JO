@@ -82,57 +82,25 @@ class MockSapProvider:
         return dynamic_records + PARAMETERS_VIEW
 
     def create_parametro(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        option_fields = {
-            'BASE_TEXTIL_ID': ('base_textil', 'base_textil'),
-            'TELA_ID': ('tela', 'tela'),
-            'PRINT_ID': ('print', 'print_name'),
-            'HILO_DE_TELA_ID': ('hilo_tela', 'hilo_de_tela'),
-            'HILO_DE_MOLDE_ID': ('hilo_molde', 'hilo_de_molde'),
-            'CANAL_TELA_ID': ('canal_tela', 'canal_tela'),
-            'SENTIDO_SESGOS_ID': ('sentido_sesgos', 'sentido_sesgos'),
-            'ROTACION_MOLDE_ID': ('rotacion_molde', 'rotacion_molde'),
-            'RESTRICCIONES_ID': ('restricciones_tela', 'restricciones_tela'),
-        }
-        resolved: Dict[str, Any] = {}
-        for payload_key, (source_name, target_name) in option_fields.items():
-            option = next(
-                (item for item in self.get_parameter_options(source_name) if item['ID'] == payload[payload_key]),
-                None,
-            )
-            if option is None:
-                raise SapConfigurationError(f'Opcion invalida para {payload_key}')
-            resolved[target_name] = option['NOMBRE']
-
-        record, _ = SapParametroRecord.objects.update_or_create(
-            codigo=payload['CODIGO'],
-            defaults={
-                **resolved,
-                'ancho': Decimal('1.50'),
-            },
-        )
-        return {
-            'success': True,
-            'data': {
-                'CODIGO': record.codigo,
-                'BASE_TEXTIL': record.base_textil,
-                'TELA': record.tela,
-                'ANCHO': float(record.ancho),
-                'PRINT': record.print_name,
-                'HILO_DE_TELA': record.hilo_de_tela,
-                'HILO_DE_MOLDE': record.hilo_de_molde,
-                'CANAL_TELA': record.canal_tela,
-                'SENTIDO_SESGOS': record.sentido_sesgos,
-                'ROTACION_MOLDE': record.rotacion_molde,
-                'RESTRICCIONES_TELA': record.restricciones_tela,
-                'CREATED_AT': record.created_at.isoformat(),
-            },
-        }
+        raise SapConfigurationError('Modo solo lectura: no se permiten escrituras en parámetros.')
 
     def get_consumos_by_reference(self, reference: str) -> List[Dict[str, Any]]:
-        return CONSUMOS_BY_REFERENCE.get(reference.upper(), [])
+        normalized = reference.upper().strip()
+        if not normalized:
+            return []
+
+        exact = CONSUMOS_BY_REFERENCE.get(normalized)
+        if exact:
+            return exact
+
+        partial_matches: List[Dict[str, Any]] = []
+        for key, value in CONSUMOS_BY_REFERENCE.items():
+            if normalized in key.upper():
+                partial_matches.extend(value)
+        return partial_matches
 
     def create_consumo(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        return {'success': True, 'data': payload}
+        raise SapConfigurationError('Modo solo lectura: no se permiten escrituras en consumos.')
 
     def get_consumo_textil(self, tipo_prenda: str, cantidad_telas: Optional[int], numero_variante: Optional[str]) -> List[Dict[str, Any]]:
         results = [item for item in CONSUMO_TEXTIL if item['tipo_prenda'].lower() == tipo_prenda.lower()]
@@ -143,7 +111,7 @@ class MockSapProvider:
         return results
 
     def create_fact_consumo(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        return {'success': True, 'message': 'Referente guardado en modo mock', 'data': payload}
+        raise SapConfigurationError('Modo solo lectura: no se permiten escrituras en fact_consumo.')
 
 
 class HanaSapProvider(MockSapProvider):
@@ -161,6 +129,8 @@ class HanaSapProvider(MockSapProvider):
         ok, message = self.is_available()
         if not ok:
             return QueryResponse([], message)
+        if not _is_read_only_sql(query):
+            return QueryResponse([], 'Modo solo lectura: la consulta fue rechazada.')
         try:
             connection = hdbcli.dbapi.connect(
                 address=self.config['address'],
@@ -200,33 +170,18 @@ class HanaSapProvider(MockSapProvider):
                 ON T1."Name" = T2."U_GSP_ModelCode"
             INNER JOIN "@GSP_TCCOLLECTION" T3
                 ON T1."U_GSP_COLLECTION" = T3."U_GSP_SEASON"
-            WHERE T1."U_GSP_REFERENCE" = ?
+            WHERE UPPER(T1."U_GSP_REFERENCE") LIKE ?
             AND T2."U_GSP_SchName" = 'TELAS'
             ORDER BY T2."U_GSP_SchName" DESC
         """
-        response = self.execute_query(query, [reference])
+        normalized = f'%{reference.strip().upper()}%'
+        response = self.execute_query(query, [normalized])
         if response.error:
             return super().get_consumos_by_reference(reference)
         return response.data
 
     def create_consumo(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        query = """
-            INSERT INTO SBOJOZF."@GSP_TCCONSUMPTION" (
-                "U_GSP_REFERENCE", "U_GSP_ITEM_CODE", "U_GSP_QUANTITY", "U_GSP_UNIT"
-            ) VALUES (?, ?, ?, ?)
-        """
-        response = self.execute_query(
-            query,
-            [
-                payload.get('referencia'),
-                payload.get('codigo_tela'),
-                payload.get('cantidad_consumo'),
-                payload.get('unidad_medida'),
-            ],
-        )
-        if response.error:
-            raise SapConfigurationError(response.error)
-        return {'success': True, 'data': payload}
+        raise SapConfigurationError('Modo solo lectura: no se permiten escrituras en HANA.')
 
 
 def get_provider():
@@ -234,6 +189,11 @@ def get_provider():
     if mode == 'hana':
         return HanaSapProvider()
     return MockSapProvider()
+
+
+def _is_read_only_sql(query: str) -> bool:
+    statement = query.lstrip().upper()
+    return statement.startswith(('SELECT', 'WITH', 'SHOW', 'DESCRIBE', 'EXPLAIN'))
 
 
 def execute_hana_query(query: str, params: Optional[List[Any]] = None, schema: Optional[str] = None):

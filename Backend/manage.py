@@ -7,7 +7,17 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'JO_System_Project.settings')
+    should_check_startup = (
+        len(sys.argv) > 1
+        and sys.argv[1] == 'runserver'
+        and os.environ.get('RUN_MAIN') == 'true'
+    )
     try:
+        if should_check_startup:
+            import django
+            django.setup()
+            from JO_System_Project.startup import print_startup_status
+            print_startup_status()
         from django.core.management import execute_from_command_line
     except ImportError as exc:
         raise ImportError(

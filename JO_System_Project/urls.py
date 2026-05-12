@@ -5,15 +5,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-# Importaciones de vistas específicas que se mantienen en las rutas principales
-from costeo_app.views import (
-    ColeccionesAPIView,
-    PTSearchAPIView,
-    TestDataAPIView,
-    lista_coleccion,
-)
-
-
 # Importaciones JWT
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -41,14 +32,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-
-    # APIs de búsqueda y productos (se mantienen si son de costeo_app)
-    path('api/search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'),
-    path('api/colecciones/', ColeccionesAPIView.as_view(), name='api_colecciones'),
-    path('api/colecciones-list/', lista_coleccion, name='api_coleccion_list'),
-
-    # API de Prueba
-    path('api/test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
 ]
 
 # Configuración para servir archivos estáticos y media en desarrollo

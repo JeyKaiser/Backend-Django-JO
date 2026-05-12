@@ -72,8 +72,8 @@ WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 mysql_host = env.str('MYSQL_HOST', default='127.0.0.1')
 mysql_port = env.str('MYSQL_PORT', default='3306')
 mysql_name = env.str('MYSQL_DATABASE', default='diseno')
-mysql_user = env.str('MYSQL_USER', default='root')
-mysql_password = env.str('MYSQL_PASSWORD', default='password')
+mysql_user = env.str('MYSQL_USER', default='diseno_rw')
+mysql_password = env.str('MYSQL_PASSWORD', default='DisenoRW_2026!')
 
 default_database_url = (
     f'mysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_name}'

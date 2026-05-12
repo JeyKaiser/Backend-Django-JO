@@ -2,13 +2,12 @@ import logging
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
 logger = logging.getLogger(__name__)
 
 class UsersAPIView(APIView):
     """
     API migrada desde Frontend para gestionar usuarios
-    Maneja las operaciones GET y POST para usuarios (simulación sin SAP HANA)
+    Maneja las operaciones GET y POST para usuarios.
     """
     def get(self, request):
         """
@@ -27,7 +26,7 @@ class UsersAPIView(APIView):
 
             logger.info(f"[UsersAPIView] GET usuarios: offset={offset}, limit={limit}, filtros: area={area}, rol={rol}, estado={estado}, search={search}")
 
-            # Simulación de datos de usuarios (reemplaza con lógica real de Supabase)
+            # Datos de ejemplo mientras se conecta la fuente real
             mock_users = [
                 {
                     'ID_USUARIO': 1,
@@ -98,7 +97,7 @@ class UsersAPIView(APIView):
         except Exception as e:
             logger.error(f"[UsersAPIView] Error: {e}", exc_info=True)
             return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def post(self, request):
         """
         Crear nuevo usuario
@@ -107,17 +106,14 @@ class UsersAPIView(APIView):
             data = request.data
             logger.info(f"[UsersAPIView] POST crear usuario: {data.get('CODIGO_USUARIO', 'N/A')}")
 
-            # Validar campos requeridos
             required_fields = ['CODIGO_USUARIO', 'NOMBRE_COMPLETO', 'AREA', 'ROL']
             missing_fields = [field for field in required_fields if not data.get(field)]
-
             if missing_fields:
                 return Response({
                     'success': False,
                     'error': f'Campos requeridos faltantes: {", ".join(missing_fields)}'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Validar áreas y roles válidos
             valid_areas = ['DISEÑO', 'PRODUCCION', 'CALIDAD', 'TECNICO', 'PATRONAJE', 'COMERCIAL', 'OPERACIONES']
             valid_roles = [
                 'JEFE_OPERACIONES', 'DISEÑADOR_SENIOR', 'DISEÑADOR', 'CORTADOR_SENIOR',
@@ -136,7 +132,6 @@ class UsersAPIView(APIView):
                     'error': f'Rol inválido. Roles válidos: {", ".join(valid_roles)}'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            # Simulación de verificación de código existente
             existing_codes = ['USR001', 'USR002', 'USR003']
             if data.get('CODIGO_USUARIO') in existing_codes:
                 return Response({
@@ -144,7 +139,6 @@ class UsersAPIView(APIView):
                     'error': f'El código de usuario "{data.get("CODIGO_USUARIO")}" ya existe'
                 }, status=status.HTTP_409_CONFLICT)
 
-            # Simulación de creación exitosa
             logger.info(f"[UsersAPIView] Usuario {data.get('CODIGO_USUARIO')} creado exitosamente")
             return Response({
                 'success': True,
@@ -162,8 +156,7 @@ class UsersAPIView(APIView):
         except Exception as e:
             logger.error(f"[UsersAPIView] Error POST: {e}", exc_info=True)
             return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+    
 class UserDetailAPIView(APIView):
     """
     API para operaciones sobre usuarios individuales
@@ -175,7 +168,7 @@ class UserDetailAPIView(APIView):
         try:
             logger.info(f"[UserDetailAPIView] GET usuario ID: {user_id}")
 
-            # Simulación de búsqueda por ID
+            # Datos de ejemplo mientras se conecta la fuente real
             users_db = {
                 1: {
                     'ID_USUARIO': 1,
@@ -221,20 +214,16 @@ class UserDetailAPIView(APIView):
         except Exception as e:
             logger.error(f"[UserDetailAPIView] Error GET: {e}", exc_info=True)
             return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def put(self, request, user_id):
-        """
-        Actualizar usuario
-        """
+        """PUT /api/users/{id}/ - Actualizar usuario"""
         try:
             data = request.data
             logger.info(f"[UserDetailAPIView] PUT usuario ID: {user_id}")
 
-            # Simulación de actualización
             if not data:
                 return Response({'error': 'No hay campos para actualizar'}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Simulación de actualización exitosa
             return Response({
                 'success': True,
                 'message': 'Usuario actualizado exitosamente'
@@ -243,15 +232,12 @@ class UserDetailAPIView(APIView):
         except Exception as e:
             logger.error(f"[UserDetailAPIView] Error PUT: {e}", exc_info=True)
             return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def delete(self, request, user_id):
-        """
-        Eliminar usuario (soft delete)
-        """
+        """DELETE /api/users/{id}/ - Eliminar usuario"""
         try:
             logger.info(f"[UserDetailAPIView] DELETE usuario ID: {user_id}")
 
-            # Simulación de eliminación exitosa
             return Response({
                 'success': True,
                 'message': 'Usuario eliminado exitosamente'
@@ -260,20 +246,17 @@ class UserDetailAPIView(APIView):
         except Exception as e:
             logger.error(f"[UserDetailAPIView] Error DELETE: {e}", exc_info=True)
             return Response({'error': f'Error interno: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+    
 class DatabaseHealthAPIView(APIView):
     """
-    API migrada desde Frontend para verificar salud de la base de datos
+    API para verificar salud de la base de datos
     """
     def get(self, request):
-        """
-        Verificar conectividad y salud de la base de datos (simulación)
-        """
+        """Verificar conectividad y salud de la base de datos."""
         try:
             logger.info("[DatabaseHealthAPIView] Verificando salud de la base de datos")
 
-            # Simulación de verificación de salud exitosa
+            # Respuesta de ejemplo mientras se conecta la fuente real
             return Response({
                 'success': True,
                 'connection': {

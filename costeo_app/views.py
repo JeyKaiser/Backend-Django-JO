@@ -1,27 +1,20 @@
-from .models import Producto, Collection, Tela, Status
-from .models import (Foto, Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Collection, Sublinea, Linea, LineaSublinea,
+from .models import Collection, Status
+from .models import (Creativo, Tecnico, ColorReferencia, Tipo, Variacion, Sublinea, Linea, LineaSublinea,
                      DimPrenda, DimCantidadTelas, DimUsoTela, DimBaseTextil,
                      DimCaracteristicaColor, DimAnchoUtil, DimPropiedadesTela,
-                     DimVariante, DimDescripcion, DimTerminacion, FactConsumo)
-from .serializers import (ProductoSerializer, CollectionSerializer, TecnicoSerializer, TelaSerializer, CreativoSerializer,
-                          DimPrendaSerializer, DimCantidadTelasSerializer, DimUsoTelaSerializer, DimBaseTextilSerializer,
+                     DimVariante, DimDescripcion, DimTerminacion)
+from .serializers import (DimPrendaSerializer, DimCantidadTelasSerializer, DimUsoTelaSerializer, DimBaseTextilSerializer,
                           DimCaracteristicaColorSerializer, DimAnchoUtilSerializer, DimPropiedadesTelaSerializer,
                           DimVarianteSerializer, DimDescripcionSerializer, DimTerminacionSerializer, FactConsumoSerializer)
 from .forms import  CollectionForm
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse
-from django.contrib import messages
-from django.db import transaction
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponseNotAllowed
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from django.http import Http404
 
 import logging
 
@@ -46,9 +39,9 @@ def get_season_details(name):
 
 class ColeccionesAPIView(APIView):
     def get(self, request):
-        print("Django [ColeccionesAPIView]: Solicitud GET recibida para obtener todas las colecciones desde Supabase")
+        logger.info("Django [ColeccionesAPIView]: Solicitud GET recibida para obtener todas las colecciones")
 
-        # Simulación de datos de colecciones (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         colecciones = [
             {
                 'id': '2024',
@@ -72,11 +65,11 @@ class ColeccionesAPIView(APIView):
             }
         ]
 
-        print(f"Django [ColeccionesAPIView]: Enviando {len(colecciones)} colecciones desde Supabase")
+        logger.info(f"Django [ColeccionesAPIView]: Enviando {len(colecciones)} colecciones")
         return Response(colecciones, status=status.HTTP_200_OK)
 
     def post(self, request):
-        print("Django [ColeccionesAPIView]: Solicitud POST recibida para crear una colección")
+        logger.info("Django [ColeccionesAPIView]: Solicitud POST recibida para crear una colección")
 
         data = request.data
         code = data.get('Code')
@@ -89,7 +82,6 @@ class ColeccionesAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Simulación de creación exitosa (reemplaza con lógica real de Supabase)
         return Response(
             {"message": "Collection created successfully"},
             status=status.HTTP_201_CREATED
@@ -99,7 +91,7 @@ class TrazabilidadAPIView(APIView):
     def get(self, request, id_referencia):
         logger.info(f"Django [TrazabilidadAPIView]: Solicitud GET recibida para la trazabilidad de la referencia con ID: {id_referencia}")
 
-        # Simulación de datos de trazabilidad (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         data_from_db = [
             {
                 'ID_FASE': 1,
@@ -121,14 +113,13 @@ class TrazabilidadAPIView(APIView):
         data = request.data
         id_fase = data.get('ID_FASE')
 
-        # Simulación de actualización exitosa (reemplaza con lógica real de Supabase)
         return Response({'message': 'Traceability record created successfully'}, status=status.HTTP_201_CREATED)
 
 class TrazabilidadCurrentAPIView(APIView):
     def get(self, request, id_referencia):
         logger.info(f"Django [TrazabilidadCurrentAPIView]: Solicitud GET recibida para la fase actual de la referencia con ID: {id_referencia}")
 
-        # Simulación de fase actual (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         current_phase = {
             'ID_FASE': 2,
             'NOMBRE_FASE': 'MD Creación Ficha',
@@ -143,7 +134,7 @@ class FasesAPIView(APIView):
         if codigo_fase:
             logger.info(f"Django [FasesAPIView]: Solicitud GET recibida para la fase con código: {codigo_fase}")
 
-            # Simulación de búsqueda por código (reemplaza con lógica real de Supabase)
+            # Datos de ejemplo mientras se conecta la fuente real
             phases = {
                 'JO': {'codigo': 'JO', 'nombre': 'JO', 'descripcion': 'Fase inicial'},
                 'MD001': {'codigo': 'MD001', 'nombre': 'MD Creación Ficha', 'descripcion': 'Creación de ficha técnica'}
@@ -157,7 +148,7 @@ class FasesAPIView(APIView):
         else:
             logger.info(f"Django [FasesAPIView]: Solicitud GET recibida para obtener todas las fases")
 
-            # Simulación de todas las fases (reemplaza con lógica real de Supabase)
+            # Datos de ejemplo mientras se conecta la fuente real
             all_phases = [
                 {'codigo': 'JO', 'nombre': 'JO', 'descripcion': 'Fase inicial'},
                 {'codigo': 'MD001', 'nombre': 'MD Creación Ficha', 'descripcion': 'Creación de ficha técnica'},
@@ -175,14 +166,13 @@ class ReferenciaAPIView(APIView):
         id_coleccion = data.get('ID_COLECCION')
         nombre_referencia = data.get('NOMBRE_REFERENCIA')
 
-        # Simulación de creación exitosa (reemplaza con lógica real de Supabase)
         return Response({'message': 'Reference created successfully'}, status=status.HTTP_201_CREATED)
 
 class ReferenciaDetalleAPIView(APIView):
     def get(self, request, codigo_referencia):
         logger.info(f"Django [ReferenciaDetalleAPIView]: Solicitud GET recibida para codigo_referencia: {codigo_referencia}")
 
-        # Simulación de detalle de referencia (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         reference_detail = {
             'codigo_referencia': codigo_referencia,
             'nombre': f'Referencia {codigo_referencia}',
@@ -196,7 +186,7 @@ class ReferenciaSearchAPIView(APIView):
     def get(self, request):
         search_term = request.query_params.get('search', '')
 
-        # Simulación de búsqueda (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         search_results = [
             {
                 'codigo': 'REF001',
@@ -209,7 +199,7 @@ class ReferenciaSearchAPIView(APIView):
 
 class AnioColeccionAPIView(APIView):
     def get(self, request, coleccion): # 'coleccion' can be either slug or numeric ID
-        print(f"Django [AnioColeccionAPIView]: Coleccion ID/slug recibido: '{coleccion}'")
+        logger.info(f"Django [AnioColeccionAPIView]: Coleccion ID/slug recibido: '{coleccion}'")
         
         # Mapping from numeric IDs to slugs and vice versa
         id_to_slug = {
@@ -265,7 +255,7 @@ class AnioColeccionAPIView(APIView):
             # Input is a numeric ID, convert to slug
             slug = id_to_slug.get(coleccion)
             if not slug:
-                print(f"Django [AnioColeccionAPIView]: ERROR: Numeric ID '{coleccion}' no encontrado.")
+                logger.warning(f"Django [AnioColeccionAPIView]: Numeric ID '{coleccion}' no encontrado.")
                 return Response({'detail': f'Collection ID "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
         else:
             # Input is already a slug
@@ -276,13 +266,13 @@ class AnioColeccionAPIView(APIView):
         collection_name = slug_to_name.get(slug, slug)
 
         if cards:
-            print(f"Django [AnioColeccionAPIView]: Colección '{slug}' encontrada. Enviando {len(cards)} tarjetas.")
+            logger.info(f"Django [AnioColeccionAPIView]: Colección '{slug}' encontrada. Enviando {len(cards)} tarjetas.")
             return Response({
                 'nombre_coleccion': collection_name,
                 'anios': cards
             }, status=status.HTTP_200_OK)
         else:
-            print(f"Django [AnioColeccionAPIView]: ERROR: Colección '{coleccion}' NO encontrada.")
+            logger.warning(f"Django [AnioColeccionAPIView]: Colección '{coleccion}' no encontrada.")
             return Response({'detail': f'Collection "{coleccion}" not found'}, status=status.HTTP_404_NOT_FOUND)
         
 
@@ -291,7 +281,7 @@ class ReferenciasAnioAPIView(APIView):
     def get(self, request, collection_id):
         logger.info(f"Django [ReferenciasAPIView]: Solicitud GET recibida para collection_id: {collection_id}")
 
-        # Simulación de referencias por colección (reemplaza con lógica real de Supabase)
+        # Datos de ejemplo mientras se conecta la fuente real
         references = [
             {
                 'codigo': 'REF001',
@@ -329,7 +319,7 @@ class FasesDeReferenciaAPIView(APIView):
             elif fasesSlug == 'md-creacion-ficha':
                 logger.info(f"Cargando datos para la fase 'MD Creacion Ficha' de la referencia {referencia_id} (Colección: {collection_id})")
 
-                # Simulación de datos de telas e insumos (reemplaza con lógica real de Supabase)
+                # Datos de ejemplo mientras se conecta la fuente real
                 telas_data = [
                     {
                         'codigo': 'TELA001',
@@ -412,7 +402,7 @@ class FasesDeReferenciaAPIView(APIView):
 #---------------------------------------------------------------------------------------------
 class TestDataAPIView(APIView):
     def get(self, request, test_id): # 'test_id' es el parámetro de la URL
-        print(f"Django: [TestDataAPIView] Recibida solicitud para test_id: {test_id}") # Log en la terminal de Django
+        logger.info(f"Django: [TestDataAPIView] Recibida solicitud para test_id: {test_id}")
         
         data = {
             'id': test_id,
@@ -421,7 +411,7 @@ class TestDataAPIView(APIView):
             'timestamp': '2024-06-25T10:00:00Z' # Un dato fijo para probar
         }
         
-        print(f"Django: [TestDataAPIView] Enviando respuesta: {data}") # Log en la terminal de Django
+        logger.info(f"Django: [TestDataAPIView] Enviando respuesta: {data}")
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -429,10 +419,6 @@ class TestDataAPIView(APIView):
 
 
 
-
-  
-
-# --- NUEVA APIView COMBINADA ---
 class ModeloDetalleAPIView(APIView):
     def get(self, request, referencia_id):
         logger.info(f"Django [ModeloDetalleAPIView]: Solicitud GET recibida para referencia_id: {referencia_id}, - Colección ID: {request.GET.get('collectionId')}")
@@ -469,28 +455,17 @@ class ModeloDetalleAPIView(APIView):
             logger.error(f"Django [ModeloDetalleAPIView]: ERROR al obtener el detalle del modelo para la referencia '{referencia_id}': {e}", exc_info=True)
             return Response({'detail': f'Error al obtener detalle del modelo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
        
-
-
-# apps/costeo_app/views.py (Fragmento relevante)
-
-# ...
 class FaseDetalleAPIView(APIView):
     def get(self, request, collection_id, referencia_id, fasesSlug):
-        # ...
         if fasesSlug == 'md-creacion-ficha':
-            # FUNCIONES REMOVIDAS:
-            # telas_data = telasPorReferencia(referencia_id, collection_id)
-            # insumos_data = insumosPorReferencia(referencia_id, collection_id)
-            # TODO: Implementar nueva lógica para obtener telas e insumos
             telas_data = []
             insumos_data = []
 
             data_for_phase = {
                 "mensaje": f"Datos de BD para MD Creacion Ficha de {referencia_id} (Colección: {collection_id})",
-                "telas": telas_data,     # <--- Asegúrate que esto es un array de objetos
-                "insumos": insumos_data, # <--- Asegúrate que esto es un array de objetos
+                "telas": telas_data,
+                "insumos": insumos_data,
             }
-        # ...
         return Response(data_for_phase, status=status.HTTP_200_OK)
 
 
@@ -504,7 +479,7 @@ class PTSearchAPIView(APIView):
             return Response({'detail': 'Parámetro "ptCode" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Simulación de búsqueda PT Code (reemplaza con lógica real de Supabase)
+            # Datos de ejemplo mientras se conecta la fuente real
             search_result = {
                 'pt_code': pt_code,
                 'collection': 'Winter Sun 2024',
@@ -517,26 +492,12 @@ class PTSearchAPIView(APIView):
             return Response({'detail': f'Error al realizar la búsqueda: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-
-
-
-#   ------- D J A N G O   V I E W S / T E M P L A T E S  -------
-
 @login_required
 def index(request):    
     return render(request, "index.html")      
-    # title = 'Django-Course!!'   
-    # context = {
-    #     'respuesta': 'Hola, soy Daniel, ¿en qué puedo ayudarte?',
-    #     "nombre": 'Daniel',
-    #     "apellido": 'Gossdfsdfsdfsfsdfez',
-    # }    
-    # return JsonResponse(context, status=200, safe=False) 
 
- 
 def anio_coleccion(request, coleccion):
-    print("Django: ", coleccion)
+    logger.info(f"Django: {coleccion}")
     coleccion_data = {       
 
         'winter-sun': [
@@ -594,14 +555,13 @@ def obtener_sublineas(request, linea_id):
 
 def collection_list(request):
     coleccion = Collection.objects.all()
-    #print(coleccion.values())
     return render(request, 'colecciones/colecciones.html',{
         'miColeccion': coleccion,
     })
 
 
 def create_reference(request):
-    status = Status.objects.all()
+    statuses = Status.objects.all()
     creativo = Creativo.objects.all()
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
@@ -613,24 +573,7 @@ def create_reference(request):
     color_ref = ColorReferencia.objects.all()
 
     if request.method == 'POST':
-        form = CollectionForm(request.POST, request.FILES)
-        print(
-            request.POST.get('referencia'),
-            request.POST.get('foto_referencia'),
-            request.POST.get('nombre_sistema'),
-            request.POST.get('codigo_sap_md'),
-            request.POST.get('codigo_sap_pt'),
-            request.POST.get('descripcion_color'),
-            request.POST.get('creativo'),
-            request.POST.get('tecnico'),
-            request.POST.get('status'),
-            request.POST.get('codigo_color'),
-            request.POST.get('linea'),
-            request.POST.get('lineasublinea'),
-        )
-        if form.is_valid():
-            form.save()
-            return redirect('collection')
+        return HttpResponseNotAllowed(['GET'])
     else:
         form = CollectionForm()
 
@@ -638,7 +581,7 @@ def create_reference(request):
         'form': form,
         'miCreativo': creativo,
         'miTecnico': tecnico,
-        'miStatus': status,
+        'miStatus': statuses,
         'miTipo': tipo,
         'miVariacion': variacion,
         'miColorReferencia': codigo_color,
@@ -650,50 +593,17 @@ def create_reference(request):
 
 
 def RegisterReference(request):
-    status = Status.objects.all()
+    statuses = Status.objects.all()
     creativo = Creativo.objects.all()
     tecnico = Tecnico.objects.all()
     tipo = Tipo.objects.all()
     variacion = Variacion.objects.all()
 
     if request.method == "POST":
-        referencia = request.POST.get('referencia')
-        nombre_referente = request.POST.get('nombre_referente')
-        codigo_sap_md = request.POST.get('codigo_sap_md')
-        codigo_sap_pt = request.POST.get('codigo_sap_pt')
-        status_id = request.POST.get('status')
-        creativo_id = request.POST.get('creativo')
-        tecnico_id = request.POST.get('tecnico')
-        tipo_id = request.POST.get('tipo')
-        variacion_id = request.POST.get('variacion')
-        linea_id = request.POST.get('linea')
-
-        print(referencia, nombre_referente, codigo_sap_md, codigo_sap_pt, status_id, creativo_id, tecnico_id, tipo_id, variacion_id, linea_id)
-
-        foto_ref = request.FILES.get('foto')
-        foto_referencia = None
-        if foto_ref:
-            fs = FileSystemStorage()
-            filename = fs.save(foto_ref.name, foto_ref)
-            uploaded_file_url = fs.url(filename)
-            foto_referencia = Foto.objects.create(ruta_foto=uploaded_file_url)
-
-        # Crear la nueva colección en la base de datos
-        nueva_coleccion = Collection.objects.create(
-            referencia=referencia,
-            foto_referencia=foto_referencia,
-            codigo_sap_md=codigo_sap_md,
-            codigo_sap_pt=codigo_sap_pt,
-            nombre_referente=nombre_referente,
-            status_id=status_id,
-            creativo_id=creativo_id,
-            tecnico_id=tecnico_id,
-            linea_id=linea_id,
-        )
-        return redirect('RegisterReference')
+        return HttpResponseNotAllowed(['GET'])
 
     return render(request, 'colecciones/register_ref.html', {
-        'miStatus': status,
+        'miStatus': statuses,
         'miCreativo': creativo,
         'miTecnico': tecnico,
         'miTipo': tipo,
@@ -701,32 +611,9 @@ def RegisterReference(request):
     })
 
 
-# class ProductoListCreateAPIView(generics.ListCreateAPIView):
-#     queryset = Producto.objects.all()
-#     serializer_class = ProductoSerializer
-
-# class CollectionCreateView(generics.CreateAPIView):
-#     queryset = Collection.objects.all()
-#     serializer_class = CollectionSerializer
-
-# class TecnicoViewSet(viewsets.ModelViewSet):
-#     queryset = Tecnico.objects.all()
-#     serializer_class = TecnicoSerializer
-
-# class TelaViewSet(viewsets.ModelViewSet):
-#     queryset = Tela.objects.all()
-#     serializer_class = TelaSerializer
-
-# class CreativoViewSet(viewsets.ModelViewSet):
-#     queryset = Creativo.objects.all()
-#     serializer_class = CreativoSerializer
-
-
-
 @api_view(['GET'])
 def lista_coleccion(request):
     nombre = request.GET.get('nombre')
-    # Simulación básica
     data = [
         {'producto': 'Vestido largo', 'coleccion': nombre},
         {'producto': 'Chaqueta de cuero', 'coleccion': nombre},
@@ -740,10 +627,6 @@ class ProtectedDataView(APIView):
     def get(self, request):
         return Response({"message": "¡Estos son datos protegidos, " + request.user.username + "!"})
 
-
-# =====================================================================================
-# VISTAS DE API PARA LA BASE DE DATOS DIMENSIONAL 'CONSUMO_TEXTIL'
-# =====================================================================================
 
 class DimPrendaList(generics.ListAPIView):
     queryset = DimPrenda.objects.all()

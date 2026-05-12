@@ -1,12 +1,13 @@
 # costeo_app/urls.py
 from . import views
-from django.urls import path, include
+from django.urls import path
 
 
 # Importa solo los ViewSets si los registras aquí
 #from .views import obtener_sublineas, TecnicoViewSet, TelaViewSet, CreativoViewSet, ReferenciaDetailView #ReferenciasPorAnioListView , lista_coleccion, ProductoListCreateAPIView
 from .views import (ColeccionesAPIView, AnioColeccionAPIView,ReferenciasAnioAPIView, ModeloDetalleAPIView, FasesDeReferenciaAPIView, FaseDetalleAPIView, ReferenciaDetalleAPIView, ReferenciaSearchAPIView, ReferenciaAPIView, FasesAPIView, TrazabilidadAPIView, TrazabilidadCurrentAPIView,
-                    DimPrendaList, DimCantidadTelasList, DimUsoTelaList, DimBaseTextilList, DimCaracteristicaColorList, DimAnchoUtilList, DimPropiedadesTelaList, DimVarianteList, DimDescripcionList, DimTerminacionList, FactConsumoCreate)
+                    DimPrendaList, DimCantidadTelasList, DimUsoTelaList, DimBaseTextilList, DimCaracteristicaColorList, DimAnchoUtilList, DimPropiedadesTelaList, DimVarianteList, DimDescripcionList, DimTerminacionList, FactConsumoCreate,
+                    PTSearchAPIView, TestDataAPIView, lista_coleccion)
 
 # router = DefaultRouter()
 # router.register(r'tecnicos', TecnicoViewSet)
@@ -37,6 +38,9 @@ urlpatterns = [
     path('detalle-referencia/<str:referencia_id>/', ModeloDetalleAPIView.as_view(), name='api_modelo_detalle'),
     path('fases/<str:collection_id>/<str:referencia_id>/<str:fasesSlug>/', FasesDeReferenciaAPIView.as_view(), name='api_fase_detalle'),
     path('fases/<str:fase_slug>/<str:referencia_id>/', FaseDetalleAPIView.as_view(), name='api_fase_detalle'),
+    path('search-pt/', PTSearchAPIView.as_view(), name='api_search_pt_code'),
+    path('colecciones-list/', lista_coleccion, name='api_coleccion_list'),
+    path('test-data/<str:test_id>/', TestDataAPIView.as_view(), name='api_test_data'),
     
 
     #path('referencias1/<str:codigo_referencia>/', ReferenciaDetailView.as_view(), name='referencia-detail'),

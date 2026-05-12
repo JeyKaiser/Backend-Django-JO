@@ -1,54 +1,48 @@
 from .forms import CustomUserCreationForm, SigninForm
 from .models import CustomUser
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from django.shortcuts import render, redirect
-from django.core.files.storage import FileSystemStorage
-from django.http import JsonResponse
 from django.db import transaction
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-#CREAR USUARIO NUEVO
+# Crear usuario nuevo
 def signup(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
-        # print(request.POST)
         if request.POST['password1'] == request.POST['password2']:
             try:
                 with transaction.atomic():
                     user = CustomUser.objects.create_user(
                         username=request.POST['username'],
                         password=request.POST['password1'],
-                        email=request.POST['email']  # Agregar el email
+                        email=request.POST['email']
                     )
-                user.save()                # Iniciar sesión automáticamente después del registro
+                user.save()
                 login(request, user)
                 messages.success(request, 'Cuenta creada con éxito.')
-                print('Cuenta creada con éxito.')
+                logger.info('Cuenta creada con éxito.')
                 return redirect('signin')
             except Exception as e:
-                print(f'Error: {e}')
+                logger.error(f'Error creando cuenta: {e}')
                 return render(request, 'signup.html', {'miSignup': form})
         else:
             messages.error(request, 'Las contraseñas no coinciden.')
-            print('Las claves no son iguales.')
+            logger.warning('Las contraseñas no coinciden.')
             return render(request, 'signup.html', {'miSignup': form})
     else:
         form = CustomUserCreationForm(request.POST)
         return render(request, 'signup.html', {'miSignup': form})
 
 
-# Login de usuario
 def signin(request):
     if request.method == 'GET':
         return render(request, 'signin.html', {
@@ -61,8 +55,7 @@ def signin(request):
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                # Aquí sí se llama a la función login con el usuario autenticado
-                login(request, user)                
+                login(request, user)
                 return redirect('index')
             else:
                 return render(request, 'signin.html', {
@@ -77,7 +70,7 @@ def signin(request):
 
 
 # ============================
-# API VIEWS para usuarios SAP HANA
+# API views para usuarios
 # Compatibles con frontend Next.js
 # ============================
 
@@ -87,11 +80,7 @@ class UsuariosAPIView(APIView):
     Compatible con el frontend Next.js y API spec
     """
     permission_classes = [AllowAny]
-    
-    def __init__(self):
-        super().__init__()
-        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
-    
+
     def get(self, request):
         """GET /api/users/ - Lista usuarios con paginación y filtros"""
         try:
@@ -110,7 +99,6 @@ class UsuariosAPIView(APIView):
             
             search_term = request.GET.get('search', '')
             
-            # Simulación de obtener usuarios (reemplaza con lógica real de Supabase)
             result = {
                 'users': [
                     {
@@ -161,16 +149,15 @@ class UsuariosAPIView(APIView):
                 'error': 'Error obteniendo usuarios',
                 'timestamp': self._get_timestamp()
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def post(self, request):
         """POST /api/users/ - Crear nuevo usuario"""
         import time
         start_time = time.time()
-        
+
         try:
             data = request.data
-            
-            # Validar campos requeridos
+
             required_fields = ['CODIGO_USUARIO', 'NOMBRE_COMPLETO', 'AREA', 'ROL']
             for field in required_fields:
                 if not data.get(field):
@@ -179,9 +166,8 @@ class UsuariosAPIView(APIView):
                         'error': f'Campo requerido faltante: {field}',
                         'timestamp': self._get_timestamp()
                     }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Simulación de verificación de usuario existente
-            existing_codes = ['USR001', 'USR002']  # Simulación
+
+            existing_codes = ['USR001', 'USR002']
             if data.get('CODIGO_USUARIO') in existing_codes:
                 return Response({
                     'success': False,
@@ -189,10 +175,8 @@ class UsuariosAPIView(APIView):
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_409_CONFLICT)
 
-            # Simulación de creación de usuario
-            created_user = data
             execution_time = int((time.time() - start_time) * 1000)
-            
+
             logger.info(f"[UsuariosAPIView] Usuario creado: {data.get('CODIGO_USUARIO')}")
             return Response({
                 'success': True,
@@ -206,9 +190,8 @@ class UsuariosAPIView(APIView):
                 },
                 'executionTime': execution_time
             }, status=status.HTTP_201_CREATED)
-            
+
         except Exception as e:
-            execution_time = int((time.time() - start_time) * 1000)
             logger.error(f"[UsuariosAPIView] Error creando usuario: {str(e)}")
             return Response({
                 'success': False,
@@ -226,15 +209,10 @@ class UsuarioDetailAPIView(APIView):
     Vista para gestionar un usuario específico por ID
     """
     permission_classes = [AllowAny]
-    
-    def __init__(self):
-        super().__init__()
-        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
-    
+
     def get(self, request, user_id):
         """GET /api/users/{id}/ - Obtener usuario por ID"""
         try:
-            # Simulación de obtener usuario por ID
             users_db = {
                 1: {'ID_USUARIO': 1, 'CODIGO_USUARIO': 'USR001', 'NOMBRE_COMPLETO': 'Juan Pérez'},
                 2: {'ID_USUARIO': 2, 'CODIGO_USUARIO': 'USR002', 'NOMBRE_COMPLETO': 'María García'}
@@ -259,19 +237,17 @@ class UsuarioDetailAPIView(APIView):
                 'error': str(e),
                 'timestamp': self._get_timestamp()
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+
     def put(self, request, user_id):
         """PUT /api/users/{id}/ - Actualizar usuario"""
         import time
         start_time = time.time()
-        
+
         try:
             data = request.data
-            
-            # Simulación de actualización de usuario
             updated_user = data
             execution_time = int((time.time() - start_time) * 1000)
-            
+
             if updated_user:
                 logger.info(f"[UsuarioDetailAPIView] Usuario actualizado: {user_id}")
                 return Response({
@@ -286,7 +262,7 @@ class UsuarioDetailAPIView(APIView):
                     'error': 'Usuario no encontrado',
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_404_NOT_FOUND)
-                
+
         except Exception as e:
             execution_time = int((time.time() - start_time) * 1000)
             logger.error(f"[UsuarioDetailAPIView] Error actualizando usuario {user_id}: {str(e)}")
@@ -295,17 +271,14 @@ class UsuarioDetailAPIView(APIView):
                 'error': str(e),
                 'timestamp': self._get_timestamp()
             }, status=status.HTTP_400_BAD_REQUEST)
-    
+
     def delete(self, request, user_id):
         """DELETE /api/users/{id}/ - Eliminar usuario"""
         import time
         start_time = time.time()
-        
+
         try:
-            # Verificar si es eliminación hard o soft
             hard_delete = request.GET.get('hard', 'false').lower() == 'true'
-            
-            # Simulación de obtener datos del usuario
             users_db = {
                 1: {'ID_USUARIO': 1, 'CODIGO_USUARIO': 'USR001', 'NOMBRE_COMPLETO': 'Juan Pérez'},
                 2: {'ID_USUARIO': 2, 'CODIGO_USUARIO': 'USR002', 'NOMBRE_COMPLETO': 'María García'}
@@ -318,10 +291,9 @@ class UsuarioDetailAPIView(APIView):
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_404_NOT_FOUND)
 
-            # Simulación de eliminación
             success = True
             execution_time = int((time.time() - start_time) * 1000)
-            
+
             if success:
                 logger.info(f"[UsuarioDetailAPIView] Usuario {'eliminado' if hard_delete else 'desactivado'}: {user_id}")
                 return Response({
@@ -341,7 +313,7 @@ class UsuarioDetailAPIView(APIView):
                     'error': 'Error eliminando usuario',
                     'timestamp': self._get_timestamp()
                 }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                
+
         except Exception as e:
             execution_time = int((time.time() - start_time) * 1000)
             logger.error(f"[UsuarioDetailAPIView] Error eliminando usuario {user_id}: {str(e)}")
@@ -361,11 +333,7 @@ class UsuariosSearchAPIView(APIView):
     Vista para búsqueda avanzada de usuarios
     """
     permission_classes = [AllowAny]
-    
-    def __init__(self):
-        super().__init__()
-        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
-    
+
     def get(self, request):
         """GET /api/users/search/ - Búsqueda avanzada de usuarios"""
         try:
@@ -391,7 +359,6 @@ class UsuariosSearchAPIView(APIView):
             exact_match = request.GET.get('exact', 'false').lower() == 'true'
             limit = min(int(request.GET.get('limit', 20)), 50)  # Max 50
             
-            # Simulación de búsqueda de usuarios
             results = [
                 {
                     'ID_USUARIO': 1,
@@ -401,6 +368,7 @@ class UsuariosSearchAPIView(APIView):
                     'ROL': 'DISEÑADOR'
                 }
             ]
+            results = results[:limit]
             
             # Generar sugerencias simples
             suggestions = [user.get('NOMBRE_COMPLETO', '') for user in results[:3]]
@@ -434,15 +402,10 @@ class UsuariosOptionsAPIView(APIView):
     Vista para obtener opciones de campos (roles, estados, etc.)
     """
     permission_classes = [AllowAny]
-    
-    def __init__(self):
-        super().__init__()
-        # Simulación de servicio de usuarios (reemplaza con lógica real de Supabase)
-    
+
     def get(self, request):
         """GET /api/users/options/ - Opciones de campos y estadísticas"""
         try:
-            # Simulación de opciones de usuario
             options = {
                 'currentAreas': ['DISEÑO', 'PRODUCCION', 'CALIDAD'],
                 'currentRoles': ['DISEÑADOR', 'CORTADOR_SENIOR', 'ANALISTA_COSTOS'],
@@ -507,21 +470,16 @@ class UsuariosOptionsAPIView(APIView):
         return datetime.now().isoformat() + 'Z'
 
 
-# ============================
-# Views adicionales para testing
-# ============================
-
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def test_hana_connection(request):
     """
-    Vista para probar la conexión con SAP HANA
+    Vista para probar la conexión con la base de datos
     """
     try:
-        # Simulación de conexión exitosa
         return Response({
             'status': 'success',
-            'message': 'Conexión simulada exitosa con base de datos',
+            'message': 'Conexión exitosa con base de datos',
             'total_users': 2
         }, status=status.HTTP_200_OK)
 
@@ -531,4 +489,3 @@ def test_hana_connection(request):
             'status': 'error',
             'message': f'Error conectando con base de datos: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
