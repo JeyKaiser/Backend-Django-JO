@@ -7,3 +7,5 @@ django-environ
 django-cors-headers
 djangorestframework
 djangorestframework-simplejwt
+PyMySQL
+cryptography

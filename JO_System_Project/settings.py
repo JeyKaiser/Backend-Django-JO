@@ -3,6 +3,12 @@ from pathlib import Path
 import os
 import environ
 
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,6 +82,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'JO_System_Project.wsgi.application'
 
+# Database
+mysql_host = env.str('MYSQL_HOST', default='127.0.0.1')
+mysql_port = env.str('MYSQL_PORT', default='3306')
+mysql_name = env.str('MYSQL_DATABASE', default='diseno')
+mysql_user = env.str('MYSQL_USER', default='root')
+mysql_password = env.str('MYSQL_PASSWORD', default='password')
+
+default_database_url = (
+    f'mysql://{mysql_user}:{mysql_password}@{mysql_host}:{mysql_port}/{mysql_name}'
+)
+
 # SAP HANA Configuration - Opcional para despliegue en Render
 HANA_CONFIG = {
     'address': env('HANA_HOST', default=''),
@@ -84,13 +101,11 @@ HANA_CONFIG = {
     'password': env('HANA_PASSWORD', default=''),
     'database': env('HANA_DATABASE', default='DISENO'),
     'schema': env('HANA_SCHEMA', default='GARMENT_PRODUCTION_CONTROL'),
-    'encrypt': env.bool('HANA_ENCRYPT', default=True),
-    'sslValidateCertificate': env.bool('HANA_VALIDATE_CERTIFICATE', default=False),
 }
 SAP_BACKEND_MODE = env.str('SAP_BACKEND_MODE', default='mock')
 
 DATABASES = {
-    'default': env.db_url('DATABASE_URL', default='sqlite:///db.sqlite3'),
+    'default': env.db_url('DATABASE_URL', default=default_database_url),
 }
 
 
@@ -131,6 +146,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'costeo_app' / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
